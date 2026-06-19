@@ -1,0 +1,24 @@
+# Copy to ${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml and edit.
+# Drop any pack key you don't fill — its engine seam simply no-ops.
+# See README.md for what each key does.
+
+name: my-project
+
+# A shell command, run with $CWD exported. Exit 0 = this project is active.
+# Detect however you like: cwd glob, file presence (test -f gradlew),
+# git remote (git -C "$CWD" remote get-url origin | grep -q my-org), etc.
+detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
+
+# What the main agent must do at session start when detected (free-form prose).
+sessionInstructions: |
+  Invoke Skill my-project-init before other work; skip if already invoked this session.
+
+# Extension points the engine consumes. codeStyleAudit / codeStyleRules are COMMANDS
+# (the hook auto-quotes values with spaces). Pack values are single-line scalars
+# (the WORKFLOW_PACK announcement is one line; newlines are collapsed to spaces).
+pack:
+  initialize: my-project-init
+  reviewers: my-project-code-reviewer
+  codeStyleAudit: /my-project-style-audit
+  codeStyleRules: cat /abs/path/to/rules.md
+  projectStatePath: /abs/path/to/my-project/.workflow-state

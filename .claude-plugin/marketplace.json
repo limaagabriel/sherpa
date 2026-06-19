@@ -1,0 +1,20 @@
+{
+  "name": "sherpa",
+  "owner": {
+    "name": "Gabriel Lima"
+  },
+  "metadata": {
+    "description": "Sherpa — a project-agnostic Discover->Validate workflow guide",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "sherpa",
+      "source": "./",
+      "description": "Develop like a sherpa: opt-in /plan, /execute, /workflow skills driving the full Discover->Analyze->Plan->Execute->Validate loop with bundled scout/review/build subagents. Extend via project packs + WORKFLOW_STATE_DIR.",
+      "version": "0.1.0",
+      "category": "development",
+      "keywords": ["workflow", "planning", "code-review", "adversarial"]
+    }
+  ]
+}
