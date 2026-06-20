@@ -55,7 +55,7 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 | `reviewers` | extra code-reviewer subagents | `/build-and-review` review fan-out | only generic reviewers run |
 | `codeStyleAudit` | exhaustive per-rule style **command** | Validate phase style audit | style audit skipped |
 | `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | task-reviewer / adversarial-* style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
-| `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-breaker` mode=briefing — its Architecture-rule violation lens | `architecture — N/A: no project architecture pack` (lens skipped) |
+| `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-breaker` mode=briefing — its Architecture-rule violation lens | falls back to advisory general principles (SRP / coupling / cyclic deps / leaky abstraction) — `architecture — general-principle fallback`, WARN not BLOCK |
 | `projectStatePath` | absolute dir for this project's run-state (SPEC/DECISIONS/PROGRESS/`discovery/`/`briefings/`/`handoffs/`) | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
 
 `codeStyleAudit`, `codeStyleRules`, and `architectureRules` are **commands**, not paths —
