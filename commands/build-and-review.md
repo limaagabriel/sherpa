@@ -46,7 +46,7 @@ Run once, before anything else:
 - `git rev-parse HEAD` → `PRE-BUILD BASE`. Range `<PRE-BUILD BASE>..HEAD` scopes Verify, Review, and Deliver.
 - `scripts/build-id.sh` → `BUILD ID`. Forward with each subtask's index `<n>` into every builder dispatch.
 - `scripts/build-notes.sh init` → set repo-local notes config (idempotent).
-- **Project pack.** If a `WORKFLOW_PACK:` line was announced at session start (see `packs/README.md`), capture its `initialize`, `codeStyleRules`, `reviewers`, and `codeStyleAudit`. Resolve the `initialize` skill's `SKILL.md` path. Forward `codeStyleRules` and the `initialize` SKILL.md path into every builder + reviewer dispatch (subagents don't see session context — they only get what you pass; they have no Skill tool, so they `Read` the SKILL.md rather than invoke it), and dispatch the announced `reviewers` in Review. **No announcement → no pack; every style/reviewer step below no-ops.**
+- **Project pack.** If a `WORKFLOW_PACK:` line was announced at session start (see `packs/README.md`), capture its `initialize`, `codeStyleRules`, `reviewers`, and `codeStyleAudit`. Resolve the `initialize` skill's `SKILL.md` path. Forward `codeStyleRules` and the `initialize` SKILL.md path into every builder + reviewer dispatch (subagents don't see session context — they only get what you pass; they have no Skill tool, so they `Read` the SKILL.md rather than invoke it), and dispatch the announced `reviewers` in Review. **No announcement → no pack. The extra `reviewers` fan-out no-ops; style checks fall back to the file's language conventions + in-file/module precedent (no project rules to cite).**
 
 Create `briefings/` and `handoffs/` lazily (workers `mkdir -p` their own).
 

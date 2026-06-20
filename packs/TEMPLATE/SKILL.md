@@ -28,7 +28,7 @@ These rules apply when the cwd / target / branch lives in a <Project> codebase.
 - **codeStyleAudit:** the Validate phase runs this command for the exhaustive pass.
 - **architectureRules:** a shell command that prints the project's architectural guidelines to stdout; sherpa runs it at the **plan** layer and forwards the output to `plan-breaker`, which checks the proposed plan against it. Absent → that lens is skipped.
 - **initialize:** this skill itself — the main agent invokes it at session start; the orchestrator forwards its `SKILL.md` path to subagents (which `Read` it).
-- If you announce neither style key, the engine emits `style — N/A: no project style pack`.
+- If you announce neither style key, reviewers fall back to the file's language conventions + in-file/module precedent (`style — language-convention fallback`) — never skipped outright.
 
 ## Topic breadcrumbs (load on demand, don't pre-read)
 | When you… | Read |

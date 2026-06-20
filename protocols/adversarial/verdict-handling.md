@@ -29,8 +29,8 @@ Audits the whole turn: **code diff**, **process** (skill use, Discover/Plan skip
 
 Judges a committed diff range against a goal + acceptance criteria, then audits style and patterns.
 
-- **Catalog classes:** `ACCEPTANCE` (MET/UNMET/UNVERIFIABLE per criterion), `STYLE` (project style), `PRECEDENT`. `STYLE` is `N/A` when no project pack announced a `codeStyleRules` command. `PRECEDENT` reports 0 when no new pattern appears.
-- **Coverage validation:** confirm an `ACCEPTANCE` section, a `STYLE (project pack)` line, and a `PRECEDENT` section. Missing → re-invoke once naming it.
+- **Catalog classes:** `ACCEPTANCE` (MET/UNMET/UNVERIFIABLE per criterion), `STYLE` (project style), `PRECEDENT`. `STYLE` falls back to language conventions + in-file/module precedent (still FIX-tier) when no project pack announced a `codeStyleRules` command — it is never simply skipped. `PRECEDENT` reports 0 when no new pattern appears.
+- **Coverage validation:** confirm an `ACCEPTANCE` section, a `STYLE` line (project-pack rules or language-convention fallback), and a `PRECEDENT` section. Missing → re-invoke once naming it.
 - **Verdict mapping:** `ACCEPTANCE: UNMET` → BLOCK (builder must fix). `[STYLE]` → FIX (mechanical). `[PRECEDENT]` → BLOCK (human judgment, regardless of ACCEPTANCE). Mixed STYLE + PRECEDENT → BLOCK.
 - **Trigger:** fired by `/build-and-review` once the committed range is stable. Not hook-driven.
 

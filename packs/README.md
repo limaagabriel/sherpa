@@ -54,7 +54,7 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 | `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every builder/reviewer/breaker subagent | engine defaults only |
 | `reviewers` | extra code-reviewer subagents | `/build-and-review` review fan-out | only generic reviewers run |
 | `codeStyleAudit` | exhaustive per-rule style **command** | Validate phase style audit | style audit skipped |
-| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | task-reviewer / adversarial-* style pass | `style — N/A: no project style pack` |
+| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | task-reviewer / adversarial-* style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-breaker` mode=briefing — its Architecture-rule violation lens | `architecture — N/A: no project architecture pack` (lens skipped) |
 | `projectStatePath` | absolute dir for this project's run-state (SPEC/DECISIONS/PROGRESS/`discovery/`/`briefings/`/`handoffs/`) | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
 

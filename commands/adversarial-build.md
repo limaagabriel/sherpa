@@ -19,7 +19,7 @@ adversarial-build receives per dispatch:
 - discovery file path `discovery/<BUILD ID>.md` (coordinator and breaker `Read` it by path, never pasted inline)
 - task-type + required template fields (`protocols/invariants/task-types.md`)
 - run context: `BUILD ID`, subtask index `<n>`, `PRE-EXISTING DIRT`, `PRE-BUILD BASE`, handoff path
-- project pack `codeStyleRules` command + `initialize` SKILL.md path when announced upstream — forward to the builder (run `codeStyleRules` for the rules, then write conforming code; `Read` the `initialize` SKILL.md for conventions) and the Probe breaker (run `codeStyleRules` to check project style; `Read` the `initialize` SKILL.md); absent → all style steps no-op. The drafter is style/knowledge-agnostic (it only writes the briefing; the builder owns conformance) — it receives neither key.
+- project pack `codeStyleRules` command + `initialize` SKILL.md path when announced upstream — forward to the builder (run `codeStyleRules` for the rules, then write conforming code; `Read` the `initialize` SKILL.md for conventions) and the Probe breaker (run `codeStyleRules` to check project style; `Read` the `initialize` SKILL.md); absent → style steps fall back to the file's language conventions + in-file/module precedent. The drafter is style/knowledge-agnostic (it only writes the briefing; the builder owns conformance) — it receives neither key.
 
 **Standalone:** caller supplies discovery context directly (inline or file path); no `discovery/<BUILD ID>.md` to read.
 
@@ -104,7 +104,7 @@ Dispatch `adversarial-breaker` (`mode=output`, `model: sonnet`). Pass:
 - `PRE-EXISTING DIRT` snapshot.
 - `BUILD ID`.
 - `PRE-BUILD BASE` SHA, with instruction to inspect via `git diff <PRE-BUILD BASE>..HEAD`.
-- Project pack `codeStyleRules` command + `initialize` SKILL.md path (when announced) — running `codeStyleRules` enables the `style_violation` hole-class (`Read` the `initialize` SKILL.md for conventions); absent → breaker skips style findings.
+- Project pack `codeStyleRules` command + `initialize` SKILL.md path (when announced) — running `codeStyleRules` enables the `style_violation` hole-class against project rules (`Read` the `initialize` SKILL.md for conventions); absent → the breaker checks `style_violation` against the file's language conventions + in-file/module precedent.
 
 On `VERDICT: HOLES` → **log** `--phase probe --event verdict --verdict HOLES --fix-loop <count> --hole-classes <classes>` (add `--cap-hit` at fix loop 3), relay each hole to `adversarial-builder` as a fix request (amends commit), re-dispatch breaker (fresh `Agent` call). **Cap: 3 fix loops total (shared with Build-failure relays).** After cap, surface remaining holes in summary and proceed.
 

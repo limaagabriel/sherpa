@@ -52,11 +52,11 @@ For every new pattern, approach, abstraction, dependency, naming convention, err
 
 ## Style audit (project pack)
 
-**Only applies when a `codeStyleRules` command was forwarded in your dispatch. Otherwise emit `style — N/A: no project style pack` and skip this pass.**
+**Runs always — the only question is the baseline.** With a `codeStyleRules` command forwarded: its stdout is the rule set; audit against it. Without one: fall back to the file's **language conventions + in-file/module precedent** as the style North Star — emit `style — language-convention fallback (no project pack)` and still audit (idiomatic naming/casing, formatting, the established in-file form), quoting the convention or the in-file majority as evidence instead of a project rule.
 
 - If an `initialize` skill SKILL.md path was forwarded in your dispatch, `Read` it first to load project conventions.
 - Run the forwarded `codeStyleRules` command (via Bash); its stdout is the full rule set. Pick candidate rules by matching the diff's file types and change kind against that output. (This is the lighter inner-loop check; an exhaustive per-rule pass is the pack's `codeStyleAudit` command at Validate.)
-- A finding must quote the rule's own definition from that output (its rationale / example), not a summary.
+- A finding must quote the rule's own definition from that output (its rationale / example), not a summary — or, in fallback mode, the language convention / in-file majority the changed line breaks.
 - You MAY read unmodified neighbors or grep the module **as evidence** for a finding whose violation is on a *changed* line (e.g. the changed line writes `getUrl` while the surrounding file uses `getURL`). Never raise a STYLE finding whose violation lives entirely on unmodified lines.
 - Style violations are always FIX. Finding format: `[STYLE] <rule-id> — evidence: "<hunk>" at <file>:<line>; owner: <id>. Fix: <one-line mechanical repair>.`
 
@@ -72,8 +72,8 @@ CRITERIA (one line per criterion):
 - [UNMET]        <criterion> — evidence: "<what's missing or wrong>"; owner: <Build-Id / SHA / "none — uncovered">
 - [UNVERIFIABLE] <criterion> — missing: "<what would make it objectively checkable>"; owner: <as above>
 
-STYLE (project pack):
-- style — checked: <files scanned>; <N> findings    |    N/A: no project style pack
+STYLE (project pack, else language-convention fallback):
+- style — checked: <files scanned>; <N> findings; baseline: <project pack | language-convention fallback (no project pack)>
 - [STYLE] <NNN> — evidence: "<diff hunk>" at <file>:<line>; owner: <id>. Fix: <repair>.
 
 PRECEDENT:
