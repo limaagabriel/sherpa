@@ -8,7 +8,7 @@ Scout the codebase BEFORE asking the user anything. The brief feeds Plan and see
 - **Bind each unbound slot evidence-first** (scout answers "who calls it", "what's the column max" — don't ask what a 30-second `Explore` settles). Escalate to `AskUserQuestion` **only** for a preference/decision, never a discoverable fact. **Never assume** a preference (a slot bound by an unverified assumption — "static names are trusted" — is exactly the failure this gate stops).
 - `AskUserQuestion` loop on the unbound preference slots + holes the scout didn't close (ambiguous scope, success criteria, constraints, inputs/outputs, non-goals, untested assumptions, conflicts, edge cases). Drop holes scout already answered.
 - One `AskUserQuestion` call holds ≤4 questions — batch *independent* ones, *serialize* dependent ones (an early answer can reshape what follows). Loop until the spec is closed.
-- `/adhd <goal>` first only when the *goal itself* has multiple viable framings (not just constraints). Never for closed or single-answer questions.
+- When the *goal itself* has multiple viable framings (not just constraints), that choice is an `AskUserQuestion` decision — surface it; never assume one framing.
 
 ## Brief (one line each)
 `Scout` (key file:line landmarks + precedent) · `Goal` (the plan goal contract, all four slots bound) · `Constraints` · `Non-goals` · `Assumptions` · `Decisions`.

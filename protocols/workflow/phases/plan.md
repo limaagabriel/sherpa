@@ -34,6 +34,18 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence 
 
 **Two layers.** The plan goal is the north star; each step goal is the local driver (verified by `task-reviewer`) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
 
+## Alternative-approach panel (reversibility-gated)
+Run on your draft before the silent self-review. The gate is cheap; the panel is not — so the panel fires **only** when a wrong pick is expensive to undo.
+
+**Reversibility gate.** Does the plan turn on a hard-to-undo decision? Scan the draft for a load-bearing choice in any of: data model / schema, public API or contract surface, module boundary, dependency selection, wire or storage protocol. None present → skip the panel; proceed to self-review. One or more → run the panel on that decision.
+
+**Panel.** Spawn three `Plan` agents in parallel, **isolated** — each sees only the goal + brief + the decision under review, never your draft and never each other's output (shared context anchors them and collapses the panel to one wider thought). One per framing:
+- **simplest-that-works** — the least machinery that satisfies the goal.
+- **most-reversible** — the decomposition cheapest to walk back if the pick is wrong.
+- **least-coupling** — the split that minimizes cross-step and cross-module coupling.
+
+Each returns a rival decomposition for the same goal. Then judge: rank the three rivals against your draft on goal-fit + reversibility + cost; graft the stronger ideas in, or adopt a rival wholesale. Record the chosen shape and why the rivals lost in Block-3 — `plan-breaker`'s Unsound why-lost lens attacks that rationale next.
+
 ## Self-review (silent, before presenting)
 Run on your draft before showing it. Fix inline; surface nothing. The dead-plan net — runs every plan.
 1. **Placeholder scan** — any TBD/TODO/vague requirement? Catch semantic ones too: an unbound noun-phrase in any Outcome ("the relevant X"). Bind it or send to Discover.
@@ -47,7 +59,7 @@ Run on your draft before showing it. Fix inline; surface nothing. The dead-plan 
 `done = <X>, confirmed by <command/observation>`
 
 ## Adversarial goal review (plan-breaker, mode=briefing)
-After the silent self-review, before presenting, dispatch `plan-breaker` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), and the brief (or `SPEC.md` path). It attacks both layers + step→plan traceability: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap. Handle per `protocols/adversarial/verdict-handling.md`. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
+After the silent self-review, before presenting, dispatch `plan-breaker` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), the brief (or `SPEC.md` path), and the proposal's Block-3 "Why this approach" (next-best alternative + why it lost). When the active pack announced an `architectureRules` command, run it (via Bash) and forward its stdout — the project's architectural guidelines. It attacks both layers + step→plan traceability + decision content: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap, unsound why-lost, architecture-rule violation, unstated load-bearing assumption. Handle per `protocols/adversarial/verdict-handling.md`. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
 
 ## Approval
 Wait for explicit approval before any Execute action.
@@ -56,7 +68,7 @@ Wait for explicit approval before any Execute action.
 
 **Answering doesn't advance the gate.** Replying to a question leaves you waiting. Don't read your own answer, or the user's acknowledgement of it, as go-ahead. If the answer changed the proposal, re-present and re-await. The gate clears only on an explicit approve-signal that post-dates the latest version.
 
-Default is **normal mode** — assume normal unless the user explicitly declares inline ("approved inline"). You may ask about inline preference, but the answer is never required: silence on the mode question = normal (mode-axis only, never a plan-approval signal). `/adhd <decision>` first when several architectures fit the brief and a wrong pick is costly. Reference patterns with file:line.
+Default is **normal mode** — assume normal unless the user explicitly declares inline ("approved inline"). You may ask about inline preference, but the answer is never required: silence on the mode question = normal (mode-axis only, never a plan-approval signal). When several architectures fit the brief and a wrong pick is costly, the reversibility-gated panel above already covered it. Reference patterns with file:line.
 
 ## On approval
 Append the Plan at a glance + before/after table + steps to `SPEC.md` — see `phases/state-persistence.md`.

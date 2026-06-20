@@ -96,7 +96,8 @@ sessionInstructions: |
 pack:
   initialize: my-project-init          # skill that loads project knowledge
   reviewers: my-project-code-reviewer  # extra review subagents
-  codeStyleRules: cat /abs/path/to/rules.md
+  codeStyleRules: cat /abs/path/to/rules.md         # step-layer style rules
+  architectureRules: cat /abs/path/to/architecture.md  # plan-layer architecture rules
   projectStatePath: /abs/path/to/.workflow-state
 ```
 

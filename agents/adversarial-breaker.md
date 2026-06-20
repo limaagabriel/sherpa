@@ -62,12 +62,12 @@ Attack the builder's result.
 - **Claims not supported by the diff.** The builder said they implemented X; grep the diff for X; if absent or incomplete, flag it.
 - **Gaps vs the briefing.** Compare the diff to the briefing's acceptance criteria. Enumerate unaddressed criteria.
 - **Missing negative paths.** Invalid input, missing state, permission denied, empty collection, concurrent modification — if the diff doesn't address them and the spec required robustness, flag the gap.
-- **Project style-rule violations.** Only when a `codeStyleRules` command was forwarded in your dispatch: run it (via Bash); its stdout is the rule set — name the rule by its id from that output. You MAY cite an unmodified neighbor — or a module grep — **as evidence** of the convention a changed line breaks (the changed line writes `getUrl`, the file already uses `getURL`); the violation must sit on a changed line, never one living entirely on unmodified lines.
+- **Style violations.** With a `codeStyleRules` command forwarded: run it (via Bash); its stdout is the rule set — name the rule by its id from that output. Without one: fall back to the file's **language conventions + in-file/module precedent** as the baseline — flag idiomatic breaks the same way. Either mode: you MAY cite an unmodified neighbor — or a module grep — **as evidence** of the convention a changed line breaks (the changed line writes `getUrl`, the file already uses `getURL`); the violation must sit on a changed line, never one living entirely on unmodified lines.
 
 **Attack protocol:**
 
 1. Read the briefing (forwarded by coordinator). If an `initialize` skill SKILL.md path was forwarded in your dispatch, `Read` it first to load project conventions.
-2. If a `codeStyleRules` command was forwarded in your dispatch, run it (via Bash); its stdout is the rule set, your reference before inspecting the diff. Else skip style findings.
+2. If a `codeStyleRules` command was forwarded in your dispatch, run it (via Bash); its stdout is the rule set, your reference before inspecting the diff. Else use the file's language conventions + in-file/module precedent as the style baseline.
 3. Inspect committed changes with `git diff <base>..HEAD` using the coordinator-forwarded range; check `git status` for uncommitted leftovers. If the coordinator forwarded a `BUILD ID`, run `scripts/build-notes.sh range <BUILD ID> <base>` first and scope your attack to those commits — a concurrent agent's commits with a different Build-Id are out of scope.
 4. Read changed files at cited lines.
 5. Grep for claimed implementations.
