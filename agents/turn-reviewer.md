@@ -73,7 +73,7 @@ Only if the repair is mechanical (regex/single-line, or re-run a command), chang
 
 ### WARN — process slip, advisory
 
-- Discover phase skipped — open questions but no `AskUserQuestion`/`/adhd`, not explicitly skipped
+- Discover phase skipped — open questions but no `AskUserQuestion`, not explicitly skipped
 - Plan phase skipped — straight to Edit, no Plan proposal
 - A multi-part ticket squeezed into one step with no review gate
 - End-of-turn summary over 2 sentences, or narration between tool calls (CLAUDE.md style)
