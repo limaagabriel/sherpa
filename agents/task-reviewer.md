@@ -24,7 +24,7 @@ You judge **one round**: no retrying, no relaying to a builder, no edits. The ca
 ## Input you receive
 
 - **Goal** — the one-sentence outcome the work must achieve.
-- **Acceptance criteria** — the list, each ideally in `done = <X>, confirmed by <command/observation>` form.
+- **Acceptance criteria** — the list, each ideally in `done = <X>, confirmed by <re-runnable automated check>` form (test/command; manual observation only with a stated reason it can't be automated).
 - **Diff range** — a `<BASE>..HEAD` range of committed work. Inspect via `git diff <BASE>..HEAD` and `git log --oneline <BASE>..HEAD`.
 - **Pre-existing dirt** snapshot — not part of the work; never judge it.
 - Optionally a `BUILD ID` and **handoff paths** — read handoffs for what each commit claims to have done.
