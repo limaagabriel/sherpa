@@ -24,7 +24,7 @@ Two gates, run once over the whole range after building:
 
 - `<task>` (required): the step to implement.
 - **Goal** (required): one-sentence outcome from the Plan step.
-- **Acceptance criteria** (required): observable end states (`done = <X>, confirmed by <command/observation>`). These are exactly what `task-reviewer` judges.
+- **Acceptance criteria** (required): observable end states (`done = <X>, confirmed by <re-runnable automated check>` — test/command; manual observation only with a stated reason it can't be automated). These are exactly what `task-reviewer` judges.
 - **Mode** (optional, default `normal`): `inline` skips Discover and routes non-codegen subtasks to INLINE.
 
 ## Coordinator discipline

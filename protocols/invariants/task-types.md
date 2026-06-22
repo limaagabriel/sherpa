@@ -36,7 +36,7 @@ Required fields:
 Required fields:
 
 - `precedent` list — ≥1 `{file:line, what_it_exemplifies}` from Scout (when none exists: `Precedent: none found — new pattern justified by <reason>`)
-- Acceptance-test description — observable end state and the command/observation confirming it
+- Acceptance-test description — observable end state and the re-runnable automated check (test/command) confirming it; manual observation only with a stated reason it can't be automated
 
 ---
 

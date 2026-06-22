@@ -13,7 +13,7 @@ Each step is its own block (a single-step task still gets one block — don't co
 - **Goal** — a step goal contract (§ Goal contract). It must trace up to the plan goal; a step whose Outcome doesn't advance the north star is dead weight.
 - **Change** — the concrete delta. Bugs: root cause + fix. Multi-step: this step only.
 - **Example** — a small illustration of what the step *produces* (before→after snippet, or sample input→output). This is what makes a dead step visible — the user sees the result, not just a description.
-- **Acceptance criteria** — `done = <X>, confirmed by <command/observation>`.
+- **Acceptance criteria** — `done = <X>, confirmed by <re-runnable automated check>` (test/command). Manual observation only when the step states why no automated check is possible.
 
 ### Block 3 — Why & how
 - **Why this approach** — the next-best alternative and why it lost. Bugs: confirming evidence (file:line, repro, log) that localizes the root cause. Features/refactors: the architectural trade-off.
@@ -30,7 +30,7 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence 
 | **Outcome** | An observable end-**state**, every noun bound. Not an action ("decompose", "refactor"); not a vague reference ("the relevant X"). |
 | **For** | Who consumes the result. Every new abstraction (extracted method, class, param, indirection) names **≥2 consumers or a stated concrete value** — a single-caller extraction with no named reuse earns nothing. |
 | **Because** | The parent intent served. Must not restate the Outcome. |
-| **done when** | `confirmed by <command/observation>` — same bar as § Acceptance criteria format. |
+| **done when** | `confirmed by <re-runnable automated check>` (test/command); manual observation only with a stated reason it can't be automated — same bar as § Acceptance criteria format. |
 
 **Two layers.** The plan goal is the north star; each step goal is the local driver (verified by `task-reviewer`) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
 
@@ -56,10 +56,10 @@ Run on your draft before showing it. Fix inline; surface nothing. The dead-plan 
 6. **Earns-its-keep** — every abstraction's `For` names ≥2 consumers or a value; every `Because` says what breaks if absent (not a restated Outcome). Fails either → ceremony; fix or cut.
 
 ## Acceptance criteria format
-`done = <X>, confirmed by <command/observation>`
+`done = <X>, confirmed by <re-runnable automated check>` (test/command) — a decidable pass/fail, re-runnable without a human. Manual observation only when the step states why no automated check is possible.
 
 ## Adversarial goal review (plan-breaker, mode=briefing)
-After the silent self-review, before presenting, dispatch `plan-breaker` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), the brief (or `SPEC.md` path), and the proposal's Block-3 "Why this approach" (next-best alternative + why it lost). When the active pack announced an `architectureRules` command, run it (via Bash) and forward its stdout — the project's architectural guidelines. It attacks both layers + step→plan traceability + decision content: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap, unsound why-lost, architecture-rule violation, unstated load-bearing assumption. Handle per `protocols/adversarial/verdict-handling.md`. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
+After the silent self-review, before presenting, dispatch `plan-breaker` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), the brief (or `SPEC.md` path), and the proposal's Block-3 "Why this approach" (next-best alternative + why it lost). When the active pack announced an `architectureRules` command, run it (via Bash) and forward its stdout — the project's architectural guidelines. It attacks both layers + step→plan traceability + decision content: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap, rationale orphan, step too coarse, unsound why-lost, architecture-rule violation, unstated load-bearing assumption. Handle per `protocols/adversarial/verdict-handling.md`. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
 
 ## Approval
 Wait for explicit approval before any Execute action.
