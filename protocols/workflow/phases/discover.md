@@ -13,5 +13,4 @@ Scout the codebase BEFORE asking the user anything. The brief feeds Plan and see
 ## Brief (one line each)
 `Scout` (key file:line landmarks + precedent) · `Goal` (the plan goal contract, all four slots bound) · `Constraints` · `Non-goals` · `Assumptions` · `Decisions`.
 
-## Analyze
-Find root cause and all affected dependencies before editing. For bugs, rank hypotheses with the minimum evidence to confirm the top one. If diagnosis fails, stop and reassess — don't chain workarounds (no symlinking `node_modules`, copying files, bypassing safeguards). If evidence contradicts an `Assumption`/`Decision` in the brief, or raises a question only the user can answer, return to Discover.
+Analyze is next — diagnose + diverge on approach — in its own phase (`phases/analyze.md`).
