@@ -1,0 +1,38 @@
+{
+  "name": "sherpa",
+  "version": "0.1.0",
+  "description": "Guided Discover -> Analyze -> Plan -> Execute -> Validate workflow with resumable state and adversarial review protocols.",
+  "author": {
+    "name": "Gabriel Lima",
+    "url": "https://github.com/limaagabriel"
+  },
+  "homepage": "https://github.com/limaagabriel/sherpa",
+  "repository": "https://github.com/limaagabriel/sherpa",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "planning",
+    "code-review",
+    "adversarial",
+    "agents"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Sherpa",
+    "shortDescription": "Guided plan, execute, and validate workflow",
+    "longDescription": "Adds opt-in Sherpa workflow skills for planning a task, executing an approved plan, and validating the result with resumable run-state.",
+    "developerName": "Gabriel Lima",
+    "category": "Productivity",
+    "capabilities": [
+      "Instructions",
+      "Workflow"
+    ],
+    "websiteURL": "https://github.com/limaagabriel/sherpa",
+    "defaultPrompt": [
+      "Use Sherpa to plan this task.",
+      "Execute the approved Sherpa plan.",
+      "Run the full Sherpa workflow."
+    ],
+    "brandColor": "#2F6F6B"
+  }
+}
