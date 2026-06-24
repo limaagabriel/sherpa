@@ -11,20 +11,26 @@ ever ships its own hook.
 
 ## Where configs live
 
-The resolver scans these dirs, **highest precedence first**:
+The resolver checks these candidates, **highest precedence first**:
 
 ```
-<repo>/.claude/sherpa/projects/<project>.yaml   # project-local, shareable in-repo
-<repo>/.codex/sherpa/projects/<project>.yaml     # project-local, shareable in-repo
-${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml   # workspace (user-global)
+<repo>/.claude/sherpa.yaml          # project-local, shareable in-repo (single file)
+<repo>/.codex/sherpa.yaml           # project-local, shareable in-repo (single file)
+${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml   # workspace (user-global, many)
 ```
 
-One YAML per project. The first config whose `detect` matches wins, so a
-**project-local** pack (committed alongside the repo, in either `.claude/` or
-`.codex/`) **overrides** a workspace pack — letting a team share sherpa config
-inside the project. Set `WORKFLOW_PACKS_DIR` to relocate the workspace dir. If no
-dir has a matching `detect`, the engine runs **generic** (no pack) — every
-pack-dependent step no-ops.
+The **project-local** form is a single `sherpa.yaml` (or `.yml`) committed inside
+the repo — one project, so no `projects/` dir or multi-tenancy needed; its
+`detect` can just be `exit 0` ("this repo"). The **workspace** dir holds one YAML
+per project (each with a real `detect`) and is where you keep packs for repos you
+can't commit into. The first config whose `detect` matches wins, so a
+project-local pack **overrides** the workspace. Set `WORKFLOW_PACKS_DIR` to
+relocate the workspace dir.
+
+At session start the hook announces, via a user-visible `systemMessage`, either
+**`loaded project pack '<name>'`** (with the file it came from) or **`no project
+pack matched … running generic`** — so you always know whether project-specific
+knowledge is active. Generic means no pack: every pack-dependent step no-ops.
 
 ## The config schema (camelCase)
 
@@ -73,8 +79,14 @@ catalog.
 ## Make a pack
 
 ```sh
+# project-local (commit it in the repo — recommended for one project):
+cp TEMPLATE.yaml /path/to/my-repo/.codex/sherpa.yaml   # or .claude/sherpa.yaml
+# edit pack (detect can be `exit 0` — it's this repo); sessionInstructions
+
+# OR workspace (user-global, for repos you can't commit into):
 cp TEMPLATE.yaml "${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/my-project.yaml"
 # edit detect / sessionInstructions / pack
+
 cp -r TEMPLATE my-project-init-skill     # the init skill; place where Claude Code finds skills
 ```
 
