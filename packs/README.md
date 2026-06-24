@@ -11,13 +11,20 @@ ever ships its own hook.
 
 ## Where configs live
 
+The resolver scans these dirs, **highest precedence first**:
+
 ```
-${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml
+<repo>/.claude/sherpa/projects/<project>.yaml   # project-local, shareable in-repo
+<repo>/.codex/sherpa/projects/<project>.yaml     # project-local, shareable in-repo
+${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml   # workspace (user-global)
 ```
 
-One YAML per project. Set `WORKFLOW_PACKS_DIR` to relocate the dir. If the dir is
-missing/empty, or no config's `detect` matches, the engine runs **generic** (no
-pack) — every pack-dependent step no-ops.
+One YAML per project. The first config whose `detect` matches wins, so a
+**project-local** pack (committed alongside the repo, in either `.claude/` or
+`.codex/`) **overrides** a workspace pack — letting a team share sherpa config
+inside the project. Set `WORKFLOW_PACKS_DIR` to relocate the workspace dir. If no
+dir has a matching `detect`, the engine runs **generic** (no pack) — every
+pack-dependent step no-ops.
 
 ## The config schema (camelCase)
 
