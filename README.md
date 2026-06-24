@@ -117,8 +117,7 @@ Resolved highest precedence first:
 ## Layout
 
 ```
-skills/        /plan, /execute, /workflow entry points
-commands/      build-and-review, adversarial-build, scout, …
+skills/        /plan, /execute, /workflow + build-and-review, adversarial-build, scout, …
 agents/        scout / builder / reviewer / breaker subagents
 protocols/     the workflow + adversarial contracts (the engine's brain)
 packs/         project-pack template + docs

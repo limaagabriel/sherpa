@@ -1,4 +1,5 @@
 ---
+name: codegen-build
 description: Cheapest build path — delegates one codegen subtask (typically running an auto-gen/codegen command) to the haiku `codegen-builder`, landing exactly one commit. No breaker, no review — the caller owns review. Dispatched by /build-and-review for catalog-matched (codegen-tier) subtasks; also invokable standalone. Args - <task-or-brief>, plus orchestrated context when called by build-and-review.
 ---
 

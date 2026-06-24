@@ -1,4 +1,5 @@
 ---
+name: adversarial-build
 description: Adversarial build engine for ONE subtask. Briefs, vets (breaker), builds, probes output (breaker). --skip-vet/--skip-probe gate each breaker phase. Lands one commit. Args: <subtask> + discovery input.
 ---
 

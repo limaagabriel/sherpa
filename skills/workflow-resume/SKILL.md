@@ -1,4 +1,5 @@
 ---
+name: workflow-resume
 description: Manually resume an interrupted Discover→Validate workflow run from its persisted SPEC/DECISIONS/PROGRESS state.
 ---
 

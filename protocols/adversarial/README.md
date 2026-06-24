@@ -54,14 +54,14 @@ Three layers:
 
 | Cap | Value | Source |
 |-----|-------|--------|
-| Discover Scout dispatches | ≤2 | `commands/build-and-review.md` § Discover > Scout |
-| Discover Clarify rounds | ≤10 (proceed-with-best-effort on cap) | `commands/build-and-review.md` § Discover > Clarify |
-| Discover Approach selection | 1 (conditional) | `commands/build-and-review.md` § Discover > Approach |
-| Decompose subtasks per step | ≤6 (one level deep) | `commands/build-and-review.md` § Decompose |
-| Verify→fix loops (task-reviewer) | ≤3, then BLOCK→user | `commands/build-and-review.md` § Verify |
-| Brief Vet rewrites (breaker mode=briefing) | ≤2 (skipped under `--skip-vet`) | `commands/adversarial-build.md` § Brief > Vet |
-| Build-fix cap | ≤3 | `commands/adversarial-build.md` § Build |
-| Probe output-fix loops | ≤3, drawn from build-fix cap; skipped under `--skip-probe` (default wiring) | `commands/adversarial-build.md` § Build > Probe |
+| Discover Scout dispatches | ≤2 | `skills/build-and-review/SKILL.md` § Discover > Scout |
+| Discover Clarify rounds | ≤10 (proceed-with-best-effort on cap) | `skills/build-and-review/SKILL.md` § Discover > Clarify |
+| Discover Approach selection | 1 (conditional) | `skills/build-and-review/SKILL.md` § Discover > Approach |
+| Decompose subtasks per step | ≤6 (one level deep) | `skills/build-and-review/SKILL.md` § Decompose |
+| Verify→fix loops (task-reviewer) | ≤3, then BLOCK→user | `skills/build-and-review/SKILL.md` § Verify |
+| Brief Vet rewrites (breaker mode=briefing) | ≤2 (skipped under `--skip-vet`) | `skills/adversarial-build/SKILL.md` § Brief > Vet |
+| Build-fix cap | ≤3 | `skills/adversarial-build/SKILL.md` § Build |
+| Probe output-fix loops | ≤3, drawn from build-fix cap; skipped under `--skip-probe` (default wiring) | `skills/adversarial-build/SKILL.md` § Build > Probe |
 | Reviewer FIX loops | ≤3, then BLOCK→user | `protocols/adversarial/verdict-handling.md` § Verdict response > FIX |
 
 Cap **values** are authoritative here; Source shows where each is enforced. On hitting any cap without convergence, surface unresolved findings and hand to the user.

@@ -1,4 +1,5 @@
 ---
+name: build-and-review
 description: Build-and-review orchestrator. Given a task + goal + acceptance criteria, it Discovers, Decomposes into subtasks, tiers each (codegen / inline / default), routes each to the right builder, then runs ONE task-reviewer pass (right thing?) and ONE turn-reviewer pass (thing right?) over the whole range, iterating until the goal is met. Owns the subtask split and both review gates. Args - <task>, goal, acceptance criteria, [mode: normal|inline]. See protocols/adversarial/README.md.
 ---
 

@@ -1,6 +1,6 @@
 # Reviewer Verdict Handling
 
-Single source of truth for how the main agent handles reviewer verdicts. Imported into the user's global CLAUDE.md and referenced by `commands/adversarial-build.md`. System map: `protocols/adversarial/README.md`.
+Single source of truth for how the main agent handles reviewer verdicts. Imported into the user's global CLAUDE.md and referenced by `skills/adversarial-build/SKILL.md`. System map: `protocols/adversarial/README.md`.
 
 ## Verdict response (shared protocol)
 
@@ -20,7 +20,7 @@ Audits the whole turn: **code diff**, **process** (skill use, Discover/Plan skip
 
 - **Catalog classes:** `BLOCK`, `FIX`, `WARN`. Reasoning checks live inside them (no separate class). Project style and precedent are NOT turn-reviewer's job — `task-reviewer` owns them on the committed range; for ad-hoc edits outside `/build-and-review`, run a manual style/precedent pass if your project provides one.
 - **Primary trigger:** the `/execute` skill invokes `turn-reviewer` (via Agent) before claiming any step done, auditing `<base SHA>..HEAD` + working tree. Forward the audit scope SHA into the briefing so it audits that range, not an improvised baseline. (`/adversarial-build` forwards its own `PRE-BUILD BASE` separately.) A host environment MAY additionally wire a Stop-hook to fire this automatically, but the plugin ships no such hook.
-- **Briefing requirement:** brief the subagent on what the turn produced — the diff plus an **EVIDENCE PACK** for any completion claim, and/or each conclusion with its **CITATIONS** (file:line, grep, transcript). Formats in `commands/turn-review.md`. A completion claim with no evidence, or a conclusion with no citation, is flagged by rule.
+- **Briefing requirement:** brief the subagent on what the turn produced — the diff plus an **EVIDENCE PACK** for any completion claim, and/or each conclusion with its **CITATIONS** (file:line, grep, transcript). Formats in `skills/turn-review/SKILL.md`. A completion claim with no evidence, or a conclusion with no citation, is flagged by rule.
 - **Manual triggers:** "audit", "adversary", "turn review", "diff review", "challenge this", "reasoning review", "challenge my reasoning", "/turn-review" — invoke regardless of diff size, ignoring the hook cache.
 - **Disagree with the hook:** invoke even when it didn't fire if the turn warrants it (a one-line security fix, or before any Edit/Write that depends on an unverified diagnosis). The hook is a floor, not a ceiling.
 - **BLOCK override for reasoning findings:** there's no diff to revert, so replace "fix / override / abandon" with "re-investigate, gather more evidence, or narrow the claim".

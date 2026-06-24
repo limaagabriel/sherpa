@@ -1,4 +1,5 @@
 ---
+name: scout
 description: Scout the codebase — dispatch subgents to gather a Discover record (landmarks, precedent, constraints, tests, gaps, confidence). Args - <task> [TARGET_DIR] [breadth: quick|medium|very thorough]. Returns the record.
 ---
 

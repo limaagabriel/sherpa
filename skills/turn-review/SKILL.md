@@ -1,4 +1,5 @@
 ---
+name: turn-review
 description: Run the turn-reviewer subagent against the current turn's work. Read-only audit of code diff, process rules, codebase conventions (CLAUDE.md), claim verification, AND the turn's reasoning (root-cause claims, "what code does" conclusions, citations). Returns PASS / WARN / FIX / BLOCK verdict with evidence.
 ---
 
