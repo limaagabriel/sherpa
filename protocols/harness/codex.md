@@ -13,7 +13,7 @@ identical; only the mechanism differs.
 | `AskUserQuestion` | structured multiple-choice tool | Codex has **no** structured-question tool — ask **one numbered free-text question** listing the options (mark the recommended one), then wait for the reply. Same batching/serialization rules as the prose. |
 | the `Skill` tool (main agent invokes a skill) | Skill tool | `/skills` (explicit) or implicit skill use. Subagents have no skill tool under either harness — they `Read` the `SKILL.md` by path, unchanged. |
 | model `haiku` / `sonnet` / `opus` for a subagent | Agent frontmatter `model:` | the role's `.codex/agents/X.toml` (`model` + `model_reasoning_effort`); ignore the Claude model name |
-| `${CLAUDE_PLUGIN_ROOT}` in a path or hook | set by Claude Code | **set by Codex too** (for compatibility) — paths and the SessionStart hook resolve unchanged |
+| `${CLAUDE_PLUGIN_ROOT}` in a path or hook | set by Claude Code | set by Codex **for plugin hooks** (compatibility, per the Codex hooks docs) — the SessionStart hook resolves unchanged. In other contexts (e.g. a subagent role), if it is unset, resolve the plugin root from its install path |
 
 ## Notes
 

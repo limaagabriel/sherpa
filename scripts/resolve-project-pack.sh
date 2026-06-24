@@ -12,7 +12,7 @@
 #   ${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects} (workspace). First
 #   config whose detect matches wins, so a project-local pack overrides the workspace.
 # Config schema (camelCase): name, detect (a command; exit 0 = match),
-#   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,projectStatePath}.
+#   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,architectureRules,projectStatePath}.
 # See packs/README.md.
 #
 # Never errors out: a failing SessionStart hook must not block the session.
