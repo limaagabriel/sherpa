@@ -14,7 +14,7 @@ Gathers codebase intelligence via a read-only Explore subagent. Single responsib
 
 ## Procedure
 
-Dispatch the `Explore` subagent (`subagent_type: "Explore"`), briefed with `TASK` / `TARGET_DIR` / `FOCUS`. Required to return:
+Dispatch a read-only **explore** subagent (Claude Code: `subagent_type: "Explore"`; Codex: a read-only general/search agent — see `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md`), briefed with `TASK` / `TARGET_DIR` / `FOCUS`. Required to return:
 - File:line landmarks for relevant entry points and existing patterns.
 - Structured **precedent list** — array of `{file:line, what_it_exemplifies}`; `None found` is valid but needs justification.
 - Constraints (configs, build files, schemas, validators, conventions) and existing tests with their framework.

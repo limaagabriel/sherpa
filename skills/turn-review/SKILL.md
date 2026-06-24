@@ -3,7 +3,7 @@ name: turn-review
 description: Run the turn-reviewer subagent against the current turn's work. Read-only audit of code diff, process rules, codebase conventions (CLAUDE.md), claim verification, AND the turn's reasoning (root-cause claims, "what code does" conclusions, citations). Returns PASS / WARN / FIX / BLOCK verdict with evidence.
 ---
 
-Invoke the `turn-reviewer` subagent via the Agent tool with `subagent_type: "turn-reviewer"`.
+Invoke the `turn-reviewer` subagent (Claude Code: Agent tool, `subagent_type: "turn-reviewer"`; Codex: the `turn-reviewer` agent role — see `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md`).
 
 Audits the whole turn — code diff, process, AND reasoning — in one pass. Trigger for a code audit, reasoning audit, or both.
 

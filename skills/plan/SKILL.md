@@ -17,6 +17,8 @@ session) can run it. Stop at the approval gate — do NOT write code here.
 - **Conventions:** guard clauses, SRP, short functions, no inline comments,
   evidence-only (quote file:line). Style enforcement itself is a project-pack
   capability — see `${CLAUDE_PLUGIN_ROOT}/packs/README.md`.
+- **Harness:** under Codex CLI, read Claude-specific tool mentions (`AskUserQuestion`,
+  Agent tool / `subagent_type`, model names) per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md`.
 
 ## Gates (run in order — none skipped)
 

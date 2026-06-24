@@ -12,6 +12,8 @@ Run an **approved plan** to completion and verify it met its goal. Requires
 - Same Authority / Stance / no-narration / Conventions rules as `/plan`.
 - **Never push.** Commit only when the human asks. One commit per subtask is
   owned by the builders — never add a manual commit on top.
+- **Harness:** under Codex CLI, read Claude-specific tool mentions (`AskUserQuestion`,
+  Agent tool / `subagent_type`, model names) per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md`.
 
 ## Gates (run in order)
 
