@@ -17,6 +17,10 @@ sessionInstructions: |
 # architectureRules are COMMANDS (the hook auto-quotes values with spaces). Pack
 # values are single-line scalars (the WORKFLOW_PACK announcement is one line;
 # newlines are collapsed to spaces).
+#
+# Paths may be absolute OR relative to this file's proximate .claude/.codex dir
+# (e.g. for a committed .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`,
+# `projectStatePath: ./.workflow-state`). See README.md § Relative paths.
 pack:
   initialize: my-project-init
   reviewers: my-project-code-reviewer

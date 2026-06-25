@@ -28,8 +28,8 @@ project-local pack **overrides** the workspace. Set `WORKFLOW_PACKS_DIR` to
 relocate the workspace dir.
 
 At session start the hook announces, via a user-visible `systemMessage`, either
-**`loaded project pack '<name>'`** (with the file it came from) or **`no project
-pack matched … running generic`** — so you always know whether project-specific
+**`Project "<name>" loaded into Sherpa from <yaml path>`** or **`no project pack
+matched … running generic`** — so you always know whether project-specific
 knowledge is active. Generic means no pack: every pack-dependent step no-ops.
 
 ## The config schema (camelCase)
@@ -60,6 +60,27 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 (built from `name` + `pack`, values with spaces auto-quoted) followed by
 `sessionInstructions`, as SessionStart `additionalContext`.
 
+### Relative paths
+
+Path-ish values may be **absolute or relative**. A relative value resolves against
+the config's **proximate `.claude`/`.codex` directory** — the nearest ancestor of
+the YAML named `.claude` or `.codex`. So `<repo>/.codex/sherpa.yaml` resolves
+against `<repo>/.codex`, and `~/.claude/sherpa/projects/<p>.yaml` against
+`~/.claude`. This lets a committed pack reference scripts/files next to it:
+
+```yaml
+detect: ./detect.sh                  # runs from the proximate dir
+pack:
+  codeStyleAudit: ./style-audit.sh   # pre-wrapped: cd <base> && ./style-audit.sh
+  codeStyleRules: cat ./rules.md
+  projectStatePath: ./.workflow-state # → <base>/.workflow-state
+```
+
+Values starting with `/` (an absolute path, or a `/slash-skill` like
+`/my-style-audit`) and `projectStatePath` starting with `~` are left **as-is** —
+never rewritten. `detect` runs with its working directory set to the proximate dir
+(its `$CWD` export still points at the repo, so cwd-glob detects are unaffected).
+
 ## What each `pack` key does
 
 | Key | Fills | Engine seam that consumes it | When absent |
@@ -69,7 +90,7 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 | `codeStyleAudit` | exhaustive per-rule style **command** | Validate phase style audit | style audit skipped |
 | `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | task-reviewer / adversarial-* style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-breaker` mode=briefing — its Architecture-rule violation lens | falls back to advisory general principles (SRP / coupling / cyclic deps / leaky abstraction) — `architecture — general-principle fallback`, WARN not BLOCK |
-| `projectStatePath` | absolute dir for this project's run-state (SPEC/DECISIONS/PROGRESS/`discovery/`/`briefings/`/`handoffs/`) | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
+| `projectStatePath` | dir for this project's run-state (SPEC/DECISIONS/PROGRESS/`discovery/`/`briefings/`/`handoffs/`) — absolute, `~`, or relative to the proximate dir | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
 
 `codeStyleAudit`, `codeStyleRules`, and `architectureRules` are **commands**, not paths —
 the engine runs them and never assumes how the rules are stored. Codegen tiering shapes are
@@ -96,8 +117,9 @@ No hook to write or register — sherpa's `SessionStart` hook reads your YAML.
 
 Three ways to set it, highest precedence first:
 
-1. **Per-project** — set `projectStatePath` in the pack `pack:` map. Auto-selected
-   when the project is detected; no shell setup, and each project gets its own dir.
+1. **Per-project** — set `projectStatePath` in the pack `pack:` map (absolute, `~`,
+   or relative to the proximate dir — see § Relative paths). Auto-selected when the
+   project is detected; no shell setup, and each project gets its own dir.
 2. **Per-shell** — `export WORKFLOW_STATE_DIR=/path/to/my/workflow-state` (global,
    independent of packs).
 3. **Default** — unset both → the zero-config XDG location.

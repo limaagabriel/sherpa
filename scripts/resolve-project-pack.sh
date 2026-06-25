@@ -17,6 +17,10 @@
 #   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,architectureRules,projectStatePath}.
 # See packs/README.md.
 #
+# Relative path-ish values resolve against the config's proximate .claude/.codex dir
+# (detect runs from it; command props are pre-wrapped `cd <base> && ...`;
+# projectStatePath is prefixed with it). /- and ~-prefixed values are left as-is.
+#
 # Never errors out: a failing SessionStart hook must not block the session.
 
 input=$(cat 2>/dev/null) || exit 0
@@ -27,6 +31,36 @@ command -v yq >/dev/null 2>&1 || exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
 packs_dir="${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}"
+
+proximate_base() {
+  local dir
+  dir=$(cd "$(dirname "$1")" 2>/dev/null && pwd) || { dirname "$1"; return; }
+  local d="$dir"
+  while [ "$d" != "/" ]; do
+    case "$(basename "$d")" in
+      .claude|.codex) printf '%s' "$d"; return ;;
+    esac
+    d=$(dirname "$d")
+  done
+  printf '%s' "$dir"
+}
+
+resolve_pack_value() {
+  local key="$1" val="$2" base="$3"
+  case "$key" in
+    projectStatePath)
+      case "$val" in
+        /*|"~"*) printf '%s' "$val" ;;
+        *) printf '%s/%s' "$base" "${val#./}" ;;
+      esac ;;
+    codeStyleRules|architectureRules|codeStyleAudit)
+      case "$val" in
+        /*) printf '%s' "$val" ;;
+        *) printf "cd '%s' && %s" "$base" "$val" ;;
+      esac ;;
+    *) printf '%s' "$val" ;;
+  esac
+}
 
 shopt -s nullglob
 candidates=(
@@ -40,7 +74,8 @@ for config in "${candidates[@]}"; do
   detect=$(yq '.detect // ""' "$config" 2>/dev/null) || continue
   [ -n "$detect" ] || continue
 
-  CWD="$cwd" bash -c "$detect" >/dev/null 2>&1 || continue
+  base=$(proximate_base "$config")
+  ( cd "$base" 2>/dev/null && CWD="$cwd" bash -c "$detect" ) >/dev/null 2>&1 || continue
 
   # Matched. Build the WORKFLOW_PACK line from name + the pack map.
   name=$(yq '.name // ""' "$config" 2>/dev/null)
@@ -48,7 +83,7 @@ for config in "${candidates[@]}"; do
   while IFS= read -r entry; do
     [ -n "$entry" ] || continue
     key="${entry%%=*}"
-    val="${entry#*=}"
+    val=$(resolve_pack_value "$key" "${entry#*=}" "$base")
     case "$val" in
       *" "*) line="$line $key=\"$val\"" ;;
       *)     line="$line $key=$val" ;;
@@ -59,7 +94,7 @@ for config in "${candidates[@]}"; do
   ctx="$line"
   [ -n "$instructions" ] && ctx="$line"$'\n'"$instructions"
 
-  jq -n --arg ctx "$ctx" --arg msg "🏔️ sherpa: loaded project pack '$name' ($config)" \
+  jq -n --arg ctx "$ctx" --arg msg "Project \"$name\" loaded into Sherpa from $config 🏔️" \
     '{systemMessage:$msg, hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}' 2>/dev/null
   exit 0
 done
