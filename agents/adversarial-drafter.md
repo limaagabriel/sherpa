@@ -28,7 +28,7 @@ You author the subtask briefing the builder will execute and the breaker will at
 `Read` the discovery file and draw every field from it. Cover:
 
 - **Goal**: restate the subtask precisely, resolving every ambiguous phrase to a single interpretation. Forward the goal `/build-and-review` supplied.
-- **Acceptance criteria**: observable, verifiable end states — each in `done = <X>, confirmed by <command> → Expected: <output>` form. These are verbatim from `/build-and-review`; keep them unchanged so the builder builds to the same bar `task-reviewer` will judge.
+- **Acceptance criteria**: observable, verifiable end states — each in `done = <X>, confirmed by <command> → Expected: <output>` form. These are verbatim from `/build-and-review`; keep them unchanged so the builder builds to the same bar `step-reviewer` will judge.
 - **Assumptions**: every assumed data shape, runtime invariant, or prior-step dependency. Label any `open_ambiguities` from the discovery input as coordinator-side assumptions.
 - **Edge cases / negative paths**: enumerate invalid-input, missing-state, empty-collection, permission-denied paths — or mark them out of scope. For transform tasks: a disposition row per fragment class (`preserve | transform→X | drop | MIGRATE_TODO`).
 - **Change map**: derived from Scout landmarks — list every file the builder must touch, in dependency order, with action and exact location:

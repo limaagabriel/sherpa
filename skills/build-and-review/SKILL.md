@@ -1,6 +1,6 @@
 ---
 name: build-and-review
-description: Build-and-review orchestrator. Given a task + goal + acceptance criteria, it Discovers, Decomposes into subtasks, tiers each (codegen / inline / default), routes each to the right builder, then runs ONE task-reviewer pass (right thing?) and ONE turn-reviewer pass (thing right?) over the whole range, iterating until the goal is met. Owns the subtask split and both review gates. Args - <task>, goal, acceptance criteria, [mode: normal|inline]. See protocols/adversarial/README.md.
+description: Build-and-review orchestrator. Given a task + goal + acceptance criteria, it Discovers, Decomposes into subtasks, tiers each (codegen / inline / default), routes each to the right builder, then runs ONE step-reviewer pass (right thing?) and ONE turn-reviewer pass (thing right?) over the whole range, iterating until the goal is met. Owns the subtask split and both review gates. Args - <task>, goal, acceptance criteria, [mode: normal|inline]. See protocols/adversarial/README.md.
 ---
 
 **Build-Id note:** Follow `protocols/invariants/build-id.md` — you own the BUILD ID; every commit across all tiers must carry it.
@@ -18,14 +18,14 @@ Single entry point the CLAUDE.md Execute step calls. Turns one plan step into co
 | **default** | everything else | `/adversarial-build --skip-probe` | sonnet + Vet |
 
 Two gates, run once over the whole range after building:
-- **Verify** (`task-reviewer`) — right thing? (goal + every acceptance criterion met)
+- **Verify** (`step-reviewer`) — right thing? (goal + every acceptance criterion met)
 - **Review** (`turn-reviewer`) — thing right? (clean, honest, in-convention, no drift)
 
 ## Inputs
 
 - `<task>` (required): the step to implement.
 - **Goal** (required): one-sentence outcome from the Plan step.
-- **Acceptance criteria** (required): observable end states (`done = <X>, confirmed by <re-runnable automated check>` — test/command; manual observation only with a stated reason it can't be automated). These are exactly what `task-reviewer` judges.
+- **Acceptance criteria** (required): observable end states (`done = <X>, confirmed by <re-runnable automated check>` — test/command; manual observation only with a stated reason it can't be automated). These are exactly what `step-reviewer` judges.
 - **Mode** (optional, default `normal`): `inline` skips Discover and routes non-codegen subtasks to INLINE.
 
 ## Coordinator discipline
@@ -110,13 +110,13 @@ Process in index order:
 
 All tiers: **one commit per subtask, Build-Id noted, handoff at `handoffs/<BUILD ID>.<n>.md`.**
 
-### Verify — task-reviewer (right thing?) *[cap: 3]*
+### Verify — step-reviewer (right thing?) *[cap: 3]*
 
-Dispatch `task-reviewer` **once** over the whole range. Pass: goal, acceptance criteria (verbatim), `PRE-BUILD BASE`, range `<PRE-BUILD BASE>..HEAD`, `BUILD ID`, `PRE-EXISTING DIRT`, handoff paths, and the project pack `codeStyleRules` + `initialize` SKILL.md path when announced (enables its inner-loop style pass; omitted → it emits `style — N/A`). Returns per-criterion `MET / UNMET / UNVERIFIABLE` with evidence, owning `Build-Id.<n>` for each UNMET, plus `STYLE` (project style) findings.
+Dispatch `step-reviewer` **once** over the whole range. Pass: goal, acceptance criteria (verbatim), `PRE-BUILD BASE`, range `<PRE-BUILD BASE>..HEAD`, `BUILD ID`, `PRE-EXISTING DIRT`, handoff paths, and the project pack `codeStyleRules` + `initialize` SKILL.md path when announced (enables its inner-loop style pass; omitted → it emits `style — N/A`). Returns per-criterion `MET / UNMET / UNVERIFIABLE` with evidence, owning `Build-Id.<n>` for each UNMET, plus `STYLE` (project style) findings.
 
 - `STYLE` findings → relay each to its owning builder as a mechanical fix folded into that commit. Do not gate `ACCEPTANCE`.
 - `ACCEPTANCE: MET` → **log** `--phase verify --event verdict --verdict MET --fix-loop <loops>`, proceed to Review.
-- `ACCEPTANCE: UNMET` → **log** `--phase verify --event verdict --verdict UNMET --fix-loop <count>` (add `--cap-hit` at loop 3), relay each gap to the **owning subtask's builder** (which folds fix into that commit via amend or `--fixup` + `git rebase --autosquash <PRE-BUILD BASE>`), re-dispatch `task-reviewer` (fresh `Agent` call). **Cap: 3 loops.** After cap, or on `UNVERIFIABLE`, surface to user — human call required (BLOCK).
+- `ACCEPTANCE: UNMET` → **log** `--phase verify --event verdict --verdict UNMET --fix-loop <count>` (add `--cap-hit` at loop 3), relay each gap to the **owning subtask's builder** (which folds fix into that commit via amend or `--fixup` + `git rebase --autosquash <PRE-BUILD BASE>`), re-dispatch `step-reviewer` (fresh `Agent` call). **Cap: 3 loops.** After cap, or on `UNVERIFIABLE`, surface to user — human call required (BLOCK).
 
 You own this loop. The reviewer judges each round; you drive the iteration.
 

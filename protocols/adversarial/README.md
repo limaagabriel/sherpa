@@ -8,7 +8,7 @@
 Three layers:
 
 - **Turn audit:** the `/execute` skill runs `turn-reviewer` before claiming a step done — it audits code diff, process, and reasoning. (This plugin bundles no always-on hook; a host environment MAY wire a Stop-hook dispatcher to invoke `turn-reviewer` automatically, but that is host configuration, not shipped here.)
-- **Orchestration:** `/build-and-review <task> + goal + acceptance criteria`. Discovers, decomposes into ≤6 subtasks, tiers and routes each, then runs two range-wide gates: **Verify** (`task-reviewer` — right thing built?) and **Review** (`turn-reviewer` — built right?). Edits source only in the `inline` tier.
+- **Orchestration:** `/build-and-review <task> + goal + acceptance criteria`. Discovers, decomposes into ≤6 subtasks, tiers and routes each, then runs two range-wide gates: **Verify** (`step-reviewer` — right thing built?) and **Review** (`turn-reviewer` — built right?). Edits source only in the `inline` tier.
 - **Tier-engine:** three builders `/build-and-review` routes to:
   - **default** → `/adversarial-build --skip-probe` — drafter authors the briefing, Vet breaker attacks the spec, builder commits. Probe is skipped by default (re-attacked by range gates). Standalone callers may omit `--skip-probe` to restore Probe, or add `--skip-vet` to drop the spec gate.
   - **codegen** → `/codegen-build` — catalog-matched auto-gen to haiku; one commit, no breaker, no review.
@@ -27,7 +27,7 @@ Three layers:
               (normal mode: confirm codegen batch once; codegen wins ties)
 5. Route      CODEGEN → /codegen-build (haiku) │ DEFAULT → /adversarial-build --skip-probe │ INLINE → main agent
               each subtask → one Build-Id-noted commit + handoffs/<BUILD ID>.<n>.md
-6. Verify     task-reviewer over <PRE-BUILD BASE>..HEAD   [≤3 verify→fix loops]
+6. Verify     step-reviewer over <PRE-BUILD BASE>..HEAD   [≤3 verify→fix loops]
                   UNMET → relay to owning subtask's builder, re-verify
                   STYLE → relay as mechanical fix; does not gate ACCEPTANCE
                   UNVERIFIABLE / cap hit → BLOCK → user
@@ -58,7 +58,7 @@ Three layers:
 | Discover Clarify rounds | ≤10 (proceed-with-best-effort on cap) | `skills/build-and-review/SKILL.md` § Discover > Clarify |
 | Discover Approach selection | 1 (conditional) | `skills/build-and-review/SKILL.md` § Discover > Approach |
 | Decompose subtasks per step | ≤6 (one level deep) | `skills/build-and-review/SKILL.md` § Decompose |
-| Verify→fix loops (task-reviewer) | ≤3, then BLOCK→user | `skills/build-and-review/SKILL.md` § Verify |
+| Verify→fix loops (step-reviewer) | ≤3, then BLOCK→user | `skills/build-and-review/SKILL.md` § Verify |
 | Brief Vet rewrites (breaker mode=briefing) | ≤2 (skipped under `--skip-vet`) | `skills/adversarial-build/SKILL.md` § Brief > Vet |
 | Build-fix cap | ≤3 | `skills/adversarial-build/SKILL.md` § Build |
 | Probe output-fix loops | ≤3, drawn from build-fix cap; skipped under `--skip-probe` (default wiring) | `skills/adversarial-build/SKILL.md` § Build > Probe |

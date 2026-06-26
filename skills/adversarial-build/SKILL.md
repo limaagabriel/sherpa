@@ -33,7 +33,7 @@ Does **not** write outer workflow run-state (`SPEC.md`, `DECISIONS.md`, `PROGRES
 - `--skip-probe`: skip Probe sub-phase (breaker `mode=output`). Build still implements, commits, and writes handoff; build-failure relays still run.
 - Run context (from `/build-and-review`; self-generate when standalone): `BUILD ID`, `<n>`, `PRE-EXISTING DIRT`, `PRE-BUILD BASE`, handoff path, project pack `codeStyleRules` command + `initialize` SKILL.md path (when announced).
 
-Tiering is decided upstream. The only knobs here are `--skip-vet` / `--skip-probe`. Default-tier wiring passes `--skip-probe` (output re-attacked downstream by `task-reviewer` + `turn-reviewer`). Both flags together reduce the loop to Brief → Build → Deliver.
+Tiering is decided upstream. The only knobs here are `--skip-vet` / `--skip-probe`. Default-tier wiring passes `--skip-probe` (output re-attacked downstream by `step-reviewer` + `turn-reviewer`). Both flags together reduce the loop to Brief → Build → Deliver.
 
 ---
 
@@ -98,7 +98,7 @@ Build/test failure → relay back as output-fix request (builder amends its comm
 
 #### Probe *(skipped when `--skip-probe`)*
 
-Output is re-attacked downstream by `task-reviewer` + `turn-reviewer` over the whole range when skipped.
+Output is re-attacked downstream by `step-reviewer` + `turn-reviewer` over the whole range when skipped.
 
 Dispatch `adversarial-breaker` (`mode=output`, `model: sonnet`). Pass:
 - Handoff file **path** `handoffs/<BUILD ID>.<n>.md` — breaker verifies path exists and commit carries expected Build-Id note.

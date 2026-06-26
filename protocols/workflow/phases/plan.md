@@ -32,7 +32,7 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence 
 | **Because** | The parent intent served. Must not restate the Outcome. |
 | **done when** | `confirmed by <re-runnable automated check>` (test/command); manual observation only with a stated reason it can't be automated — same bar as § Acceptance criteria format. |
 
-**Two layers.** The plan goal is the north star; each step goal is the local driver (verified by `task-reviewer`) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
+**Two layers.** The plan goal is the north star; each step goal is the local driver (gated by `step-reviewer` before building begins) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
 
 ## Draft from the chosen framing
 Build the proposal from the **chosen framing** the Analyze panel produced (`phases/analyze.md`) — the decomposition is already diverged and judged; don't re-open it here. Record the chosen shape and why the rivals lost in Block-3 — `plan-reviewer`'s Unsound why-lost lens attacks that rationale next.

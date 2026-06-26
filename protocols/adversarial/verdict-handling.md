@@ -18,25 +18,25 @@ Applies to every reviewer subagent. `<reviewer>` = the active reviewer name.
 
 Audits the whole turn: **code diff**, **process** (skill use, Discover/Plan skips, narration, summary length, scope creep), and **reasoning** (root-cause claims, "what code does", citation soundness). A turn may carry any combination.
 
-- **Catalog classes:** `BLOCK`, `FIX`, `WARN`. Reasoning checks live inside them (no separate class). Project style and precedent are NOT turn-reviewer's job — `task-reviewer` owns them on the committed range; for ad-hoc edits outside `/build-and-review`, run a manual style/precedent pass if your project provides one.
+- **Catalog classes:** `BLOCK`, `FIX`, `WARN`. Reasoning checks live inside them (no separate class). Project style and precedent are NOT turn-reviewer's job — `step-reviewer` owns decomposition gating; for ad-hoc edits outside `/build-and-review`, run a manual style/precedent pass if your project provides one.
 - **Primary trigger:** the `/execute` skill invokes `turn-reviewer` (via Agent) before claiming any step done, auditing `<base SHA>..HEAD` + working tree. Forward the audit scope SHA into the briefing so it audits that range, not an improvised baseline. (`/adversarial-build` forwards its own `PRE-BUILD BASE` separately.) A host environment MAY additionally wire a Stop-hook to fire this automatically, but the plugin ships no such hook.
 - **Briefing requirement:** brief the subagent on what the turn produced — the diff plus an **EVIDENCE PACK** for any completion claim, and/or each conclusion with its **CITATIONS** (file:line, grep, transcript). Formats in `skills/turn-review/SKILL.md`. A completion claim with no evidence, or a conclusion with no citation, is flagged by rule.
 - **Manual triggers:** "audit", "adversary", "turn review", "diff review", "challenge this", "reasoning review", "challenge my reasoning", "/turn-review" — invoke regardless of diff size, ignoring the hook cache.
 - **Disagree with the hook:** invoke even when it didn't fire if the turn warrants it (a one-line security fix, or before any Edit/Write that depends on an unverified diagnosis). The hook is a floor, not a ceiling.
 - **BLOCK override for reasoning findings:** there's no diff to revert, so replace "fix / override / abandon" with "re-investigate, gather more evidence, or narrow the claim".
 
-## Task audit (task-reviewer)
+## Step decomposition audit (step-reviewer)
 
-Judges a committed diff range against a goal + acceptance criteria, then audits style and patterns.
+Judges the plan's step decomposition up-front, before any step is built.
 
-- **Catalog classes:** `ACCEPTANCE` (MET/UNMET/UNVERIFIABLE per criterion), `STYLE` (project style), `PRECEDENT`. `STYLE` falls back to language conventions + in-file/module precedent (still FIX-tier) when no project pack announced a `codeStyleRules` command — it is never simply skipped. `PRECEDENT` reports 0 when no new pattern appears.
-- **Coverage validation:** confirm an `ACCEPTANCE` section, a `STYLE` line (project-pack rules or language-convention fallback), and a `PRECEDENT` section. Missing → re-invoke once naming it.
-- **Verdict mapping:** `ACCEPTANCE: UNMET` → BLOCK (builder must fix). `[STYLE]` → FIX (mechanical). `[PRECEDENT]` → BLOCK (human judgment, regardless of ACCEPTANCE). Mixed STYLE + PRECEDENT → BLOCK.
-- **Trigger:** fired by `/build-and-review` once the committed range is stable. Not hook-driven.
+- **Catalog classes:** per-step `SOUND | GAP | MISSING-FOUNDATION`, plus overall `DECOMPOSITION: COMPLETE | INCOMPLETE`.
+- **Coverage validation:** confirm a per-step verdict for every step in the list, plus the overall `DECOMPOSITION` line. Missing → re-invoke once naming it.
+- **Verdict mapping:** `DECOMPOSITION: INCOMPLETE` → BLOCK (human must resolve the decomposition gap before building starts). Per-step `GAP` or `MISSING-FOUNDATION` → BLOCK.
+- **Trigger:** fired once per plan, before step 1 is built. Not hook-driven.
 
 ## Plan audit (plan-reviewer)
 
-Attacks goals at the plan layer — `mode=briefing` (goal well-formedness, before any step is built) and `mode=output` (goal achievement, after the build). Owns the premise layer; does NOT re-run `task-reviewer` (acceptance) or `turn-reviewer` (code quality).
+Attacks goals at the plan layer — `mode=briefing` (goal well-formedness, before any step is built) and `mode=output` (goal achievement, after the build). Owns the premise layer; does NOT re-run `step-reviewer` (decomposition) or `turn-reviewer` (code quality).
 
 - **Output shape:** `MODE`, `VERDICT` (`SOLID | HOLES`), `ATTACKED`, `HOLES` — not a tiered COVERAGE log. Validation: `MODE` + `VERDICT` + non-empty `ATTACKED` present, and `HOLES` non-empty whenever `VERDICT: HOLES`. Malformed → re-invoke once.
 - **Verdict mapping (`SOLID` → PASS):** classify each hole. Unbound Outcome, ceremony `For`, circular `Because`, orphan step, plan-goal↛brief gap, **rationale orphan** → BLOCK (binding / cut / motivate is human judgment; bind via `AskUserQuestion`, then re-attack with a fresh Agent call). Unverifiable done-when → FIX (add the confirming command, supply a criterion for an uncovered plan-goal clause, or replace manual observation with a re-runnable check) — but when the step states automation is genuinely impossible, accepting the manual exception is a human call → BLOCK. **Step too coarse → WARN** (advisory; suggested split — reviewability is the only stake, no authority forces it). Unsound why-lost, unstated load-bearing assumption, and a **project** architecture-rule violation → BLOCK (each needs a human decision — re-decide the rejected alternative, confirm-or-bind the premise, accept-or-conform the project rule; a project architecture-rule violation mirrors `PRECEDENT → BLOCK`). A **general-principle** architecture finding (the fallback when no `architectureRules` pack is announced) → WARN — advisory, no project authority behind it. The split is the principle: a hole with one unambiguous mechanical repair is FIX (unverifiable done-when, unless automation is genuinely impossible); a hole backed by project/human authority is BLOCK; an unbacked advisory nudge (general-principle, step-too-coarse) is WARN. `mode=output` holes (Outcome not true, motivation unsatisfied, goal drift) → BLOCK (the human decides more work vs. re-plan). BLOCK findings surfaced verbatim.
@@ -46,7 +46,7 @@ Attacks goals at the plan layer — `mode=briefing` (goal well-formedness, befor
 
 ## Code-style audit (project-pack capability)
 
-Exhaustive per-rule style enumeration is a **project-pack capability**, not an engine feature. When the active project pack announced a `codeStyleAudit` command, the Validate phase runs it over the committed range as the no-judgment-pick gate — distinct from `task-reviewer`'s lighter inner-loop candidate-pick style check. **If no pack announced `codeStyleAudit`, this gate simply does not run.**
+Exhaustive per-rule style enumeration is a **project-pack capability**, not an engine feature. When the active project pack announced a `codeStyleAudit` command, the Validate phase runs it over the committed range as the no-judgment-pick gate — distinct from `step-reviewer`'s lighter inner-loop candidate-pick style check. **If no pack announced `codeStyleAudit`, this gate simply does not run.**
 
 - **What the pack's audit emits:** the pack owns its rule taxonomy and coverage shape. The engine treats the audit as a black box that returns tiered findings (`FIX` / `BLOCK`) over the in-scope diff. The pack's own docs define how it reports coverage and which file types it scopes to.
 - **Verdict mapping (Validate dispatcher):** `[FIX]` → mechanical reformat to the rule's prescribed good-form (apply, fold into the owning commit via fixup/autosquash, re-run the pack's audit, cap 3). `[BLOCK]` → human judgment (ambiguous application, behavior-changing repair, or two valid repairs); surface verbatim. Mixed FIX + BLOCK → overall BLOCK; don't auto-fold the FIX items until the user weighs in.

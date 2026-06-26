@@ -52,7 +52,7 @@ All via `scripts/build-notes.sh` — never inline `git notes` parse.
 
 - Builder — create-vs-amend self-detection (`head-key`).
 - `adversarial-breaker` `mode=output` — scopes attack to commits with this run's key (`range`).
-- `task-reviewer` — attributes each UNMET criterion to the owning `<BUILD ID>.<n>` (`range`).
+- `step-reviewer` — reviews the decomposition before step 1 is built; does not attribute per-criterion gaps (read-only plan review).
 - `/build-and-review` Deliver and `/adversarial-build` Deliver — scope check every commit carries this run's key (`range`).
 - `scripts/fold-fix.sh` — resolves the autosquash target (`owner`).
 

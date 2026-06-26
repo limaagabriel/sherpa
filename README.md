@@ -71,7 +71,7 @@ Discover ─ scout codebase, gather precedent + constraints
 Analyze  ─ bind a concrete goal contract, clarify open decisions
 Plan     ─ propose steps  ──►  YOU APPROVE  ◄── (hard gate)
 Execute  ─ per step: brief → vet spec → build → probe output → commit
-Validate ─ task-reviewer (right thing?) + turn-reviewer (built right?)
+Validate ─ step-reviewer (right thing?) + turn-reviewer (built right?)
 ```
 
 Each step is tiered and routed to the cheapest builder that fits — a `codegen`

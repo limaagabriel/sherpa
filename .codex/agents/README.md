@@ -27,7 +27,7 @@ here are picked up with no install.
 | codegen-builder | cheap (haiku) | `gpt-5.5` | `minimal` | workspace-write |
 | adversarial-builder | standard (sonnet) | `gpt-5.5` | `medium` | workspace-write |
 | adversarial-drafter | standard (sonnet) | `gpt-5.5` | `medium` | workspace-write |
-| task-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
+| step-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | turn-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | adversarial-breaker | deep (opus) | `gpt-5.5` | `high` | read-only |
 | plan-reviewer | deep (opus) | `gpt-5.5` | `high` | read-only |
