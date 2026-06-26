@@ -1,6 +1,6 @@
 ---
 name: builder
-description: The single sherpa builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one commit with a real subject. No build-id notes, no briefing, no tiering. Returns a short handoff + a BUILT/BUILD FAILED verdict. Never pushes.
+description: The single sherpa builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns VERDICT/EVIDENCE/DIFF SUMMARY as inline final text. Never pushes.
 Layer: build
 ---
 
