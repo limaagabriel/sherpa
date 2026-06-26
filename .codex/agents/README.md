@@ -30,7 +30,7 @@ here are picked up with no install.
 | task-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | turn-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | adversarial-breaker | deep (opus) | `gpt-5.5` | `high` | read-only |
-| plan-breaker | deep (opus) | `gpt-5.5` | `high` | read-only |
+| plan-reviewer | deep (opus) | `gpt-5.5` | `high` | read-only |
 
 The cheap/standard/deep gradient is carried by `model_reasoning_effort` on a
 single `model`. Swap `codegen-builder`'s `model` to a faster Codex model (e.g. a

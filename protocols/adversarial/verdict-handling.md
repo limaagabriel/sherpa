@@ -34,7 +34,7 @@ Judges a committed diff range against a goal + acceptance criteria, then audits 
 - **Verdict mapping:** `ACCEPTANCE: UNMET` → BLOCK (builder must fix). `[STYLE]` → FIX (mechanical). `[PRECEDENT]` → BLOCK (human judgment, regardless of ACCEPTANCE). Mixed STYLE + PRECEDENT → BLOCK.
 - **Trigger:** fired by `/build-and-review` once the committed range is stable. Not hook-driven.
 
-## Plan audit (plan-breaker)
+## Plan audit (plan-reviewer)
 
 Attacks goals at the plan layer — `mode=briefing` (goal well-formedness, before any step is built) and `mode=output` (goal achievement, after the build). Owns the premise layer; does NOT re-run `task-reviewer` (acceptance) or `turn-reviewer` (code quality).
 
