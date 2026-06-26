@@ -1,6 +1,6 @@
 # Discover
 
-Scout the codebase BEFORE asking the user anything. The brief feeds Plan and seeds `/build-and-review` dispatches.
+Scout the codebase BEFORE asking the user anything. The brief feeds Plan and seeds Execute's per-step builder dispatches.
 
 ## Steps
 - `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local), `medium`/`very thorough` (cross-cutting).

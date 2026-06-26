@@ -1,6 +1,6 @@
 # State persistence (clock-out)
 
-Run-state files let resume pick up after compaction or reset. Main agent owns SPEC / DECISIONS / PROGRESS; `/build-and-review` and tier workers own `discovery/`, `briefings/`, `handoffs/`.
+Run-state files let resume pick up after compaction or reset. Main agent owns SPEC / DECISIONS / PROGRESS.
 
 ## Run-state directory
 `<BASE>/<key>/`, where the base resolves in precedence order:
@@ -25,7 +25,6 @@ Lowercases, collapses non-alnum runs to single hyphens, trims edge hyphens, trun
 - **Plan approval → DECISIONS.md** (append-only; create if absent, never overwrite): one `## <YYYY-MM-DD> — <short approach title>` section per entry, blank-line separated. Body: chosen approach + next-best + why it lost; for bugs, the Analyze root-cause too.
 - **Every step transition in Execute → full rewrite of `PROGRESS.md`** (single current-state snapshot): full step list with per-step status; in-flight index = 1-based ordinal of the `in_progress` step (`none` when none); next steps; any block reason. **Always a full rewrite, never appended.** The `/execute` skill drives this rewrite on each transition (the engine bundles no enforcement hook).
 - **Validate** → one more full rewrite of `PROGRESS.md` adding a test-results section (same rule; not a separate append).
-- **`/build-and-review` run-state** (`discovery/`, `briefings/`, `handoffs/`) → keyed by `BUILD ID` + subtask index; transport + documentation only, not read back on resume.
 
 ## Archiving a completed plan
 A branch holds one **active** plan (the triplet at the `<key>` dir root). A new Discover baseline on a branch that already ran one is a **follow-up**: archive the prior plan rather than clobber it, so its decisions survive one read away.
@@ -37,7 +36,7 @@ A branch holds one **active** plan (the triplet at the `<key>` dir root). A new 
   ```
   Moves the triplet into `archive/<NNN>-<slug>/` (`NNN` = existing count + 1) and echoes the path. It only moves files — the gate above is yours.
 - **Supersedes pointer (no carry-forward).** Write the fresh `SPEC.md` with `Supersedes: archive/<NNN>-<slug>` as line 1 (the echoed path). Prior decisions stay in `archive/<NNN>-<slug>/DECISIONS.md`, read on demand — **not** copied into the new `DECISIONS.md`. New `DECISIONS.md`/`PROGRESS.md` start absent, written at their own phases.
-- **`archive/` is reference-only** (like `briefings/`): `workflow-resume` counts its subdirs but never reads or routes on their contents.
+- **`archive/` is reference-only**: `workflow-resume` counts its subdirs but never reads or routes on their contents.
 
 ## Resume
 Manual after compaction or reset. The persisted files are the handoff surface.
