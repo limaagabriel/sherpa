@@ -18,8 +18,7 @@ the result. Sherpa makes those steps first-class:
 
 - **Plan before code.** Scout the codebase, bind a concrete goal, clarify open
   decisions, then wait for your explicit approval. No execution without an approved plan.
-- **Adversarial by default.** A *breaker* attacks the spec before code exists and
-  attacks the output after. A *reviewer* checks both "right thing?" and "built right?".
+- **Reviewed at every layer.** A plan-reviewer attacks the goal before and after. A step-reviewer gates the decomposition. Per-step reviewers check "right thing?" and "built right?" independently.
 - **Resumable.** Each phase persists run-state (SPEC / DECISIONS / PROGRESS), so you
   can stop after `/plan` and pick up with `/execute` days later.
 
@@ -52,8 +51,7 @@ shows up, you're set.
 | `/execute [key]` | Execute → Validate against the approved plan. Builds each step, reviews, validates the goal. |
 | `/workflow <task>` | The full loop — runs `/plan`, then `/execute` after you approve. |
 
-Smaller building blocks you can call directly: `/scout`, `/build-and-review`,
-`/adversarial-build`, `/codegen-build`, `/turn-review`, `/workflow-resume`.
+Smaller building blocks you can call directly: `/scout`, `/workflow-resume`.
 
 Typical flow:
 
@@ -70,14 +68,13 @@ Typical flow:
 Discover ─ scout codebase, gather precedent + constraints
 Analyze  ─ bind a concrete goal contract, clarify open decisions
 Plan     ─ propose steps  ──►  YOU APPROVE  ◄── (hard gate)
-Execute  ─ per step: brief → vet spec → build → probe output → commit
-Validate ─ step-reviewer (right thing?) + turn-reviewer (built right?)
+           plan-reviewer pressures goal well-formedness (L1)
+Execute  ─ step-reviewer gates decomposition once (L2), then per step:
+           builder commits → acceptance-reviewer + quality-reviewer (L3)
+Validate ─ plan-reviewer mode=output checks goal achieved
 ```
 
-Each step is tiered and routed to the cheapest builder that fits — a `codegen`
-tier for deterministic generators (runs on Haiku), an `inline` tier for trivial
-edits, and the full adversarial path for everything else. Reviews iterate up to a
-cap, then hand unresolved findings back to you. Full map: `protocols/adversarial/README.md`.
+Unresolved BLOCK findings surface to you. PASS/WARN/FIX continue automatically.
 
 ## Project packs (optional)
 
@@ -114,12 +111,32 @@ Resolved highest precedence first:
 2. `WORKFLOW_STATE_DIR` env var (per-shell).
 3. Default: `${XDG_STATE_HOME:-~/.local/state}/claude-workflow`.
 
+## Components
+
+### L1 Macro
+- **`/plan`** — Discover → Analyze → Plan; waits for your approval.
+- **`/scout`** — standalone codebase scout; also called by `/plan`.
+- **`plan-reviewer`** (agent) — attacks goal well-formedness (briefing) and goal achievement (output).
+
+### L2 Step
+- **`step-reviewer`** (agent) — gates the plan decomposition once before building begins.
+
+### L3 Build
+- **`/execute`** — runs approved steps via builder + reviewers, then validates the goal.
+- **`builder`** (agent) — implements one step and lands one commit.
+- **`acceptance-reviewer`** (agent) — judges each acceptance criterion MET/UNMET.
+- **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
+
+### Cross-cutting
+- **`/workflow`** — thin orchestrator: runs `/plan` then `/execute` in one go.
+- **`/workflow-resume`** — resumes an interrupted run from persisted state.
+
 ## Layout
 
 ```
-skills/        /plan, /execute, /workflow + build-and-review, adversarial-build, scout, …
-agents/        scout / builder / reviewer / breaker subagents
-protocols/     the workflow + adversarial contracts (the engine's brain)
+skills/        /plan, /execute, /workflow, /scout, /workflow-resume
+agents/        plan-reviewer, step-reviewer, builder, acceptance-reviewer, quality-reviewer
+protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver
 ```

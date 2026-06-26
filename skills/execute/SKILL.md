@@ -1,6 +1,7 @@
 ---
 name: execute
 description: Drive the Execute -> Validate half of the workflow against an approved plan — read SPEC/DECISIONS/PROGRESS, gate the decomposition once (step-reviewer), build each step (one builder + acceptance/quality reviewers), then validate the plan goal (plan-reviewer). Triggers - "/execute", "/execute <key>", "execute the plan". Requires a plan from /plan; /workflow chains both.
+Layer: build
 ---
 
 # /execute — Execute, Validate

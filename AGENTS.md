@@ -5,8 +5,7 @@ shipped as a plugin whose skills/protocols are authored in Claude Code's
 vocabulary but run under **both Claude Code and Codex CLI**.
 
 - Nothing runs until invoked: `/plan <task>`, `/execute`, `/workflow <task>`.
-  Smaller blocks: `/scout`, `/build-and-review`, `/codegen-build`,
-  `/adversarial-build`, `/turn-review`, `/workflow-resume`.
+  Smaller blocks: `/scout`, `/workflow-resume`.
 - **No execution without an approved plan.**
 
 ## Running under Codex CLI

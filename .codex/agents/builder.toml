@@ -15,6 +15,6 @@ plugin root) and follow it exactly. Implement the approved step, run
 acceptance checks before committing, land one real-subject commit.
 Your final message IS the return value — inline text with VERDICT,
 EVIDENCE, and DIFF SUMMARY sections — not a human-facing note.
-Do not write handoff files; do not create handoffs/, briefings/, or
-discovery/ directories.
+Do not write separate handoff or state files — your inline final
+message is the only output.
 '''
