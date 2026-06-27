@@ -22,6 +22,19 @@ Sherpa is three layers of decreasing altitude. Each layer has **one job, one dri
 artifact, and exactly one pressure point.** Pressure lives at the boundary between layers —
 never nested inside them.
 
+**What separates one layer from the next: how much it sees, and what it may change.** Read the
+table top-down and the discriminator is a single progression — *no code → all steps, no code →
+one step's code*. The moment a layer can see code, it is L3.
+
+| Layer | Owns (source of truth) | Question | Sees | May change |
+|---|---|---|---|---|
+| **L1 macro** | the plan (architecture + decisions) | right problem, right approach? | the whole problem, **no code** | anything |
+| **L2 step** | the step list (order + boundaries) | do these pieces, in this order, add up to the plan? | **all steps at once**, no code | the decomposition (not code) |
+| **L3 build** | the commits (the code) | does each step's code do what it promised, built well? | **one step's diff** at a time | that step's code |
+
+L1 *proposes* the step decomposition; L2 *ratifies* it. That producer-vs-ratifier split is why
+L2 is a gate, not a doing-layer — it has no driver skill of its own.
+
 ```
                         DRIVER          PRODUCES            PRESSURE (one)            MODEL
 ┌─ L1  MACRO ─────────  plan skill      the plan:           plan-reviewer:            —
@@ -55,9 +68,26 @@ no dimension-reviewer fan-out (a project pack may still announce extra `reviewer
 **Why up-front step pressure (L2):** a missing foundation in step 1 silently breaks steps 2–N.
 Reviewing the whole decomposition before building anything catches that when it is cheap.
 
+**L2 vs. the L3 acceptance-reviewer — same noun, different time.** Both judge steps, but L2 judges
+them *before* code exists ("are these the right pieces?") and L3's acceptance-reviewer judges *after*
+("did this piece get built as promised?"). Not overlap — the timeline splits them.
+
 **Why no overseer layer:** a reasoning auditor that runs at the end is pressure at the worst
 moment — max sunk cost, min leverage. Reasoning pressure belongs at L1, where a bad call is
 cheap to fix. `plan-reviewer` owns it; the old `turn-reviewer` is deleted.
+
+### Layers vs. phases (two different axes)
+
+Layers (altitude of artifact under pressure) are orthogonal to the
+Discover→Analyze→Plan→Execute→Validate phases (the timeline). The mapping:
+
+```
+Phase:   Discover → Analyze → Plan │ (gate) │ Execute  │ Validate
+Layer:   └────────── L1 ───────────┘   L2    └── L3 ────┘  cross-cutting
+```
+
+L1 spans three phases; L2 is the single gate between Plan and Execute; L3 is Execute; Validate
+belongs to no layer.
 
 ### Cross-cutting (not a layer)
 
@@ -90,8 +120,10 @@ with Pi's future convention. So the layers are made explicit by **labeling, not 
 
 1. **Layer-first README** — the component index in `README.md` is grouped under L1/L2/L3 + cross-cutting.
 2. **`Layer:` line in every component** — each `SKILL.md` / agent description names its layer
-   (`Layer: macro | step | build | cross-cutting`). A reader sees the layer in the file, and the
-   harness still finds it by convention.
+   (`Layer: macro | step | build | cross-cutting`). Pick by the discriminator from the spine: what
+   the component sees — whole problem, no code → `macro`; all steps, no code → `step`; one step's
+   code → `build`; spans layers or pure infra → `cross-cutting`. A reader sees the layer in the
+   file, and the harness still finds it by convention.
 
 Result: layers legible from any single file and from the README, with zero churn to harness paths.
 
