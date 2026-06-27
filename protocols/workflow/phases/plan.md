@@ -32,10 +32,10 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence 
 | **Because** | The parent intent served. Must not restate the Outcome. |
 | **done when** | `confirmed by <re-runnable automated check>` (test/command); manual observation only with a stated reason it can't be automated — same bar as § Acceptance criteria format. |
 
-**Two layers.** The plan goal is the north star; each step goal is the local driver (verified by `task-reviewer`) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
+**Two layers.** The plan goal is the north star; each step goal is the local driver (its acceptance verified by the L3 acceptance-reviewer) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
 
 ## Draft from the chosen framing
-Build the proposal from the **chosen framing** the Analyze panel produced (`phases/analyze.md`) — the decomposition is already diverged and judged; don't re-open it here. Record the chosen shape and why the rivals lost in Block-3 — `plan-breaker`'s Unsound why-lost lens attacks that rationale next.
+Build the proposal from the **chosen framing** the Analyze panel produced (`phases/analyze.md`) — the decomposition is already diverged and judged; don't re-open it here. Record the chosen shape and why the rivals lost in Block-3 — `plan-reviewer`'s Unsound why-lost lens attacks that rationale next.
 
 ## Self-review (silent, before presenting)
 Run on your draft before showing it. Fix inline; surface nothing. The dead-plan net — runs every plan.
@@ -49,8 +49,8 @@ Run on your draft before showing it. Fix inline; surface nothing. The dead-plan 
 ## Acceptance criteria format
 `done = <X>, confirmed by <re-runnable automated check>` (test/command) — a decidable pass/fail, re-runnable without a human. Manual observation only when the step states why no automated check is possible.
 
-## Adversarial goal review (plan-breaker, mode=briefing)
-After the silent self-review, before presenting, dispatch `plan-breaker` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), the brief (or `SPEC.md` path), and the proposal's Block-3 "Why this approach" (next-best alternative + why it lost). When the active pack announced an `architectureRules` command, run it (via Bash) and forward its stdout — the project's architectural guidelines. It attacks both layers + step→plan traceability + decision content: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap, rationale orphan, step too coarse, unsound why-lost, architecture-rule violation, unstated load-bearing assumption. Handle per `protocols/adversarial/verdict-handling.md`. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
+## Adversarial goal review (plan-reviewer, mode=briefing)
+After the silent self-review, before presenting, dispatch `plan-reviewer` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), the brief (or `SPEC.md` path), and the proposal's Block-3 "Why this approach" (next-best alternative + why it lost). When the active pack announced an `architectureRules` command, run it (via Bash) and forward its stdout — the project's architectural guidelines. It attacks both layers + step→plan traceability + decision content: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap, rationale orphan, step too coarse, unsound why-lost, architecture-rule violation, unstated load-bearing assumption. Handle the verdict: PASS/WARN/auto-cleared FIX → record and continue; BLOCK or unresolved finding → surface verbatim and wait for the human. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
 
 ## Approval
 Wait for explicit approval before any Execute action.
@@ -69,5 +69,5 @@ Append the Plan at a glance + before/after table + steps to `SPEC.md` — see `p
 - Treat a question, critique, or your own answer as approval — only an explicit affirmative on the current proposal clears the gate.
 - Default to inline on silence — silence on the mode question = normal.
 - Reference a file before verifying it exists.
-- Present without the silent self-review and the plan-breaker briefing pass.
+- Present without the silent self-review and the plan-reviewer briefing pass.
 - Bind an unbound goal slot by assumption — evidence-first, ask preferences (see `phases/discover.md`).

@@ -1,6 +1,7 @@
 ---
 name: workflow-resume
 description: Manually resume an interrupted Discover→Validate workflow run from its persisted SPEC/DECISIONS/PROGRESS state.
+Layer: cross-cutting
 ---
 
 ## Arguments
@@ -32,7 +33,6 @@ Read whichever of `SPEC.md`, `DECISIONS.md`, `PROGRESS.md` are present and surfa
 - **Archived plans** — count immediate `archive/<NNN>-*` subdirs (not recursive; `0` when absent). Report as `<N> stored under archive/ (reference only)`. Contents are NOT read for routing.
 - **Decisions so far** — from `DECISIONS.md`
 - **Step list** — from `PROGRESS.md`: each step with status, in-flight index, next steps, any `block reason`
-- **Briefings** — count direct-child regular files in `briefings/` (not subdirs, not recursive; `0` when absent). Report as `<N> stored under briefings/ (reference only)`. Contents are NOT read for routing.
 
 ---
 

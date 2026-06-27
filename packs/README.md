@@ -85,17 +85,15 @@ never rewritten. `detect` runs with its working directory set to the proximate d
 
 | Key | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|
-| `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every builder/reviewer/breaker subagent | engine defaults only |
-| `reviewers` | extra code-reviewer subagents | `/build-and-review` review fan-out | only generic reviewers run |
+| `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every builder/reviewer subagent | engine defaults only |
+| `reviewers` | extra code-reviewer subagents | `quality-reviewer` style pass | only generic reviewers run |
 | `codeStyleAudit` | exhaustive per-rule style **command** | Validate phase style audit | style audit skipped |
-| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | task-reviewer / adversarial-* style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
-| `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-breaker` mode=briefing — its Architecture-rule violation lens | falls back to advisory general principles (SRP / coupling / cyclic deps / leaky abstraction) — `architecture — general-principle fallback`, WARN not BLOCK |
-| `projectStatePath` | dir for this project's run-state (SPEC/DECISIONS/PROGRESS/`discovery/`/`briefings/`/`handoffs/`) — absolute, `~`, or relative to the proximate dir | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
+| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
+| `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-reviewer` mode=briefing — its Architecture-rule violation lens | falls back to advisory general principles (SRP / coupling / cyclic deps / leaky abstraction) — `architecture — general-principle fallback`, WARN not BLOCK |
+| `projectStatePath` | dir for this project's run-state (SPEC/DECISIONS/PROGRESS) — absolute, `~`, or relative to the proximate dir | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
 
 `codeStyleAudit`, `codeStyleRules`, and `architectureRules` are **commands**, not paths —
-the engine runs them and never assumes how the rules are stored. Codegen tiering shapes are
-extended by the human per `protocols/invariants/tiering-catalog.md` § Extending the
-catalog.
+the engine runs them and never assumes how the rules are stored.
 
 ## Make a pack
 

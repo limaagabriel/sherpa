@@ -1,6 +1,7 @@
 ---
 name: workflow
 description: Run the full Discover -> Analyze -> Plan -> Execute -> Validate workflow for a task end to end. Thin orchestrator that runs /plan, then on approval runs /execute. Use when you want the whole loop in one go. Triggers - "/workflow <task>", "run the full workflow", "plan and implement X". For just one half, call /plan or /execute directly.
+Layer: cross-cutting
 ---
 
 # /workflow — the full loop

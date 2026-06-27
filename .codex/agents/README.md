@@ -22,18 +22,15 @@ here are picked up with no install.
 
 ## Model tiers
 
-| Role | Tier (Claude model) | `model` | `model_reasoning_effort` | sandbox |
-|---|---|---|---|---|
-| codegen-builder | cheap (haiku) | `gpt-5.5` | `minimal` | workspace-write |
-| adversarial-builder | standard (sonnet) | `gpt-5.5` | `medium` | workspace-write |
-| adversarial-drafter | standard (sonnet) | `gpt-5.5` | `medium` | workspace-write |
-| task-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
-| turn-reviewer | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
-| adversarial-breaker | deep (opus) | `gpt-5.5` | `high` | read-only |
-| plan-breaker | deep (opus) | `gpt-5.5` | `high` | read-only |
+| Role | Layer | Tier (Claude model) | `model` | `model_reasoning_effort` | sandbox |
+|---|---|---|---|---|---|
+| builder | L3 build | standard (sonnet) | `gpt-5.5` | `minimal` | workspace-write |
+| acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
+| quality-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
+| step-reviewer | L2 step | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
+| plan-reviewer | L1 macro | deep (opus) | `gpt-5.5` | `high` | read-only |
 
 The cheap/standard/deep gradient is carried by `model_reasoning_effort` on a
-single `model`. Swap `codegen-builder`'s `model` to a faster Codex model (e.g. a
-Codex-Spark variant) if you have access and want it cheaper. A role with `model`
-omitted inherits the parent session model — Codex fixes a subagent's model in its
-role file (no dispatch-time override), so the tier intent must live here.
+single `model`. A role with `model` omitted inherits the parent session model —
+Codex fixes a subagent's model in its role file (no dispatch-time override), so
+the tier intent must live here.
