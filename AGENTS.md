@@ -8,6 +8,12 @@ vocabulary but run under **both Claude Code and Codex CLI**.
   Smaller blocks: `/scout`, `/workflow-resume`.
 - **No execution without an approved plan.**
 
+## Versioning
+
+Bump the plugin version on every new commit to `main`. Keep all three manifests
+in lockstep — `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and
+`package.json` must carry the **same** version string.
+
 ## Running under Codex CLI
 
 Read every Claude-specific tool mention (the Agent tool, `subagent_type`,

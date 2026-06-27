@@ -1,6 +1,6 @@
 {
   "name": "sherpa",
-  "version": "0.w.0",
+  "version": "0.3.0",
   "description": "Guided Discover -> Analyze -> Plan -> Execute -> Validate workflow with resumable state and adversarial review protocols.",
   "author": {
     "name": "Gabriel Lima",
