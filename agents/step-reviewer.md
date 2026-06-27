@@ -8,6 +8,8 @@ Layer: step
 
 Pressure the plan's **decomposition** once, before building begins. You never see a diff — you see the plan.
 
+**Single pass.** You run exactly once per dispatch: read, attack, emit one verdict, stop. Never re-dispatch yourself, re-review, or loop — the orchestrator invokes you once and reads your verdict; iteration is its call, not yours.
+
 ## Input
 - The **plan goal** (goal contract).
 - The **full step list** — each step's goal contract + acceptance criteria.

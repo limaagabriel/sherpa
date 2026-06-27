@@ -1,6 +1,6 @@
 {
   "name": "sherpa",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Develop like a sherpa: an opt-in Discover->Analyze->Plan->Execute->Validate workflow as /plan, /execute, and /workflow skills, with bundled scout/review/build subagents. Plans the route, ropes up, checks the rope at every pitch, leaves cairns to resume. Project-agnostic; extend with project packs + a configurable state directory.",
   "author": {
     "name": "Gabriel Lima"
