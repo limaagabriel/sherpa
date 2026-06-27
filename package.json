@@ -1,0 +1,18 @@
+{
+  "name": "sherpa",
+  "version": "0.1.0",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "sherpa",
+    "workflow",
+    "coding-agent"
+  ],
+  "pi": {
+    "skills": ["./skills"],
+    "extensions": ["./.pi/extensions/sherpa.ts"],
+    "subagents": {
+      "agents": ["./.pi/agents"]
+    }
+  }
+}
