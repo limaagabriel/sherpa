@@ -50,10 +50,7 @@ sessionInstructions: |
 pack:
   initialize: my-project-init
   reviewers: my-project-code-reviewer
-  codeStyleAudit: /my-project-style-audit
   codeStyleRules: cat /abs/path/to/rules.md
-  architectureRules: cat /abs/path/to/architecture.md
-  projectStatePath: /abs/path/to/my-project/.workflow-state
 ```
 
 On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` line
@@ -71,15 +68,13 @@ against `<repo>/.codex`, and `~/.claude/sherpa/projects/<p>.yaml` against
 ```yaml
 detect: ./detect.sh                  # runs from the proximate dir
 pack:
-  codeStyleAudit: ./style-audit.sh   # pre-wrapped: cd <base> && ./style-audit.sh
-  codeStyleRules: cat ./rules.md
-  projectStatePath: ./.workflow-state # → <base>/.workflow-state
+  codeStyleRules: cat ./rules.md     # pre-wrapped: cd <base> && cat ./rules.md
 ```
 
 Values starting with `/` (an absolute path, or a `/slash-skill` like
-`/my-style-audit`) and `projectStatePath` starting with `~` are left **as-is** —
-never rewritten. `detect` runs with its working directory set to the proximate dir
-(its `$CWD` export still points at the repo, so cwd-glob detects are unaffected).
+`/my-style-audit`) are left **as-is** — never rewritten. `detect` runs with its
+working directory set to the proximate dir (its `$CWD` export still points at the
+repo, so cwd-glob detects are unaffected).
 
 ## What each `pack` key does
 
@@ -87,13 +82,10 @@ never rewritten. `detect` runs with its working directory set to the proximate d
 |---|---|---|---|
 | `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every builder/reviewer subagent | engine defaults only |
 | `reviewers` | extra code-reviewer subagents | `quality-reviewer` style pass | only generic reviewers run |
-| `codeStyleAudit` | exhaustive per-rule style **command** | Validate phase style audit | style audit skipped |
-| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
-| `architectureRules` | shell **command** that dumps the project's architectural guidelines to stdout — sherpa runs it at the **plan** layer (vs `codeStyleRules` at the step layer) | `plan-reviewer` mode=briefing — its Architecture-rule violation lens | falls back to advisory general principles (SRP / coupling / cyclic deps / leaky abstraction) — `architecture — general-principle fallback`, WARN not BLOCK |
-| `projectStatePath` | dir for this project's run-state (SPEC/DECISIONS/PROGRESS) — absolute, `~`, or relative to the proximate dir | state-persistence BASE resolution | falls back to `WORKFLOW_STATE_DIR` env, then the XDG default |
+| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | builder output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 
-`codeStyleAudit`, `codeStyleRules`, and `architectureRules` are **commands**, not paths —
-the engine runs them and never assumes how the rules are stored.
+`codeStyleRules` is a **command**, not a path — the engine runs it and never assumes
+how the rules are stored.
 
 ## Make a pack
 
@@ -111,16 +103,7 @@ cp -r TEMPLATE my-project-init-skill     # the init skill; place where Claude Co
 
 No hook to write or register — sherpa's `SessionStart` hook reads your YAML.
 
-## State directory (where SPEC/DECISIONS/PROGRESS/handoffs land)
+## State
 
-Three ways to set it, highest precedence first:
-
-1. **Per-project** — set `projectStatePath` in the pack `pack:` map (absolute, `~`,
-   or relative to the proximate dir — see § Relative paths). Auto-selected when the
-   project is detected; no shell setup, and each project gets its own dir.
-2. **Per-shell** — `export WORKFLOW_STATE_DIR=/path/to/my/workflow-state` (global,
-   independent of packs).
-3. **Default** — unset both → the zero-config XDG location.
-
-Resolution: `BASE = <pack projectStatePath> || ${WORKFLOW_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/claude-workflow}`,
-then `<BASE>/<branch-or-task-key>/`.
+Sherpa persists nothing automatically. The spec and plan live in conversation; the
+opt-in `/persist` skill writes them to disk when you ask. Packs carry no state path.

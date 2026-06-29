@@ -13,18 +13,14 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked this session.
 
-# Extension points the engine consumes. codeStyleAudit / codeStyleRules /
-# architectureRules are COMMANDS (the hook auto-quotes values with spaces). Pack
-# values are single-line scalars (the WORKFLOW_PACK announcement is one line;
-# newlines are collapsed to spaces).
+# Extension points the engine consumes. codeStyleRules is a COMMAND (the hook
+# auto-quotes values with spaces). Pack values are single-line scalars (the
+# WORKFLOW_PACK announcement is one line; newlines are collapsed to spaces).
 #
-# Paths may be absolute OR relative to this file's proximate .claude/.codex dir
-# (e.g. for a committed .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`,
-# `projectStatePath: ./.workflow-state`). See README.md § Relative paths.
+# A command may be absolute OR relative to this file's proximate .claude/.codex dir
+# (e.g. for a committed .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`).
+# See README.md § Relative paths.
 pack:
   initialize: my-project-init
   reviewers: my-project-code-reviewer
-  codeStyleAudit: /my-project-style-audit
   codeStyleRules: cat /abs/path/to/rules.md
-  architectureRules: cat /abs/path/to/architecture.md
-  projectStatePath: /abs/path/to/my-project/.workflow-state

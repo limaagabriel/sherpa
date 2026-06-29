@@ -1,16 +1,22 @@
 # Discover
 
-Scout the codebase BEFORE asking the user anything. The brief feeds Plan and seeds Execute's per-step builder dispatches.
+Scout the codebase BEFORE asking the user anything. Feeds the spec (and seeds `/implement`'s
+per-step builder dispatches when a plan exists).
 
 ## Steps
-- `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local), `medium`/`very thorough` (cross-cutting).
-- Draft the **goal contract** (`phases/plan.md` § Goal contract) from request + scout: `<Outcome> for <consumers> because <motivation>; done when <verification>`. Its **unbound slots are your clarification questions** — a slot you can't fill *is* a hole.
-- **Bind each unbound slot evidence-first** (scout answers "who calls it", "what's the column max" — don't ask what a 30-second `Explore` settles). Escalate to `AskUserQuestion` **only** for a preference/decision, never a discoverable fact. **Never assume** a preference (a slot bound by an unverified assumption — "static names are trusted" — is exactly the failure this gate stops).
-- `AskUserQuestion` loop on the unbound preference slots + holes the scout didn't close (ambiguous scope, success criteria, constraints, inputs/outputs, non-goals, untested assumptions, conflicts, edge cases). Drop holes scout already answered.
-- One `AskUserQuestion` call holds ≤4 questions — batch *independent* ones, *serialize* dependent ones (an early answer can reshape what follows). Loop until the spec is closed.
-- When the *goal itself* has multiple viable framings (not just constraints), that choice is an `AskUserQuestion` decision — surface it; never assume one framing.
+- `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local),
+  `medium`/`very thorough` (cross-cutting).
+- Draft the **goal contract** (`phases/plan.md` § Goal contract) from request + scout:
+  `<Outcome> for <consumers> because <motivation>; done when <verification>`. Its **unbound
+  slots are your clarification questions** — a slot you can't fill *is* a hole.
+- **Bind each unbound slot evidence-first** — scout answers "who calls it", "what's the column
+  max"; don't ask what a 30-second `Explore` settles. **Never assume** a preference.
+- **Ask as it arises.** When a slot needs a user preference/decision (not a discoverable fact),
+  surface it right then via `AskUserQuestion` — one at a time, in the moment, brainstorming-style.
+  Don't batch them to the end. A genuine framing choice is a question, never an assumption.
+- **Residual → open questions.** Anything the user chooses to leave open, or a tradeoff not yet
+  resolvable, becomes a line in the spec's **open questions** section — not a forced decision.
 
 ## Brief (one line each)
-`Scout` (key file:line landmarks + precedent) · `Goal` (the plan goal contract, all four slots bound) · `Constraints` · `Non-goals` · `Assumptions` · `Decisions`.
-
-Analyze is next — diagnose + diverge on approach — in its own phase (`phases/analyze.md`).
+`Scout` (key file:line landmarks + precedent) · `Goal` (the goal contract) · `Constraints` ·
+`Non-goals` · `Assumptions` · `Open questions`.

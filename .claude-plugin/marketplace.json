@@ -4,15 +4,15 @@
     "name": "Gabriel Lima"
   },
   "metadata": {
-    "description": "Sherpa — a project-agnostic Discover->Validate workflow guide",
-    "version": "0.2.0"
+    "description": "Sherpa — composable spec/plan/implement layers; the user composes the workflow",
+    "version": "0.4.0"
   },
   "plugins": [
     {
       "name": "sherpa",
       "source": "./",
-      "description": "Develop like a sherpa: opt-in /plan, /execute, /workflow skills driving the full Discover->Analyze->Plan->Execute->Validate loop with bundled scout/review/build subagents. Extend via project packs + WORKFLOW_STATE_DIR.",
-      "version": "0.2.0",
+      "description": "Develop like a sherpa: composable /spec, /plan, /implement skills — one per layer (macro, step, build) — with bundled scout/review/build subagents. The user composes the workflow; nothing persists unless you call /persist. Extend via project packs.",
+      "version": "0.4.0",
       "category": "development",
       "keywords": ["workflow", "planning", "code-review", "adversarial"]
     }

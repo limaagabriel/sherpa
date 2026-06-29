@@ -21,5 +21,6 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 - **Tests + regression** — non-trivial logic carries a runnable check; change doesn't break neighbors.
 
 ## Output
-- Findings tiered `BLOCK | FIX | WARN`, each with `file:line` evidence and a one-line fix.
-- Overall: `QUALITY: PASS | WARN | FIX | BLOCK`.
+- `PASS` — nothing to change. Or
+- `FIX <list>` — mechanical issues the builder folds into its commit; each with `file:line` + a one-line fix. Or
+- `BLOCK <list>` — issues that need a human call before proceeding; each with `file:line` + why.

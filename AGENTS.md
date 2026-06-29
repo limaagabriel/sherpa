@@ -1,12 +1,18 @@
 # sherpa — agent instructions
 
-sherpa is an opt-in **Discover → Analyze → Plan → Execute → Validate** workflow,
-shipped as a plugin whose skills/protocols are authored in Claude Code's
-vocabulary but run under **both Claude Code and Codex CLI**.
+sherpa is a set of **composable, opt-in skills** — one per layer — shipped as a
+plugin whose skills/protocols are authored in Claude Code's vocabulary but run
+under **both Claude Code and Codex CLI**. The user composes the workflow; sherpa
+offers the tools.
 
-- Nothing runs until invoked: `/plan <task>`, `/execute`, `/workflow <task>`.
-  Smaller blocks: `/scout`, `/workflow-resume`.
-- **No execution without an approved plan.**
+- Three layers, three entry points (pick by task complexity):
+  `/spec <task>` (macro — refine intent + discover), `/plan <task>` (step —
+  decompose), `/implement <task>` (build). Smaller block: `/scout`.
+- Each skill is a standalone entry point: it consumes the upstream artifact if it's
+  in context, else does the minimum to proceed — never re-running the layer above.
+- **Nothing persists unless asked** — `/persist` writes the in-context spec/plan to
+  disk; there is no automatic run-state.
+- See `protocols/layers.md` for the layer/skill/reviewer binding.
 
 ## Versioning
 

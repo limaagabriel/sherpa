@@ -3,7 +3,7 @@
 # file agents/builder.md; this TOML only binds the model tier + sandbox.
 # Tier: implementation (model set by caller).
 name = "builder"
-description = '''The single sherpa builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns VERDICT/EVIDENCE/DIFF SUMMARY as inline final text. Never pushes.'''
+description = '''The single sherpa builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.'''
 model = "gpt-5.5"
 model_reasoning_effort = "minimal"
 sandbox_mode = "workspace-write"
@@ -13,8 +13,8 @@ and output contract from the sherpa plugin file agents/builder.md
 (resolve via $CLAUDE_PLUGIN_ROOT when set, else the installed sherpa
 plugin root) and follow it exactly. Implement the approved step, run
 acceptance checks before committing, land one real-subject commit.
-Your final message IS the return value — inline text with VERDICT,
-EVIDENCE, and DIFF SUMMARY sections — not a human-facing note.
-Do not write separate handoff or state files — your inline final
+Your final message IS the return value — inline text: BUILT <sha>
+<subject> with the check you ran, or FAILED <why> — not a human-facing
+note. Do not write separate handoff or state files — your inline final
 message is the only output.
 '''

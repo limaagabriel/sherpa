@@ -14,12 +14,12 @@
 #   ${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}/*.yaml|*.yml  workspace (many)
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # Config schema (camelCase): name, detect (a command; exit 0 = match),
-#   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,architectureRules,projectStatePath}.
+#   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,architectureRules}.
 # See packs/README.md.
 #
-# Relative path-ish values resolve against the config's proximate .claude/.codex dir
-# (detect runs from it; command props are pre-wrapped `cd <base> && ...`;
-# projectStatePath is prefixed with it). /- and ~-prefixed values are left as-is.
+# Relative command props resolve against the config's proximate .claude/.codex dir
+# (detect runs from it; command props are pre-wrapped `cd <base> && ...`).
+# /- and ~-prefixed values are left as-is.
 #
 # Never errors out: a failing SessionStart hook must not block the session.
 
@@ -48,12 +48,7 @@ proximate_base() {
 resolve_pack_value() {
   local key="$1" val="$2" base="$3"
   case "$key" in
-    projectStatePath)
-      case "$val" in
-        /*|"~"*) printf '%s' "$val" ;;
-        *) printf '%s/%s' "$base" "${val#./}" ;;
-      esac ;;
-    codeStyleRules|architectureRules|codeStyleAudit)
+    codeStyleRules)
       case "$val" in
         /*) printf '%s' "$val" ;;
         *) printf "cd '%s' && %s" "$base" "$val" ;;

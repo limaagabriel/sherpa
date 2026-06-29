@@ -1,26 +1,28 @@
 # Sherpa
 
-A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin that
-turns "do this task" into a guided **Discover → Analyze → Plan → Execute → Validate**
-loop — with bundled scout, builder, and reviewer subagents that rope up, check the
-rope at every pitch, and leave cairns so you can resume.
+A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
+**composable skills**, one per layer of altitude — `/spec` (macro), `/plan` (step),
+`/implement` (build) — with bundled scout, builder, and reviewer subagents that rope up
+and check the rope at every pitch.
 
-It's **opt-in** (nothing runs until you call `/plan`, `/execute`, or `/workflow`)
-and **project-agnostic** — your project's code style, extra reviewers, and state
-location plug in through a small YAML *pack*, so the engine never hard-codes
-anything about your repo.
+Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until
+you call a skill), **lean** (nothing persists unless you call `/persist`), and
+**project-agnostic** — your code style and extra reviewers plug in through a small YAML
+*pack*, so the engine never hard-codes anything about your repo.
 
 ## Why
 
-Asking an agent to "just build it" skips the parts that make work trustworthy:
-scouting precedent, pinning down acceptance criteria, and adversarially checking
-the result. Sherpa makes those steps first-class:
+Asking an agent to "just build it" skips the parts that make work trustworthy: scouting
+precedent, pinning down acceptance criteria, and adversarially checking the result. Sherpa
+makes those first-class — but lets *you* decide how much ceremony a task needs:
 
-- **Plan before code.** Scout the codebase, bind a concrete goal, clarify open
-  decisions, then wait for your explicit approval. No execution without an approved plan.
-- **Reviewed at every layer.** A plan-reviewer attacks the goal before and after. A step-reviewer gates the decomposition. Per-step reviewers check "right thing?" and "built right?" independently.
-- **Resumable.** Each phase persists run-state (SPEC / DECISIONS / PROGRESS), so you
-  can stop after `/plan` and pick up with `/execute` days later.
+- **A ceremony gradient.** A fuzzy task starts at `/spec`. A clear goal starts at `/plan`.
+  One obvious change goes straight to `/implement`. You pick the entry point.
+- **Reviewed at every layer.** A spec-reviewer attacks the framing, a plan-reviewer attacks
+  the decomposition, and per-step acceptance + quality reviewers check "right thing?" and
+  "built right?" independently.
+- **No magic state.** The spec and plan live in the conversation. Want them on disk to resume
+  later? Call `/persist`. Otherwise sherpa leaves no trace.
 
 ## Install
 
@@ -39,47 +41,50 @@ git clone https://github.com/limaagabriel/sherpa.git
 /plugin install sherpa@sherpa
 ```
 
-Then open `/hooks`, review and **trust** sherpa's `SessionStart` hook (it detects
-your project pack), and start a new thread. Verify with `/plan` — if the skill
-shows up, you're set.
+Then open `/hooks`, review and **trust** sherpa's `SessionStart` hook (it detects your
+project pack), and start a new thread. Verify with `/spec` — if the skill shows up, you're set.
 
 ## Usage
 
-| Command | Does |
-|---|---|
-| `/plan <task>` | Discover → Analyze → Plan. Scouts, clarifies, proposes a plan, **waits for approval**. |
-| `/execute [key]` | Execute → Validate against the approved plan. Builds each step, reviews, validates the goal. |
-| `/workflow <task>` | The full loop — runs `/plan`, then `/execute` after you approve. |
+| Skill | Layer | Does | Start here when |
+|---|---|---|---|
+| `/spec <task>` | macro | Refine intent, scout, ask questions as they arise, compose + present a spec, get a cold-eyes critique. | the task is fuzzy or has design calls |
+| `/plan <task>` | step | Decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
+| `/implement <task>` | build | Build each step (builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
+| `/scout <task>` | — | Standalone codebase scout; also called by `/spec` and `/plan`. | you just want a lay of the land |
+| `/persist` | — | Write the in-context spec/plan to disk so a later session can resume. | you want to save or resume |
 
-Smaller building blocks you can call directly: `/scout`, `/workflow-resume`.
-
-Typical flow:
+Each skill is a standalone entry point: it uses the upstream artifact if it's in context,
+else does the minimum to proceed — never re-running the layer above. Compose them however the
+task wants:
 
 ```
-/workflow add rate limiting to the public API
-   → sherpa scouts, asks a few clarifying questions, presents a plan
-   → you approve
-   → it builds each step, runs reviewers, validates against the goal
+/spec add rate limiting to the public API   # fuzzy → shape it first
+   → scouts, asks a few questions, presents a spec
+/plan                                        # decompose the spec into steps
+   → presents steps, waits for your approval
+/implement                                   # build them, reviewed per step
 ```
+
+…or just `/implement bump the copyright year` for a one-liner.
 
 ## How it works
 
 ```
-Discover ─ scout codebase, gather precedent + constraints
-Analyze  ─ bind a concrete goal contract, clarify open decisions
-Plan     ─ propose steps  ──►  YOU APPROVE  ◄── (hard gate)
-           plan-reviewer pressures goal well-formedness (L1)
-Execute  ─ step-reviewer gates decomposition once (L2), then per step:
-           builder commits → acceptance-reviewer + quality-reviewer (L3)
-Validate ─ plan-reviewer mode=output checks goal achieved
+/spec       scout + refine intent + ask as questions arise  →  spec  (in context)
+            spec-reviewer attacks the framing (L1)
+/plan       decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
+            plan-reviewer attacks the decomposition (L2)
+/implement  per step: builder commits → acceptance-reviewer + quality-reviewer (L3)
 ```
 
-Unresolved BLOCK findings surface to you. PASS/WARN/FIX continue automatically.
+`BLOCK` findings surface to you. `MET`/`PASS`/`FIX` continue automatically (a `FIX` is folded
+into the builder's commit and re-checked once). There is no final Validate gate — pressure
+lives at each boundary. See `protocols/layers.md`.
 
 ## Project packs (optional)
 
-The engine ships generic. To layer in your project's conventions, drop one YAML
-file per project:
+The engine ships generic. To layer in your project's conventions, drop one YAML file per project:
 
 ```
 ${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml
@@ -93,49 +98,38 @@ sessionInstructions: |
 pack:
   initialize: my-project-init          # skill that loads project knowledge
   reviewers: my-project-code-reviewer  # extra review subagents
-  codeStyleRules: cat /abs/path/to/rules.md         # step-layer style rules
-  architectureRules: cat /abs/path/to/architecture.md  # plan-layer architecture rules
-  projectStatePath: /abs/path/to/.workflow-state
+  codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
 ```
 
-Sherpa's single `SessionStart` hook scans the dir, detects the active project, and
-announces its pack — no per-project hook to write. If nothing matches, the engine
-runs generic and every pack-dependent step no-ops. Details and the full schema:
-`packs/README.md`.
-
-### Where run-state lives
-
-Resolved highest precedence first:
-
-1. Pack `projectStatePath` (per-project).
-2. `WORKFLOW_STATE_DIR` env var (per-shell).
-3. Default: `${XDG_STATE_HOME:-~/.local/state}/claude-workflow`.
+Sherpa's single `SessionStart` hook scans the dir, detects the active project, and announces
+its pack — no per-project hook to write. If nothing matches, the engine runs generic and every
+pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ## Components
 
 ### L1 Macro
-- **`/plan`** — Discover → Analyze → Plan; waits for your approval.
-- **`/scout`** — standalone codebase scout; also called by `/plan`.
-- **`plan-reviewer`** (agent) — attacks goal well-formedness (briefing) and goal achievement (output).
+- **`/spec`** — refine intent + discover; presents a spec, nothing on disk.
+- **`/scout`** — standalone codebase scout; also called by `/spec` and `/plan`.
+- **`spec-reviewer`** (agent) — cold eyes on the spec's intent, discovery, and open questions.
 
 ### L2 Step
-- **`step-reviewer`** (agent) — gates the plan decomposition once before building begins.
+- **`/plan`** — decompose into steps; waits for your approval.
+- **`plan-reviewer`** (agent) — attacks the decomposition (traceability, gaps, overlap, order).
 
 ### L3 Build
-- **`/execute`** — runs approved steps via builder + reviewers, then validates the goal.
+- **`/implement`** — runs approved steps via builder + reviewers, pressure per step.
 - **`builder`** (agent) — implements one step and lands one commit.
-- **`acceptance-reviewer`** (agent) — judges each acceptance criterion MET/UNMET.
+- **`acceptance-reviewer`** (agent) — judges whether each acceptance criterion is met.
 - **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
 
 ### Cross-cutting
-- **`/workflow`** — thin orchestrator: runs `/plan` then `/execute` in one go.
-- **`/workflow-resume`** — resumes an interrupted run from persisted state.
+- **`/persist`** — writes the in-context spec/plan to disk on request.
 
 ## Layout
 
 ```
-skills/        /plan, /execute, /workflow, /scout, /workflow-resume
-agents/        plan-reviewer, step-reviewer, builder, acceptance-reviewer, quality-reviewer
+skills/        /spec, /plan, /implement, /scout, /persist
+agents/        spec-reviewer, plan-reviewer, builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

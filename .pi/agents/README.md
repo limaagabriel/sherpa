@@ -25,8 +25,8 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 | builder | `agents/builder.md` | read, grep, find, ls, bash, edit, write | low |
 | acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | low |
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
-| step-reviewer | `agents/step-reviewer.md` | read, grep, find, ls, bash | medium |
-| plan-reviewer | `agents/plan-reviewer.md` | read, grep, find, ls, bash | high |
+| plan-reviewer | `agents/plan-reviewer.md` | read, grep, find, ls, bash | medium |
+| spec-reviewer | `agents/spec-reviewer.md` | read, grep, find, ls, bash | high |
 
 The builder is the only writer (`edit, write`); the four reviewers are
 read-only. Each shim resolves the package root via `$SHERPA_PLUGIN_ROOT` (exported

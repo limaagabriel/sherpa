@@ -1,33 +1,29 @@
 ---
 name: plan
-description: Drive the Discover -> Analyze -> Plan half of the workflow for a task — scout the code, bind a goal contract, clarify open decisions, then present a Plan proposal and wait for explicit approval. Persists SPEC + DECISIONS run-state for /execute to pick up. Triggers - "/plan <task>", "plan this", "plan the implementation of X". The counterpart is /execute; /workflow chains both.
-Layer: macro
+description: Step layer (L2). Decompose a goal into ordered, traceable steps, then get a cold-eyes critique of the decomposition before any code. Reads the spec from context if present; standalone, takes a <task> and does a light scout. Writes nothing to disk. Triggers - "/plan", "/plan <task>", "decompose this", "break it into steps". Skip /spec and start here when the goal is already clear. Counterparts - /spec (intent+discovery), /implement (build).
+Layer: step
 ---
 
-# /plan — Discover, Analyze, Plan
+# /plan — decompose into steps
 
-Produce an **approved plan** for `<task>`, persisted so `/execute` (or a later
-session) can run it. Stop at the approval gate — do NOT write code here.
+Produce an **approved plan** (the step list) for the goal. The middle of the ceremony gradient.
+Entry point for a medium task whose goal is clear but wants decomposition + step-critique. Skip
+it for a one-obvious-change task (go straight to `/implement`).
 
-## Operating rules (apply throughout)
-- **Authority:** the human owns every decision — clarifications, plan approval.
-  You propose; they decide.
-- **Stance:** feedback-first — when the human floats an approach, open with a
-  brief take (sound? risk? better option?). Push back when a better path exists.
-- **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** guard clauses, SRP, short functions, no inline comments,
-  evidence-only (quote file:line). Style enforcement itself is a project-pack
-  capability — see `${CLAUDE_PLUGIN_ROOT}/packs/README.md`.
-- **Harness:** under Codex CLI, read Claude-specific tool mentions (`AskUserQuestion`,
-  Agent tool / `subagent_type`, model names) per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md`.
+The plan lives **in context** (printed, not on disk). Persisting is the opt-in `/persist` skill.
 
-## Gates (run in order — none skipped)
+## Operating rules
+- Same Authority / Stance / no-narration / Conventions / Harness rules as `/spec`.
 
-1. **Set up run-state.** Resolve `BASE` per `state-persistence.md` § Run-state directory — the active pack's `projectStatePath` (from the `WORKFLOW_PACK:` line) when announced, else `${WORKFLOW_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/claude-workflow}`; `<key>` = current git branch, else slug the raw task via `${CLAUDE_PLUGIN_ROOT}/scripts/run-state-key.sh`. `mkdir -p "$BASE/<key>"`. Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/state-persistence.md` (incl. follow-up archiving).
-2. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: scout via `/scout` BEFORE asking anything; draft the goal contract; bind discoverable slots evidence-first; `AskUserQuestion` only for genuine preferences/decisions.
-3. **Analyze.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/analyze.md`: root cause + affected deps, then the unconditional alternative-approach panel → chosen framing. On assumption-failure, return to Discover.
-4. **Plan.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/plan.md`: draft from Analyze's chosen framing, then present the Plan proposal (Plan-at-a-glance + before/after table + per-step blocks with goal contracts + Why/How), after a silent self-review and a `plan-reviewer` `mode=briefing` pass (via Agent).
-5. **Persist + await approval.** On the brief closing, write `SPEC.md` (Discover fields). Wait for an **explicit** affirmative on the current proposal — a question or critique is not approval. On approval: append the plan to `SPEC.md` and write `DECISIONS.md`.
+## Steps
+1. **Get context.** Spec in context → use it as the goal + discovery. **No spec** → treat the
+   `<task>` arg as the goal, run a quick `/scout`; do not refine intent or write open questions
+   (that's `/spec`). If the task is genuinely fuzzy, offer `/spec` first in one declinable line.
+2. **Settle what blocks a step.** Resolve any open questions that block a step boundary —
+   `AskUserQuestion`, or answers already in the conversation. Leave the rest open.
+3. **Decompose + review + present.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/plan.md`: write the steps
+   (Block 1/2/3, goal contracts), run the silent self-review, dispatch `plan-reviewer` (one shot)
+   over the step list, then present and wait for **explicit** approval.
 
 ## Done when
-An approved plan exists in `SPEC.md` + `DECISIONS.md` under `$BASE/<key>/`. Hand off to `/execute`.
+An approved step list exists in context. Hand off to `/implement`, or offer `/persist`.

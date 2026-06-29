@@ -1,73 +1,67 @@
-# Plan
+# Plan (step layer)
 
-Present a **Plan proposal**, then wait for approval. It adapts to task shape (bug / refactor / feature / multi-step) but always carries the three blocks below — even a one-line fix gets the full shape.
+Decompose the goal into steps, present them, wait for approval. Driven by `/plan`.
+Input is the spec (in context) — or, standalone, a `<task>` + a light `/scout`.
+
+## Before decomposing
+- **Settle only what blocks a step.** If the spec left open questions, resolve the ones that
+  actually block a step boundary — ask via `AskUserQuestion`, or use answers already in the
+  conversation. Questions that don't block decomposition ride into `/implement` as builder-time
+  calls; don't force them here.
+- **Standalone (no spec):** quick `/scout`, then decompose. Do NOT refine intent or write an
+  open-questions section — that is `/spec`'s job; if it was skipped, you're working without it.
 
 ## Plan proposal format
+Always carries the three blocks — even a one-line fix gets the full shape.
 
 ### Block 1 — Plan at a glance
 - The **plan goal** as a goal contract (§ Goal contract) — the north star every step traces to.
-- A **before / after table** — current → target, one row per affected area. The user reads this to confirm the plan closes the gap before reading any step. Works for every shape: bug (buggy → correct), refactor (current → target structure), feature (absent → present), docs/rename/config (old → new).
+- A **before / after table** — current → target, one row per affected area.
 
 ### Block 2 — Steps
-Each step is its own block (a single-step task still gets one block — don't collapse to prose). Every step carries:
-- **Goal** — a step goal contract (§ Goal contract). It must trace up to the plan goal; a step whose Outcome doesn't advance the north star is dead weight.
-- **Change** — the concrete delta. Bugs: root cause + fix. Multi-step: this step only.
-- **Example** — a small illustration of what the step *produces* (before→after snippet, or sample input→output). This is what makes a dead step visible — the user sees the result, not just a description.
-- **Acceptance criteria** — `done = <X>, confirmed by <re-runnable automated check>` (test/command). Manual observation only when the step states why no automated check is possible.
+Each step is its own block. Every step carries:
+- **Goal** — a step goal contract (§ Goal contract). Must trace up to the plan goal.
+- **Change** — the concrete delta (this step only).
+- **Example** — a small before→after snippet or sample input→output of what the step produces.
+- **Acceptance criteria** — `done = <X>, confirmed by <re-runnable automated check>`. Manual
+  observation only when the step states why no automated check is possible.
 
 ### Block 3 — Why & how
-- **Why this approach** — the next-best alternative and why it lost. Bugs: confirming evidence (file:line, repro, log) that localizes the root cause. Features/refactors: the architectural trade-off.
-- **How it's verified** — observable end state + test plan. Required before any logic change. Docs/renames/config: the manual check that confirms success.
+- **Why this approach** — the next-best alternative and why it lost (bugs: confirming evidence).
+- **How it's verified** — observable end state + test plan.
 
 ## Goal contract
-
-Every goal — the one **plan goal** and each **step goal** — is one sentence with four bound slots:
+Every goal — the one **plan goal** and each **step goal** — is one sentence, four bound slots:
 
 > **`<Outcome>` for `<consumers>` because `<motivation>`; done when `<verification>`.**
 
 | Slot | Rule |
 |---|---|
-| **Outcome** | An observable end-**state**, every noun bound. Not an action ("decompose", "refactor"); not a vague reference ("the relevant X"). |
-| **For** | Who consumes the result. Every new abstraction (extracted method, class, param, indirection) names **≥2 consumers or a stated concrete value** — a single-caller extraction with no named reuse earns nothing. |
+| **Outcome** | An observable end-**state**, every noun bound. Not an action; not a vague reference. |
+| **For** | Who consumes it. Every new abstraction names **≥2 consumers or a stated concrete value**. |
 | **Because** | The parent intent served. Must not restate the Outcome. |
-| **done when** | `confirmed by <re-runnable automated check>` (test/command); manual observation only with a stated reason it can't be automated — same bar as § Acceptance criteria format. |
-
-**Two layers.** The plan goal is the north star; each step goal is the local driver (its acceptance verified by the L3 acceptance-reviewer) and must trace up to it. The fill-in form makes an empty slot visible — and an unbound slot is a Discover question, not something to assume (see `phases/discover.md`).
-
-## Draft from the chosen framing
-Build the proposal from the **chosen framing** the Analyze panel produced (`phases/analyze.md`) — the decomposition is already diverged and judged; don't re-open it here. Record the chosen shape and why the rivals lost in Block-3 — `plan-reviewer`'s Unsound why-lost lens attacks that rationale next.
+| **done when** | `confirmed by <re-runnable automated check>`; manual only with a stated reason. |
 
 ## Self-review (silent, before presenting)
-Run on your draft before showing it. Fix inline; surface nothing. The dead-plan net — runs every plan.
-1. **Placeholder scan** — any TBD/TODO/vague requirement? Catch semantic ones too: an unbound noun-phrase in any Outcome ("the relevant X"). Bind it or send to Discover.
-2. **Internal consistency** — do steps contradict? Do they actually sum to the after-state?
-3. **Scope** — one plan's worth, or does it need decomposition?
-4. **Ambiguity** — could a step read two ways? Pick one, make it explicit.
-5. **Dead-plan smell test** — does before/after close the brief's `Goal` gap? Does every step trace up? A step that doesn't → cut or justify.
-6. **Earns-its-keep** — every abstraction's `For` names ≥2 consumers or a value; every `Because` says what breaks if absent (not a restated Outcome). Fails either → ceremony; fix or cut.
+1. **Placeholder scan** — any TBD/vague requirement or unbound noun-phrase? Bind it.
+2. **Consistency** — do steps contradict, and do they sum to the after-state?
+3. **Scope** — one plan's worth?
+4. **Earns-its-keep** — every abstraction's `For` names ≥2 consumers/a value; every `Because`
+   says what breaks if absent. Fails either → cut or justify.
 
-## Acceptance criteria format
-`done = <X>, confirmed by <re-runnable automated check>` (test/command) — a decidable pass/fail, re-runnable without a human. Manual observation only when the step states why no automated check is possible.
-
-## Adversarial goal review (plan-reviewer, mode=briefing)
-After the silent self-review, before presenting, dispatch `plan-reviewer` `mode=briefing` via Agent. Forward the plan goal, the full step list (each goal in contract form), the brief (or `SPEC.md` path), and the proposal's Block-3 "Why this approach" (next-best alternative + why it lost). When the active pack announced an `architectureRules` command, run it (via Bash) and forward its stdout — the project's architectural guidelines. It attacks both layers + step→plan traceability + decision content: unbound Outcome, ceremony `For`, circular `Because`, unverifiable done-when, orphan step, plan-goal↛brief gap, rationale orphan, step too coarse, unsound why-lost, architecture-rule violation, unstated load-bearing assumption. Handle the verdict: PASS/WARN/auto-cleared FIX → record and continue; BLOCK or unresolved finding → surface verbatim and wait for the human. A hole only the human can close → BLOCK: bind via `AskUserQuestion`, then re-attack (fresh Agent call). Self-review grades your own goal; this is the independent eyes it can't be.
+## Adversarial decomposition review (plan-reviewer)
+After the silent self-review, before presenting, dispatch `plan-reviewer` via Agent. Forward the
+plan goal + the full step list (each goal in contract form) + the spec path for context. It attacks
+traceability, missing foundation, gaps, overlap, ordering and returns `SOLID | HOLES`. Handle:
+`SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → surface verbatim
+and wait. This is the independent eyes your own self-review can't be.
 
 ## Approval
-Wait for explicit approval before any Execute action.
-
-**What counts:** an affirmative on *this* proposal — "approved", "go", "ship it", "lgtm", "proceed", "do it". Nothing else. A question, critique, change request, or curious reaction ("why this step?") is **not** approval. When in doubt, you are not approved.
-
-**Answering doesn't advance the gate.** Replying to a question leaves you waiting. Don't read your own answer, or the user's acknowledgement of it, as go-ahead. If the answer changed the proposal, re-present and re-await. The gate clears only on an explicit approve-signal that post-dates the latest version.
-
-Default is **normal mode** — assume normal unless the user explicitly declares inline ("approved inline"). You may ask about inline preference, but the answer is never required: silence on the mode question = normal (mode-axis only, never a plan-approval signal). When several architectures fit the brief and a wrong pick is costly, the Analyze panel (`phases/analyze.md`) already diverged on it. Reference patterns with file:line.
-
-## On approval
-Append the Plan at a glance + before/after table + steps to `SPEC.md` — see `phases/state-persistence.md`.
+Wait for **explicit** approval before any `/implement` action — "approved", "go", "ship it", "lgtm".
+A question, critique, or your own answer is **not** approval. When in doubt, you are not approved.
 
 ## Don't
 - Skip approval, even for small fixes.
-- Treat a question, critique, or your own answer as approval — only an explicit affirmative on the current proposal clears the gate.
-- Default to inline on silence — silence on the mode question = normal.
+- Re-refine intent or surface open questions (that's `/spec`).
 - Reference a file before verifying it exists.
-- Present without the silent self-review and the plan-reviewer briefing pass.
-- Bind an unbound goal slot by assumption — evidence-first, ask preferences (see `phases/discover.md`).
+- Present without the silent self-review and the plan-reviewer pass.

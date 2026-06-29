@@ -29,7 +29,7 @@ assert_not_contains() {
   esac
 }
 
-# (a) project-local .codex/sherpa.yaml — relative command + relative projectStatePath
+# (a) project-local .codex/sherpa.yaml — relative command resolves against the proximate base
 repo="$tmp/repo"
 mkdir -p "$repo/.codex"
 cat >"$repo/.codex/sherpa.yaml" <<'YAML'
@@ -37,11 +37,9 @@ name: proj-a
 detect: "exit 0"
 pack:
   codeStyleRules: cat ./rules.md
-  projectStatePath: ./.workflow-state
 YAML
 out=$(ctx "$repo")
 assert_contains "a/command" "$out" "cd '$repo/.codex' && cat ./rules.md"
-assert_contains "a/statepath" "$out" "projectStatePath=$repo/.codex/.workflow-state"
 assert_contains "a/message" "$(msg "$repo")" "Project \"proj-a\" loaded into Sherpa from $repo/.codex/sherpa.yaml 🏔️"
 
 # (b) workspace YAML under a .claude ancestor — base must walk up to <tmp>/home/.claude

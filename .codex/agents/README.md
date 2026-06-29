@@ -27,8 +27,8 @@ here are picked up with no install.
 | builder | L3 build | standard (sonnet) | `gpt-5.5` | `minimal` | workspace-write |
 | acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | quality-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
-| step-reviewer | L2 step | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
-| plan-reviewer | L1 macro | deep (opus) | `gpt-5.5` | `high` | read-only |
+| plan-reviewer | L2 step | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
+| spec-reviewer | L1 macro | deep (opus) | `gpt-5.5` | `high` | read-only |
 
 The cheap/standard/deep gradient is carried by `model_reasoning_effort` on a
 single `model`. A role with `model` omitted inherits the parent session model —

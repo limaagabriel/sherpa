@@ -23,12 +23,10 @@ These rules apply when the cwd / target / branch lives in a <Project> codebase.
 - <how Build/Execute changes for this project — e.g. codegen pairing, formatting
   as a per-step builder action>
 
-## Style & architecture (consumed by the engine via the announcement)
-- **codeStyleRules:** a shell command that prints the complete rule set to stdout; `step-reviewer` and `quality-reviewer` run it and cite rules from its output when announced. Sherpa makes no assumption about how rules are stored.
-- **codeStyleAudit:** the Validate phase runs this command for the exhaustive pass.
-- **architectureRules:** a shell command that prints the project's architectural guidelines to stdout; sherpa runs it at the **plan** layer and forwards the output to `plan-reviewer`, which checks the proposed plan against it. Absent → that lens falls back to an advisory general-principle check (SRP / coupling / cyclic deps / leaky abstraction, WARN-tier).
+## Style (consumed by the engine via the announcement)
+- **codeStyleRules:** a shell command that prints the complete rule set to stdout; the `builder` conforms its output to it and the `quality-reviewer` cites rules from its output when announced. Sherpa makes no assumption about how rules are stored.
 - **initialize:** this skill itself — the main agent invokes it at session start; the orchestrator forwards its `SKILL.md` path to subagents (which `Read` it).
-- If you announce neither style key, reviewers fall back to the file's language conventions + in-file/module precedent (`style — language-convention fallback`) — never skipped outright.
+- Absent → reviewers fall back to the file's language conventions + in-file/module precedent (`style — language-convention fallback`) — never skipped outright.
 
 ## Topic breadcrumbs (load on demand, don't pre-read)
 | When you… | Read |
