@@ -46,14 +46,10 @@ proximate_base() {
 }
 
 resolve_pack_value() {
-  local key="$1" val="$2" base="$3"
-  case "$key" in
-    codeStyleRules)
-      case "$val" in
-        /*) printf '%s' "$val" ;;
-        *) printf "cd '%s' && %s" "$base" "$val" ;;
-      esac ;;
-    *) printf '%s' "$val" ;;
+  local val="$1" base="$2"
+  case "$val" in
+    /*) printf '%s' "$val" ;;
+    *) printf "cd '%s' && %s" "$base" "$val" ;;
   esac
 }
 
@@ -78,7 +74,7 @@ for config in "${candidates[@]}"; do
   while IFS= read -r entry; do
     [ -n "$entry" ] || continue
     key="${entry%%=*}"
-    val=$(resolve_pack_value "$key" "${entry#*=}" "$base")
+    val=$(resolve_pack_value "${entry#*=}" "$base")
     case "$val" in
       *" "*) line="$line $key=\"$val\"" ;;
       *)     line="$line $key=$val" ;;
