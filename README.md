@@ -2,7 +2,7 @@
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
 **composable skills**, one per layer of altitude — `/spec` (macro), `/plan` (step),
-`/implement` (build) — with bundled scout, builder, and reviewer subagents that rope up
+`/implement` (build) — with bundled scout, step-builder, and reviewer subagents that rope up
 and check the rope at every pitch.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until
@@ -50,7 +50,7 @@ project pack), and start a new thread. Verify with `/spec` — if the skill show
 |---|---|---|---|
 | `/spec <task>` | macro | Refine intent, scout, ask questions as they arise, compose + present a spec, get a cold-eyes critique. | the task is fuzzy or has design calls |
 | `/plan <task>` | step | Decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
-| `/implement <task>` | build | Build each step (builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
+| `/implement <task>` | build | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
 | `/scout <task>` | — | Standalone codebase scout; also called by `/spec` and `/plan`. | you just want a lay of the land |
 | `/persist` | — | Write the in-context spec/plan to disk so a later session can resume. | you want to save or resume |
 
@@ -75,11 +75,11 @@ task wants:
             spec-reviewer attacks the framing (L1)
 /plan       decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
             plan-reviewer attacks the decomposition (L2)
-/implement  per step: builder commits → acceptance-reviewer + quality-reviewer (L3)
+/implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L3)
 ```
 
 `BLOCK` findings surface to you. `MET`/`PASS`/`FIX` continue automatically (a `FIX` is folded
-into the builder's commit and re-checked once). There is no final Validate gate — pressure
+into the step-builder's commit and re-checked once). There is no final Validate gate — pressure
 lives at each boundary. See `protocols/layers.md`.
 
 ## Project packs (optional)
@@ -117,8 +117,8 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 - **`plan-reviewer`** (agent) — attacks the decomposition (traceability, gaps, overlap, order).
 
 ### L3 Build
-- **`/implement`** — runs approved steps via builder + reviewers, pressure per step.
-- **`builder`** (agent) — implements one step and lands one commit.
+- **`/implement`** — runs approved steps via step-builder + reviewers, pressure per step.
+- **`step-builder`** (agent) — implements one step and lands one commit.
 - **`acceptance-reviewer`** (agent) — judges whether each acceptance criterion is met.
 - **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
 
@@ -129,7 +129,7 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ```
 skills/        /spec, /plan, /implement, /scout, /persist
-agents/        spec-reviewer, plan-reviewer, builder, acceptance-reviewer, quality-reviewer
+agents/        spec-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

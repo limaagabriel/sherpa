@@ -10,4 +10,4 @@
 
 ## Exceptions (intentional)
 
-- **`builder`** runs its own commits and any commands the step requires.
+- **`step-builder`** runs its own commits and any commands the step requires.

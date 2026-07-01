@@ -1,7 +1,8 @@
 ---
 name: acceptance-reviewer
-description: Per-step acceptance reviewer (L3, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the builder once; no multi-loop. Distinct from the quality-reviewer.
+description: Per-step acceptance reviewer (L3, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the step-builder once; no multi-loop. Distinct from the quality-reviewer.
 Layer: build
+model: sonnet
 ---
 
 # acceptance-reviewer — L3 (plan perspective)

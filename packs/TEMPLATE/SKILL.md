@@ -21,10 +21,10 @@ These rules apply when the cwd / target / branch lives in a <Project> codebase.
 
 ## Workflow extension
 - <how Build/Execute changes for this project — e.g. codegen pairing, formatting
-  as a per-step builder action>
+  as a per-step step-builder action>
 
 ## Style (consumed by the engine via the announcement)
-- **codeStyleRules:** a shell command that prints the complete rule set to stdout; the `builder` conforms its output to it and the `quality-reviewer` cites rules from its output when announced. Sherpa makes no assumption about how rules are stored.
+- **codeStyleRules:** a shell command that prints the complete rule set to stdout; the `step-builder` conforms its output to it and the `quality-reviewer` cites rules from its output when announced. Sherpa makes no assumption about how rules are stored.
 - **initialize:** this skill itself — the main agent invokes it at session start; the orchestrator forwards its `SKILL.md` path to subagents (which `Read` it).
 - Absent → reviewers fall back to the file's language conventions + in-file/module precedent (`style — language-convention fallback`) — never skipped outright.
 

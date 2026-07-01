@@ -51,7 +51,7 @@ never a forced router. The user's judgment is the router.
 | `/plan` skill | step | decomposes into steps; writes no code |
 | `plan-reviewer` | step | sees all steps, no code; read-only `SOLID \| HOLES` on the decomposition |
 | `/implement` skill | build | drives one step at a time; never reopens the plan |
-| `builder` | build | sees one step's diff; changes only that step's code |
+| `step-builder` | build | sees one step's diff; changes only that step's code |
 | `acceptance-reviewer` | build | sees one step's diff + criteria; read-only `MET \| UNMET` |
 | `quality-reviewer` | build | sees one step's diff; read-only `PASS \| FIX \| BLOCK` |
 | `/persist` skill | cross-cutting | writes the in-context spec/plan to disk on request; owns no layer |

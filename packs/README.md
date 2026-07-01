@@ -80,9 +80,9 @@ repo, so cwd-glob detects are unaffected).
 
 | Key | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|
-| `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every builder/reviewer subagent | engine defaults only |
+| `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every step-builder/reviewer subagent | engine defaults only |
 | `reviewers` | extra code-reviewer subagents | `quality-reviewer` style pass | only generic reviewers run |
-| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | builder output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
+| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | step-builder output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 
 `codeStyleRules` is a **command**, not a path — the engine runs it and never assumes
 how the rules are stored.

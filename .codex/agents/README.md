@@ -24,7 +24,7 @@ here are picked up with no install.
 
 | Role | Layer | Tier (Claude model) | `model` | `model_reasoning_effort` | sandbox |
 |---|---|---|---|---|---|
-| builder | L3 build | standard (sonnet) | `gpt-5.5` | `minimal` | workspace-write |
+| step-builder | L3 build | standard (sonnet) | `gpt-5.5` | `minimal` | workspace-write |
 | acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | quality-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
 | plan-reviewer | L2 step | standard (sonnet) | `gpt-5.5` | `medium` | read-only |

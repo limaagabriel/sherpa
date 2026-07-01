@@ -2,6 +2,7 @@
 name: quality-reviewer
 description: Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. One general reviewer — sherpa ships no dimension-reviewer fan-out. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
 Layer: build
+model: sonnet
 ---
 
 # quality-reviewer — L3 (quality perspective)
@@ -22,5 +23,5 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 
 ## Output
 - `PASS` — nothing to change. Or
-- `FIX <list>` — mechanical issues the builder folds into its commit; each with `file:line` + a one-line fix. Or
+- `FIX <list>` — mechanical issues the step-builder folds into its commit; each with `file:line` + a one-line fix. Or
 - `BLOCK <list>` — issues that need a human call before proceeding; each with `file:line` + why.

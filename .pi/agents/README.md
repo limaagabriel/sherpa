@@ -22,13 +22,13 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 
 | Role | Canonical body | tools | `thinking` |
 |---|---|---|---|
-| builder | `agents/builder.md` | read, grep, find, ls, bash, edit, write | low |
+| step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | low |
 | acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | low |
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
 | plan-reviewer | `agents/plan-reviewer.md` | read, grep, find, ls, bash | medium |
 | spec-reviewer | `agents/spec-reviewer.md` | read, grep, find, ls, bash | high |
 
-The builder is the only writer (`edit, write`); the four reviewers are
+The step-builder is the only writer (`edit, write`); the four reviewers are
 read-only. Each shim resolves the package root via `$SHERPA_PLUGIN_ROOT` (exported
 by `.pi/extensions/sherpa.ts`), else the concrete pi install roots
 `~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`.

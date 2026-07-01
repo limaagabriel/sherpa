@@ -28,4 +28,4 @@ identical; only the mechanism differs.
 - **Plugin root resolution.** Each role shim and skill path resolves the package
   root via `$SHERPA_PLUGIN_ROOT` first, else the concrete pi install roots
   (`~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`). The
-  builder is the only writer; the four reviewers are read-only.
+  step-builder is the only writer; the four reviewers are read-only.

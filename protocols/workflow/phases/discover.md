@@ -1,7 +1,7 @@
 # Discover
 
 Scout the codebase BEFORE asking the user anything. Feeds the spec (and seeds `/implement`'s
-per-step builder dispatches when a plan exists).
+per-step step-builder dispatches when a plan exists).
 
 ## Steps
 - `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local),
