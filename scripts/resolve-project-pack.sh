@@ -22,6 +22,15 @@
 # /- and ~-prefixed values are left as-is.
 #
 # Never errors out: a failing SessionStart hook must not block the session.
+#
+# Assumption (not independently verified in this session): Codex's hook runtime
+# consumes hookSpecificOutput.additionalContext the same way Claude Code's SessionStart
+# hook does. This is inferred from Codex's explicit hooks.json wiring in
+# .codex-plugin/plugin.json, paired with Claude Code's directory-convention pickup of
+# the same hooks/hooks.json file — not a matching manifest declaration on the Claude
+# side. No Codex harness was run here to confirm it. By contrast, Pi's consumption IS
+# verified directly: .pi/extensions/sherpa.ts's resolvePackContext() reads this script's
+# JSON stdout and forwards additionalContext verbatim.
 
 input=$(cat 2>/dev/null) || exit 0
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null) || exit 0
