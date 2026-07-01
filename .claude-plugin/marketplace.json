@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Sherpa — composable spec/plan/implement layers; the user composes the workflow",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "plugins": [
     {
       "name": "sherpa",
       "source": "./",
       "description": "Develop like a sherpa: composable /spec, /plan, /implement skills — one per layer (macro, step, build) — with bundled scout/review/build subagents. The user composes the workflow; nothing persists unless you call /persist. Extend via project packs.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "category": "development",
       "keywords": ["workflow", "planning", "code-review", "adversarial"]
     }
