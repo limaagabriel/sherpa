@@ -30,6 +30,9 @@ cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null) || exit 0
 command -v yq >/dev/null 2>&1 || exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PRIMER=$(sed -n '/^---$/,/^---$/!p' "$dir/../skills/using-sherpa/SKILL.md")
+
 packs_dir="${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}"
 
 proximate_base() {
@@ -82,15 +85,17 @@ for config in "${candidates[@]}"; do
   done < <(yq '.pack // {} | to_entries | .[] | .key + "=" + (.value | tostring | sub("\n"; " "))' "$config" 2>/dev/null)
 
   instructions=$(yq '.sessionInstructions // ""' "$config" 2>/dev/null)
-  ctx="$line"
-  [ -n "$instructions" ] && ctx="$line"$'\n'"$instructions"
+  ctx="$PRIMER"$'\n\n'"$line"
+  [ -n "$instructions" ] && ctx="$ctx"$'\n'"$instructions"
 
   jq -n --arg ctx "$ctx" --arg msg "Project \"$name\" loaded into Sherpa from $config 🏔️" \
     '{systemMessage:$msg, hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}' 2>/dev/null
   exit 0
 done
 
-# No pack matched — tell the user no project-specific knowledge was loaded.
+# No pack matched — tell the user no project-specific knowledge was loaded,
+# but still force-load the layer-selection primer.
 jq -n --arg msg "🏔️ sherpa: no project pack matched this repo — running generic (no project-specific knowledge loaded)." \
-  '{systemMessage:$msg}' 2>/dev/null
+  --arg ctx "$PRIMER" \
+  '{systemMessage:$msg, hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}' 2>/dev/null
 exit 0

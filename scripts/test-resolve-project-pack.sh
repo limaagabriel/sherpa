@@ -41,6 +41,7 @@ YAML
 out=$(ctx "$repo")
 assert_contains "a/command" "$out" "cd '$repo/.codex' && cat ./rules.md"
 assert_contains "a/message" "$(msg "$repo")" "Project \"proj-a\" loaded into Sherpa from $repo/.codex/sherpa.yaml 🏔️"
+assert_contains "a/primer" "$out" "check whether one of these fits"
 
 # (b) workspace YAML under a .claude ancestor — base must walk up to <tmp>/home/.claude
 ws_home="$tmp/home"
@@ -90,6 +91,12 @@ assert_contains "d/quoted-base" "$out" "cd '$repo_d/.codex' && cat ./rules.md"
 ( cd "$repo_d/.codex" && echo hi >rules.md )
 emitted=$(printf '%s' "$out" | sed -n "s/.*codeStyleRules=\"\\(cd '[^\"]*\\)\".*/\\1/p")
 bash -c "$emitted" >/dev/null 2>&1 || { echo "FAIL [d/runnable]: emitted cmd failed: $emitted"; fail=1; }
+
+# (e) no pack matches — primer must still be force-loaded via additionalContext
+nomatch="$tmp/nomatch"
+mkdir -p "$nomatch"
+out=$(ctx "$nomatch")
+assert_contains "e/primer" "$out" "check whether one of these fits"
 
 [ "$fail" -eq 0 ] && echo "PASS: all resolution cases" || echo "FAILED"
 exit "$fail"
