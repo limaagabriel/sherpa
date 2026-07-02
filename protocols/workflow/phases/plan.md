@@ -25,6 +25,9 @@ Each step is its own block. Every step carries:
 - **Example** — a small before→after snippet or sample input→output of what the step produces.
 - **Acceptance criteria** — `done = <X>, confirmed by <re-runnable automated check>`. Manual
   observation only when the step states why no automated check is possible.
+- **Blast contract** — `reversibility: one-way-door | revertible; touches: <files/symbols touched
+  or silently affected beyond the listed diff>; revert: <exact command or state restore that undoes
+  this step>`.
 
 ### Block 3 — Why & how
 - **Why this approach** — the next-best alternative and why it lost (bugs: confirming evidence).
