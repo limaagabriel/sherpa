@@ -3,6 +3,7 @@ name: plan-reviewer
 description: Read-only step-layer adversary (L2). Given the plan goal + the full step list, attacks the decomposition BEFORE any code — does each step trace to the goal, is a foundation later steps need missing, do steps overlap, is the order sound? Returns SOLID | HOLES. Never sees a diff. Single pass, no loop.
 tools: Read, Grep, Glob, Bash
 Layer: step
+model: opus
 ---
 
 # plan-reviewer — L2

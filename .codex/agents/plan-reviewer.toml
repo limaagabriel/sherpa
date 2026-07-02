@@ -1,6 +1,6 @@
 # sherpa plan-reviewer subagent — Codex role binding.
 # Full role in plugin file agents/plan-reviewer.md; this TOML binds the model
-# tier + sandbox. Tier: standard review (Claude: sonnet). Read-only.
+# tier + sandbox. Tier: standard review (Claude: opus). Read-only.
 name = "plan-reviewer"
 description = '''Read-only step-layer adversary (L2). Given the plan goal + the full step list, attacks the decomposition BEFORE any code — does each step trace to the goal, is a foundation later steps need missing, do steps overlap, is the order sound? Returns SOLID | HOLES. Never sees a diff. Single pass, no loop.'''
 model = "gpt-5.5"

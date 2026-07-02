@@ -3,6 +3,7 @@ name: spec-reviewer
 description: Read-only macro-layer adversary (L1). Cold eyes on a spec — attacks the refined intent, the discovery claims, and the open-questions section. Did /spec frame the right problem, is its discovery founded, did it surface the real unknowns? Returns SOLID | HOLES. Single pass, no code, no loop.
 tools: Read, Grep, Glob, Bash
 Layer: macro
+model: opus
 ---
 
 # spec-reviewer — L1
