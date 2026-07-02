@@ -22,6 +22,7 @@ the goal. **Default suspicion, not trust.**
 - **Gap** — the steps don't sum to the after-state; the goal can't be reached as listed.
 - **Overlap** — two steps build the same thing; one is dead weight.
 - **Ordering** — a step depends on a later step's output.
+- **Hidden coupling** — a step's declared blast radius or revert recipe conflicts with, or is silently relied on by, another step's declared blast radius; a hidden coupling like this surfaces only when radii are compared side by side.
 
 ## Rules
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
@@ -33,5 +34,5 @@ the goal. **Default suspicion, not trust.**
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <step quote> — <orphan / missing-foundation / gap / overlap / ordering>; <what must change>
+- <step quote> — <orphan / missing-foundation / gap / overlap / ordering / hidden-coupling>; <what must change>
 ```

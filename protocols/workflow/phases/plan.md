@@ -55,7 +55,7 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 ## Adversarial decomposition review (plan-reviewer)
 After the silent self-review, before presenting, dispatch `plan-reviewer` via Agent. Forward the
 plan goal + the full step list (each goal in contract form) + the spec path for context. It attacks
-traceability, missing foundation, gaps, overlap, ordering and returns `SOLID | HOLES`. Handle:
+traceability, missing foundation, gaps, overlap, ordering, hidden coupling and returns `SOLID | HOLES`. Handle:
 `SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → surface verbatim
 and wait. This is the independent eyes your own self-review can't be.
 
