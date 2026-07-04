@@ -92,6 +92,19 @@ assert_contains "d/quoted-base" "$out" "cd '$repo_d/.codex' && cat ./rules.md"
 emitted=$(printf '%s' "$out" | sed -n "s/.*codeStyleRules=\"\\(cd '[^\"]*\\)\".*/\\1/p")
 bash -c "$emitted" >/dev/null 2>&1 || { echo "FAIL [d/runnable]: emitted cmd failed: $emitted"; fail=1; }
 
+# (f) project-local .pi/sherpa.yaml — relative command resolves against the proximate base
+repo_f="$tmp/repof"
+mkdir -p "$repo_f/.pi"
+cat >"$repo_f/.pi/sherpa.yaml" <<'YAML'
+name: proj-f
+detect: "exit 0"
+pack:
+  codeStyleRules: cat ./rules.md
+YAML
+out=$(ctx "$repo_f")
+assert_contains "f/command" "$out" "cd '$repo_f/.pi' && cat ./rules.md"
+assert_contains "f/message" "$(msg "$repo_f")" "Project \"proj-f\" loaded into Sherpa from $repo_f/.pi/sherpa.yaml 🏔️"
+
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
 mkdir -p "$nomatch"

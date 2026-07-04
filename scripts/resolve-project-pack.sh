@@ -11,13 +11,14 @@
 # Config candidates, highest precedence first:
 #   <cwd>/.claude/sherpa.yaml|.yml      project-local, shareable in-repo (single file)
 #   <cwd>/.codex/sherpa.yaml|.yml       project-local, shareable in-repo (single file)
+#   <cwd>/.pi/sherpa.yaml|.yml          project-local, shareable in-repo (single file)
 #   ${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}/*.yaml|*.yml  workspace (many)
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # Config schema (camelCase): name, detect (a command; exit 0 = match),
 #   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,architectureRules}.
 # See packs/README.md.
 #
-# Relative command props resolve against the config's proximate .claude/.codex dir
+# Relative command props resolve against the config's proximate .claude/.codex/.pi dir
 # (detect runs from it; command props are pre-wrapped `cd <base> && ...`).
 # /- and ~-prefixed values are left as-is.
 #
@@ -50,7 +51,7 @@ proximate_base() {
   local d="$dir"
   while [ "$d" != "/" ]; do
     case "$(basename "$d")" in
-      .claude|.codex) printf '%s' "$d"; return ;;
+      .claude|.codex|.pi) printf '%s' "$d"; return ;;
     esac
     d=$(dirname "$d")
   done
@@ -69,6 +70,7 @@ shopt -s nullglob
 candidates=(
   "$cwd/.claude/sherpa.yaml" "$cwd/.claude/sherpa.yml"
   "$cwd/.codex/sherpa.yaml"  "$cwd/.codex/sherpa.yml"
+  "$cwd/.pi/sherpa.yaml"     "$cwd/.pi/sherpa.yml"
   "$packs_dir"/*.yaml "$packs_dir"/*.yml
 )
 

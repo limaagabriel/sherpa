@@ -16,6 +16,7 @@ The resolver checks these candidates, **highest precedence first**:
 ```
 <repo>/.claude/sherpa.yaml          # project-local, shareable in-repo (single file)
 <repo>/.codex/sherpa.yaml           # project-local, shareable in-repo (single file)
+<repo>/.pi/sherpa.yaml              # project-local, shareable in-repo (single file)
 ${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml   # workspace (user-global, many)
 ```
 
@@ -60,8 +61,8 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 ### Relative paths
 
 Path-ish values may be **absolute or relative**. A relative value resolves against
-the config's **proximate `.claude`/`.codex` directory** — the nearest ancestor of
-the YAML named `.claude` or `.codex`. So `<repo>/.codex/sherpa.yaml` resolves
+the config's **proximate `.claude`/`.codex`/`.pi` directory** — the nearest ancestor of
+the YAML named `.claude`, `.codex`, or `.pi`. So `<repo>/.codex/sherpa.yaml` resolves
 against `<repo>/.codex`, and `~/.claude/sherpa/projects/<p>.yaml` against
 `~/.claude`. This lets a committed pack reference scripts/files next to it:
 
@@ -91,7 +92,7 @@ how the rules are stored.
 
 ```sh
 # project-local (commit it in the repo — recommended for one project):
-cp TEMPLATE.yaml /path/to/my-repo/.codex/sherpa.yaml   # or .claude/sherpa.yaml
+cp TEMPLATE.yaml /path/to/my-repo/.codex/sherpa.yaml   # or .claude/ or .pi/
 # edit pack (detect can be `exit 0` — it's this repo); sessionInstructions
 
 # OR workspace (user-global, for repos you can't commit into):
