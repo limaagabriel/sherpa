@@ -10,12 +10,13 @@ No separate Validate phase — adversarial pressure lives per step.
 
 ## Per-step build
 Dispatch `step-builder` with the step's `task` + `Goal` + `Acceptance criteria` (+ pack
-`codeStyleRules`/`initialize` path when announced). Pure-codegen step → dispatch at model
-haiku; else default. Each step:
+`knowledge`/`implement.knowledge`/`implement.codeStyleRules`/`implement.validate` when announced).
+Pure-codegen step → dispatch at model haiku; else default. Each step:
 - Builds in isolation — module still builds, no half-applied artifacts.
 - Lands exactly one commit (real subject). The step-builder owns it; never add a manual commit on top.
 - On `BUILT`, two L3 reviewers run in parallel over the step's commit range:
-  `acceptance-reviewer` (met its criteria?) and `quality-reviewer` (clean, correct, secure, no regression).
+  `acceptance-reviewer` (met its criteria?) and `quality-reviewer` (clean, correct, secure, no
+  regression; also gets pack `knowledge`/`implement.knowledge`/`implement.codeStyleRules` when announced).
 
 ## Verdicts (one gradation)
 - `UNMET`, or a quality `FIX` → relay to the step-builder to fold into its commit; re-check once.

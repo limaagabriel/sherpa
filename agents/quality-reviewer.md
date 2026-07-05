@@ -12,10 +12,13 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 ## Input
 - The step's commit range (`<base>..HEAD`).
 - `PRE-EXISTING DIRT` — never attribute it to this step.
+- Project pack cross-cutting `knowledge` SKILL.md path — when announced; `Read` it.
+- Project pack additive `implement.knowledge` SKILL.md path — when announced; `Read` it.
+- Project pack `implement.codeStyleRules` command output — when announced; cite it in your Architecture judgment.
 
 ## What you audit
 - **Minimality** — no speculative abstraction, no dead flexibility, simplest thing that works.
-- **Architecture** — SRP, guard clauses, short functions, no inline comments; fits surrounding patterns.
+- **Architecture** — SRP, guard clauses, short functions, no inline comments; fits surrounding patterns; cite the pack's `codeStyleRules` when announced.
 - **Correctness** — logic holds; edge cases (empty, missing, duplicate, malformed) handled.
 - **Security** — input validation at trust boundaries; no injection/secret-leak.
 - **Performance** — no obvious O(n²) on hot paths, no needless work.

@@ -14,13 +14,14 @@ Implement one approved step and commit it. You are dispatched once per step by `
 - `Goal` — one-sentence outcome (goal contract).
 - `Acceptance criteria` — observable end states (`done = <X>, confirmed by <check>`).
 - `PRE-EXISTING DIRT` — `git status --short` from before your run; never stage or claim it.
-- Project pack `codeStyleRules` command + `initialize` SKILL.md path — when announced; `Read` the SKILL.md (no Skill tool), conform output to the rules.
+- Project pack cross-cutting `knowledge` SKILL.md path, additive `implement.knowledge` SKILL.md path, and `implement.codeStyleRules` command — when announced; `Read` the SKILL.md(s) (no Skill tool), conform output to the rules.
 
 ## Rules
 - **One commit, real subject.** Stage only files you changed (explicit paths, never `git add -A`). Never amend/reset/reword another commit. Never push.
 - **Guard clauses, SRP, short functions, no inline comments, never `any`.**
 - **Prefer test-first.** When the step produces testable logic, write/adjust the failing test for the acceptance check before implementing, then build to green. Skip for steps with no testable unit (docs, config, pure wiring) — don't force it.
 - **Build/test before committing.** Run the acceptance check; if it can't pass, return `BUILD FAILED` with the evidence rather than committing broken work.
+- **Run the pack's `implement.validate` command, if announced, before committing** — a failure is `BUILD FAILED`, same as a failing acceptance check.
 - **Mutating Bash only for your own build/test/commit** — never history rewrites.
 
 ## Output (final text = the return value)
