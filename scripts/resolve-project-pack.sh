@@ -15,7 +15,8 @@
 #   ${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}/*.yaml|*.yml  workspace (many)
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # Config schema (camelCase): name, detect (a command; exit 0 = match),
-#   sessionInstructions, pack:{initialize,reviewers,codeStyleAudit,codeStyleRules,architectureRules}.
+#   sessionInstructions, pack:{knowledge, spec:{knowledge}, plan:{knowledge,architectureRules},
+#   implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #
 # Relative command props resolve against the config's proximate .claude/.codex/.pi dir
@@ -93,7 +94,10 @@ for config in "${candidates[@]}"; do
       *" "*) line="$line $key=\"$val\"" ;;
       *)     line="$line $key=$val" ;;
     esac
-  done < <(yq '.pack // {} | to_entries | .[] | .key + "=" + (.value | tostring | sub("\n"; " "))' "$config" 2>/dev/null)
+  done < <(yq '.pack // {} | to_entries | .[] | .key as $k | .value | (
+      (select(tag == "!!map") | to_entries | .[] | ($k + "." + .key) + "=" + (.value | tostring | sub("\n"; " "))),
+      (select(tag != "!!map") | ($k + "=" + (. | tostring | sub("\n"; " "))))
+    )' "$config" 2>/dev/null)
 
   instructions=$(yq '.sessionInstructions // ""' "$config" 2>/dev/null)
   ctx="$PRIMER"$'\n\n'"$line"

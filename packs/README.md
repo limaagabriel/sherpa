@@ -1,7 +1,7 @@
 # Project packs — extending the workflow engine
 
 The engine is project-agnostic. A **project pack** layers project-specific
-knowledge on top of it (code style, extra reviewers, profile/conventions)
+knowledge on top of it (code style, architecture rules, profile/conventions)
 without the engine knowing anything about your project.
 
 A pack is a **YAML config file** plus an **init skill**. Sherpa ships one generic
@@ -47,11 +47,23 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked.
 
-# The WORKFLOW_PACK — extension points the engine consumes.
+# The WORKFLOW_PACK — extension points the engine consumes, sectioned by skill.
 pack:
-  initialize: my-project-init
-  reviewers: my-project-code-reviewer
-  codeStyleRules: cat /abs/path/to/rules.md
+  knowledge: my-project-init        # cross-cutting: every layer, every subagent
+
+  spec:
+    knowledge: my-spec-init         # optional, additive
+
+  plan:
+    knowledge: my-plan-init         # optional, additive
+    architectureRules: cat /abs/path/to/architecture.md
+
+  implement:
+    knowledge: my-implement-init    # optional, additive
+    codeStyleRules: cat /abs/path/to/rules.md
+    validate: |
+      npm run lint
+      npm test
 ```
 
 On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` line
@@ -69,7 +81,8 @@ against `<repo>/.codex`, and `~/.claude/sherpa/projects/<p>.yaml` against
 ```yaml
 detect: ./detect.sh                  # runs from the proximate dir
 pack:
-  codeStyleRules: cat ./rules.md     # pre-wrapped: cd <base> && cat ./rules.md
+  implement:
+    codeStyleRules: cat ./rules.md   # pre-wrapped: cd <base> && cat ./rules.md
 ```
 
 Values starting with `/` (an absolute path, or a `/slash-skill` like
@@ -81,12 +94,16 @@ repo, so cwd-glob detects are unaffected).
 
 | Key | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|
-| `initialize` | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | the agent + every step-builder/reviewer subagent | engine defaults only |
-| `reviewers` | extra code-reviewer subagents | `quality-reviewer` style pass | only generic reviewers run |
-| `codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | step-builder output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
+| `knowledge` (top-level) | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | every layer, every subagent | engine defaults only |
+| `spec.knowledge` | additive project knowledge for the spec layer | `/spec` skill, `spec-reviewer` | cross-cutting `knowledge` only |
+| `plan.knowledge` | additive project knowledge for the plan layer | `/plan` skill, `plan-reviewer` | cross-cutting `knowledge` only |
+| `plan.architectureRules` | shell **command** that dumps architecture constraints to stdout | `/plan` drafts steps mindful of it; `plan-reviewer` checks the decomposition against it | no architecture check |
+| `implement.knowledge` | additive project knowledge for the implement layer | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
+| `implement.codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
+| `implement.validate` | shell command(s) `step-builder` runs before committing | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
 
-`codeStyleRules` is a **command**, not a path — the engine runs it and never assumes
-how the rules are stored.
+`architectureRules`, `codeStyleRules`, and `validate` are **commands**, not paths — the engine
+runs them and never assumes how the rules are stored.
 
 ## Make a pack
 

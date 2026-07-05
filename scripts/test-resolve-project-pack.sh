@@ -36,7 +36,8 @@ cat >"$repo/.codex/sherpa.yaml" <<'YAML'
 name: proj-a
 detect: "exit 0"
 pack:
-  codeStyleRules: cat ./rules.md
+  implement:
+    codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo")
 assert_contains "a/command" "$out" "cd '$repo/.codex' && cat ./rules.md"
@@ -51,7 +52,8 @@ cat >"$packs/proj-b.yaml" <<'YAML'
 name: proj-b
 detect: "exit 0"
 pack:
-  architectureRules: cat ./arch.md
+  plan:
+    architectureRules: cat ./arch.md
 YAML
 cleancwd="$tmp/elsewhere"
 mkdir -p "$cleancwd"
@@ -65,14 +67,15 @@ cat >"$repo_c/.claude/sherpa.yaml" <<'YAML'
 name: proj-c
 detect: "exit 0"
 pack:
-  codeStyleAudit: /my-style-audit
-  codeStyleRules: cat /abs/rules.md
+  knowledge: /my-skill
+  implement:
+    codeStyleRules: cat /abs/rules.md
 YAML
 # slash-skill (value starts with /) stays unwrapped; a command embedding an
 # absolute path is still wrapped (harmless — cwd does not affect an absolute path).
 out=$(ctx "$repo_c")
-assert_contains "c/slash-skill" "$out" "codeStyleAudit=/my-style-audit"
-assert_not_contains "c/skill-no-wrap" "$out" "&& /my-style-audit"
+assert_contains "c/slash-skill" "$out" "knowledge=/my-skill"
+assert_not_contains "c/skill-no-wrap" "$out" "&& /my-skill"
 assert_contains "c/abs-command" "$out" "cat /abs/rules.md"
 
 # (d) base path with a space — emitted cd must single-quote it so the consumer's
@@ -83,13 +86,14 @@ cat >"$repo_d/.codex/sherpa.yaml" <<'YAML'
 name: proj-d
 detect: "exit 0"
 pack:
-  codeStyleRules: cat ./rules.md
+  implement:
+    codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo_d")
 assert_contains "d/quoted-base" "$out" "cd '$repo_d/.codex' && cat ./rules.md"
 # the emitted command must actually run (cd succeeds, no "too many arguments")
 ( cd "$repo_d/.codex" && echo hi >rules.md )
-emitted=$(printf '%s' "$out" | sed -n "s/.*codeStyleRules=\"\\(cd '[^\"]*\\)\".*/\\1/p")
+emitted=$(printf '%s' "$out" | sed -n "s/.*implement.codeStyleRules=\"\\(cd '[^\"]*\\)\".*/\\1/p")
 bash -c "$emitted" >/dev/null 2>&1 || { echo "FAIL [d/runnable]: emitted cmd failed: $emitted"; fail=1; }
 
 # (f) project-local .pi/sherpa.yaml — relative command resolves against the proximate base
@@ -99,11 +103,31 @@ cat >"$repo_f/.pi/sherpa.yaml" <<'YAML'
 name: proj-f
 detect: "exit 0"
 pack:
-  codeStyleRules: cat ./rules.md
+  implement:
+    codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo_f")
 assert_contains "f/command" "$out" "cd '$repo_f/.pi' && cat ./rules.md"
 assert_contains "f/message" "$(msg "$repo_f")" "Project \"proj-f\" loaded into Sherpa from $repo_f/.pi/sherpa.yaml 🏔️"
+
+# (g) two-level flatten — a bare top-level `knowledge` and a nested `implement.knowledge`
+# coexist in the same pack and both appear, correctly named, in the emitted line.
+repo_g="$tmp/repog"
+mkdir -p "$repo_g/.claude"
+cat >"$repo_g/.claude/sherpa.yaml" <<'YAML'
+name: proj-g
+detect: "exit 0"
+pack:
+  knowledge: /my-project-init
+  implement:
+    knowledge: /my-implement-init
+    validate: /my-validate-skill
+YAML
+out=$(ctx "$repo_g")
+assert_contains "g/top-level-knowledge" "$out" "knowledge=/my-project-init"
+assert_contains "g/nested-knowledge" "$out" "implement.knowledge=/my-implement-init"
+assert_contains "g/nested-validate" "$out" "implement.validate=/my-validate-skill"
+assert_not_contains "g/no-cross-leak" "$out" "implement.knowledge=/my-project-init"
 
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"

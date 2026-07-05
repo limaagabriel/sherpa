@@ -56,6 +56,9 @@ never a forced router. The user's judgment is the router.
 | `quality-reviewer` | build | sees one step's diff; read-only `PASS \| FIX \| BLOCK` |
 | `/persist` skill | cross-cutting | writes the in-context spec/plan to disk on request; owns no layer |
 
+An optional **project pack** extends each layer's components with project-specific knowledge
+(and, for plan/implement, extra rules/validation) — see `packs/README.md`.
+
 ## No separate Validate
 Adversarial pressure lives at each boundary — the spec critique (L1), the decomposition critique
 (L2), and per-step acceptance + quality (L3). There is no final goal-gate: if the decomposition was

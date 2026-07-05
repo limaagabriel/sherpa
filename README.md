@@ -96,9 +96,9 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked.
 pack:
-  initialize: my-project-init          # skill that loads project knowledge
-  reviewers: my-project-code-reviewer  # extra review subagents
-  codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
+  knowledge: my-project-init          # cross-cutting: every layer, every subagent
+  implement:
+    codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
 ```
 
 Sherpa's single `SessionStart` hook scans the dir, detects the active project, and announces
