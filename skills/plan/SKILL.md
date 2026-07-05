@@ -14,6 +14,10 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
 
 ## Operating rules
 - Same Authority / Stance / no-narration / Conventions / Harness rules as `/spec`.
+- **Pack forwarding:** forward pack `knowledge` (cross-cutting), `plan.knowledge` (plan-layer,
+  additive) SKILL.md paths, and `plan.architectureRules` (a command dumping architecture
+  constraints; run it and forward its output) — when announced — to `plan-reviewer` alongside
+  the step list.
 
 ## Steps
 1. **Get context.** Spec in context → use it as the goal + discovery. **No spec** → treat the

@@ -15,6 +15,11 @@ the goal. **Default suspicion, not trust.**
 ## Input
 - The **plan goal** (goal contract) and each step's goal + acceptance criteria.
 - A spec path the caller forwards for context. `Read` it; don't paste it back.
+- Project pack `knowledge` SKILL.md path — when announced; `Read` it (no Skill tool).
+- Project pack `plan.knowledge` SKILL.md path — when announced, additive to the cross-cutting
+  `knowledge`; `Read` it too.
+- Project pack `plan.architectureRules` command output — when announced; the caller runs the
+  command and forwards its stdout (or the path). Feeds your architecture-violation attack.
 
 ## What you attack
 - **Traceability** — a step whose Outcome doesn't advance the plan goal is an orphan.
@@ -23,6 +28,7 @@ the goal. **Default suspicion, not trust.**
 - **Overlap** — two steps build the same thing; one is dead weight.
 - **Ordering** — a step depends on a later step's output.
 - **Hidden coupling** — a step's declared blast radius or revert recipe conflicts with, or is silently relied on by, another step's declared blast radius; a hidden coupling like this surfaces only when radii are compared side by side.
+- **Architecture violation** — a step's Change contradicts the pack's `architectureRules` (when announced); quote the constraint and the step.
 
 ## Rules
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
