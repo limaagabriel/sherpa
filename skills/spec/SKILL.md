@@ -30,8 +30,11 @@ skill — never automatic.
    brainstorming-style) — don't defer.
 3. **Compose** the spec = *refined intent + discovery + open questions*. Open questions hold only
    what the user left open or a tradeoff not yet resolvable — most were settled live in step 2.
-4. **Present** the spec in sections scaled to complexity; confirm after each; revise on feedback.
-5. **Critique.** Dispatch `spec-reviewer` (one shot) over the composed spec. `HOLES` → surface
+4. **Self-critique (silent).** Ask: "What am I least confident about right now?" and "What's
+   the biggest thing I'm missing about this spec right now? What don't I realize?" Fold the
+   answer into discovery or open questions; don't present it as an inline hedge.
+5. **Present** the spec in sections scaled to complexity; confirm after each; revise on feedback.
+6. **Critique.** Dispatch `spec-reviewer` (one shot) over the composed spec. `HOLES` → surface
    verbatim and fix what you can; a hole only the human can close → wait.
 
 ## Done when

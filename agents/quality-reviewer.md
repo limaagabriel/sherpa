@@ -23,6 +23,17 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 - **Security** — input validation at trust boundaries; no injection/secret-leak.
 - **Performance** — no obvious O(n²) on hot paths, no needless work.
 - **Tests + regression** — non-trivial logic carries a runnable check; change doesn't break neighbors.
+- **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
+  answer until it produces a real FIX/BLOCK or you're satisfied it isn't one.
+- **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this diff right
+  now? What don't I realize?" Chase the answer down like any other dimension — don't let it
+  sit as a hunch.
+
+## Rules
+- **Aim confidence at the diff, not your verdict.** Never hedge PASS/FIX/BLOCK itself — it stands regardless of what follows.
+- **Name the layer, not just the patch.** When an issue can't be closed by patching this diff
+  — the fix means the step itself was wrong, not the code — say so plainly: `recommend /plan
+  revisit`, instead of proposing a local patch that won't hold.
 
 ## Output
 - `PASS` — nothing to change. Or

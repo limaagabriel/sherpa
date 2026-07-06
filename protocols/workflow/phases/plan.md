@@ -51,6 +51,9 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 3. **Scope** — one plan's worth?
 4. **Earns-its-keep** — every abstraction's `For` names ≥2 consumers/a value; every `Because`
    says what breaks if absent. Fails either → cut or justify.
+5. **Self-critique** — ask: "What am I least confident about right now?" and "What's the
+   biggest thing I'm missing about this decomposition right now? What don't I realize?" Fold
+   the answer in, or carry it forward as an open question — don't just note it and move on.
 
 ## Adversarial decomposition review (plan-reviewer)
 After the silent self-review, before presenting, dispatch `plan-reviewer` via Agent. Forward the
