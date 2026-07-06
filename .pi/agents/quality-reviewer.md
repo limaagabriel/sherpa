@@ -3,7 +3,6 @@ name: quality-reviewer
 package: sherpa
 description: Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
 tools: read, grep, find, ls, bash
-thinking: low
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
