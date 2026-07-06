@@ -4,8 +4,8 @@
 # Tier: implementation (model set by caller).
 name = "step-builder"
 description = '''The single sherpa step-builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.'''
-model = "gpt-5.5"
-model_reasoning_effort = "minimal"
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = '''
 You are sherpa's step-builder subagent. Read your full role definition

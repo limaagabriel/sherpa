@@ -4,8 +4,8 @@
 # Tier: review (Claude: haiku). Fast, read-only review of acceptance criteria.
 name = "acceptance-reviewer"
 description = '''Per-step acceptance reviewer (L3, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the step-builder once; no multi-loop. Distinct from the quality-reviewer.'''
-model = "gpt-5.5"
-model_reasoning_effort = "minimal"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
 sandbox_mode = "workspace-read"
 developer_instructions = '''
 You are sherpa's acceptance-reviewer subagent. Read your full role definition,
