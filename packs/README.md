@@ -21,12 +21,14 @@ ${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml   # workspace (u
 ```
 
 The **project-local** form is a single `sherpa.yaml` (or `.yml`) committed inside
-the repo — one project, so no `projects/` dir or multi-tenancy needed; its
-`detect` can just be `exit 0` ("this repo"). The **workspace** dir holds one YAML
-per project (each with a real `detect`) and is where you keep packs for repos you
-can't commit into. The first config whose `detect` matches wins, so a
-project-local pack **overrides** the workspace. Set `WORKFLOW_PACKS_DIR` to
-relocate the workspace dir.
+the repo — one project, so no `projects/` dir or multi-tenancy needed, and no
+`detect` needed either: the file only exists at that fixed path inside this repo,
+so finding it already *is* the detection. The **workspace** dir holds one YAML
+per project (each with a real `detect`, since one shared dir serves many repos)
+and is where you keep packs for repos you can't commit into. The first config
+whose `detect` matches (or, for a project-local config, whose file is simply
+found) wins, so a project-local pack **overrides** the workspace. Set
+`WORKFLOW_PACKS_DIR` to relocate the workspace dir.
 
 At session start the hook announces, via a user-visible `systemMessage`, either
 **`Project "<name>" loaded into Sherpa from <yaml path>`** or **`no project pack
@@ -110,7 +112,7 @@ runs them and never assumes how the rules are stored.
 ```sh
 # project-local (commit it in the repo — recommended for one project):
 cp TEMPLATE.yaml /path/to/my-repo/.codex/sherpa.yaml   # or .claude/ or .pi/
-# edit pack (detect can be `exit 0` — it's this repo); sessionInstructions
+# edit pack (drop `detect` entirely — it's this repo); sessionInstructions
 
 # OR workspace (user-global, for repos you can't commit into):
 cp TEMPLATE.yaml "${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/my-project.yaml"

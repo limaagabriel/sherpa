@@ -129,6 +129,30 @@ assert_contains "g/nested-knowledge" "$out" "implement.knowledge=/my-implement-i
 assert_contains "g/nested-validate" "$out" "implement.validate=/my-validate-skill"
 assert_not_contains "g/no-cross-leak" "$out" "implement.knowledge=/my-project-init"
 
+# (h) project-local config with NO `detect` key still matches — file presence
+# at the fixed path is the detection.
+repo_h="$tmp/repoh"
+mkdir -p "$repo_h/.claude"
+cat >"$repo_h/.claude/sherpa.yaml" <<'YAML'
+name: proj-h
+pack:
+  knowledge: /my-project-init
+YAML
+assert_contains "h/local-no-detect-matches" "$(msg "$repo_h")" "Project \"proj-h\" loaded into Sherpa"
+
+# (i) workspace config with NO `detect` key must NOT match — one shared dir
+# serves many projects, so a real `detect` is required to pick the right one.
+packs_i="$tmp/packs-i"
+mkdir -p "$packs_i"
+cat >"$packs_i/proj-i.yaml" <<'YAML'
+name: proj-i
+pack:
+  knowledge: /my-project-init
+YAML
+cleancwd_i="$tmp/elsewhere-i"
+mkdir -p "$cleancwd_i"
+assert_not_contains "i/workspace-no-detect-skipped" "$(WORKFLOW_PACKS_DIR="$packs_i" msg "$cleancwd_i")" "proj-i"
+
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
 mkdir -p "$nomatch"

@@ -7,6 +7,9 @@ name: my-project
 # A shell command, run with $CWD exported. Exit 0 = this project is active.
 # Detect however you like: cwd glob, file presence (test -f gradlew),
 # git remote (git -C "$CWD" remote get-url origin | grep -q my-org), etc.
+# Committing this file inside the repo (.claude|.codex|.pi/sherpa.yaml)? Drop
+# `detect` entirely — the file's fixed location already proves the project is
+# active. Only the shared workspace dir (many projects, one dir) needs a real one.
 detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 
 # What the main agent must do at session start when detected (free-form prose).

@@ -14,7 +14,9 @@
 #   <cwd>/.pi/sherpa.yaml|.yml          project-local, shareable in-repo (single file)
 #   ${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}/*.yaml|*.yml  workspace (many)
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
-# Config schema (camelCase): name, detect (a command; exit 0 = match),
+# `detect` is optional for project-local configs (file presence at that fixed path is
+# the detection); it's required for workspace configs (one dir shared by many projects).
+# Config schema (camelCase): name, detect (a command; exit 0 = match; optional for project-local),
 #   sessionInstructions, pack:{knowledge, spec:{knowledge}, plan:{knowledge,architectureRules},
 #   implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
@@ -68,20 +70,33 @@ resolve_pack_value() {
 }
 
 shopt -s nullglob
-candidates=(
+local_candidates=(
   "$cwd/.claude/sherpa.yaml" "$cwd/.claude/sherpa.yml"
   "$cwd/.codex/sherpa.yaml"  "$cwd/.codex/sherpa.yml"
   "$cwd/.pi/sherpa.yaml"     "$cwd/.pi/sherpa.yml"
-  "$packs_dir"/*.yaml "$packs_dir"/*.yml
 )
+candidates=("${local_candidates[@]}" "$packs_dir"/*.yaml "$packs_dir"/*.yml)
+
+is_local() {
+  local c
+  for c in "${local_candidates[@]}"; do [ "$c" = "$1" ] && return 0; done
+  return 1
+}
 
 for config in "${candidates[@]}"; do
   [ -f "$config" ] || continue
   detect=$(yq '.detect // ""' "$config" 2>/dev/null) || continue
-  [ -n "$detect" ] || continue
-
   base=$(proximate_base "$config")
-  ( cd "$base" 2>/dev/null && CWD="$cwd" bash -c "$detect" ) >/dev/null 2>&1 || continue
+
+  # Project-local configs live at a fixed path under $cwd — finding the file
+  # there already proves the project is active, so `detect` is optional.
+  # Workspace configs share one dir across many projects, so a real `detect`
+  # is required to pick the right one.
+  if [ -n "$detect" ]; then
+    ( cd "$base" 2>/dev/null && CWD="$cwd" bash -c "$detect" ) >/dev/null 2>&1 || continue
+  elif ! is_local "$config"; then
+    continue
+  fi
 
   # Matched. Build the WORKFLOW_PACK line from name + the pack map.
   name=$(yq '.name // ""' "$config" 2>/dev/null)
