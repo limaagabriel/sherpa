@@ -16,26 +16,29 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked this session.
 
-# Extension points the engine consumes, sectioned by skill. architectureRules,
-# codeStyleRules, and validate are COMMANDs (the hook auto-quotes values with
-# spaces). Pack values are single-line scalars (the WORKFLOW_PACK announcement
-# is one line; newlines are collapsed to spaces).
+# Extension points the engine consumes, sectioned by skill. `knowledge` values
+# are inline prose, forwarded verbatim to every layer and subagent in the
+# WORKFLOW_PACK announcement — the prose may itself say "invoke Skill X" if you
+# want a skill loaded. architectureRules, codeStyleRules, and validate are
+# COMMANDs (the hook auto-quotes values with spaces). Pack values are
+# single-line scalars (the WORKFLOW_PACK announcement is one line; newlines
+# are collapsed to spaces).
 #
 # A command may be absolute OR relative to this file's proximate .claude/.codex dir
 # (e.g. for a committed .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`).
 # See README.md § Relative paths.
 pack:
-  knowledge: my-project-init        # cross-cutting: every layer, every subagent
+  knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
 
   spec:
-    knowledge: my-spec-init         # optional, additive
+    knowledge: Additive spec-layer notes for the reviewer.   # optional, additive
 
   plan:
-    knowledge: my-plan-init         # optional, additive
+    knowledge: Additive plan-layer notes for the reviewer.   # optional, additive
     architectureRules: cat /abs/path/to/architecture.md
 
   implement:
-    knowledge: my-implement-init    # optional, additive
+    knowledge: Additive implement-layer notes for the step-builder.   # optional, additive
     codeStyleRules: cat /abs/path/to/rules.md
     validate: |
       npm run lint

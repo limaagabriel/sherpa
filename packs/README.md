@@ -4,7 +4,8 @@ The engine is project-agnostic. A **project pack** layers project-specific
 knowledge on top of it (code style, architecture rules, profile/conventions)
 without the engine knowing anything about your project.
 
-A pack is a **YAML config file** plus an **init skill**. Sherpa ships one generic
+A pack is a **YAML config file** plus, optionally, an **init skill** its prose may
+invoke. Sherpa ships one generic
 `SessionStart` hook that scans your config dir, detects the active project, and
 announces its pack to the engine. N projects coexist — one YAML each. No project
 ever ships its own hook.
@@ -50,18 +51,21 @@ sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked.
 
 # The WORKFLOW_PACK — extension points the engine consumes, sectioned by skill.
+# `knowledge` values are inline prose, forwarded verbatim to every layer and
+# subagent in the WORKFLOW_PACK announcement — the prose may itself say
+# "invoke Skill X" if you want a skill loaded.
 pack:
-  knowledge: my-project-init        # cross-cutting: every layer, every subagent
+  knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
 
   spec:
-    knowledge: my-spec-init         # optional, additive
+    knowledge: Additive spec-layer notes for the reviewer.   # optional, additive
 
   plan:
-    knowledge: my-plan-init         # optional, additive
+    knowledge: Additive plan-layer notes for the reviewer.   # optional, additive
     architectureRules: cat /abs/path/to/architecture.md
 
   implement:
-    knowledge: my-implement-init    # optional, additive
+    knowledge: Additive implement-layer notes for the step-builder.   # optional, additive
     codeStyleRules: cat /abs/path/to/rules.md
     validate: |
       npm run lint
@@ -96,11 +100,11 @@ repo, so cwd-glob detects are unaffected).
 
 | Key | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|
-| `knowledge` (top-level) | skill that loads project knowledge; main agent invokes at session start, orchestrator forwards its SKILL.md path to subagents which `Read` it | every layer, every subagent | engine defaults only |
-| `spec.knowledge` | additive project knowledge for the spec layer | `/spec` skill, `spec-reviewer` | cross-cutting `knowledge` only |
-| `plan.knowledge` | additive project knowledge for the plan layer | `/plan` skill, `plan-reviewer` | cross-cutting `knowledge` only |
+| `knowledge` (top-level) | inline prose, forwarded verbatim in the WORKFLOW_PACK announcement to every layer and subagent — the prose may itself say "invoke Skill X" | every layer, every subagent | engine defaults only |
+| `spec.knowledge` | additive inline prose for the spec layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/spec` skill, `spec-reviewer` | cross-cutting `knowledge` only |
+| `plan.knowledge` | additive inline prose for the plan layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/plan` skill, `plan-reviewer` | cross-cutting `knowledge` only |
 | `plan.architectureRules` | shell **command** that dumps architecture constraints to stdout | `/plan` drafts steps mindful of it; `plan-reviewer` checks the decomposition against it | no architecture check |
-| `implement.knowledge` | additive project knowledge for the implement layer | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
+| `implement.knowledge` | additive inline prose for the implement layer, forwarded verbatim alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
 | `implement.codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `implement.validate` | shell command(s) `step-builder` runs before committing | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
 
@@ -118,7 +122,7 @@ cp TEMPLATE.yaml /path/to/my-repo/.codex/sherpa.yaml   # or .claude/ or .pi/
 cp TEMPLATE.yaml "${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/my-project.yaml"
 # edit detect / sessionInstructions / pack
 
-cp -r TEMPLATE my-project-init-skill     # the init skill; place where Claude Code finds skills
+cp -r TEMPLATE my-project-init-skill     # optional init skill; only needed if your knowledge prose invokes one
 ```
 
 No hook to write or register — sherpa's `SessionStart` hook reads your YAML.
