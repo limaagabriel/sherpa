@@ -24,14 +24,14 @@ here are picked up with no install.
 
 | Role | Layer | Tier (Claude model) | `model` | `model_reasoning_effort` | sandbox |
 |---|---|---|---|---|---|
-| step-builder | L3 build | standard (sonnet) | `gpt-5.5` | `minimal` | workspace-write |
-| acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
-| quality-reviewer | L3 build | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
-| plan-reviewer | L2 step | standard (sonnet) | `gpt-5.5` | `medium` | read-only |
+| step-builder | L3 build | standard (sonnet) | `gpt-5.4` | `medium` | workspace-write |
+| acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.4` | `high` | workspace-read |
+| quality-reviewer | L3 build | standard (sonnet) | `gpt-5.4` | `high` | workspace-read |
+| plan-reviewer | L2 step | deep (opus) | `gpt-5.5` | `high` | read-only |
 | spec-reviewer | L1 macro | deep (opus) | `gpt-5.5` | `high` | read-only |
 | scout | cross-cutting | standard (sonnet) | `gpt-5.4` | `medium` | read-only |
 
-The cheap/standard/deep gradient is carried by `model_reasoning_effort` on a
-single `model`. A role with `model` omitted inherits the parent session model —
+The standard/deep gradient is carried by both `model` (standard `gpt-5.4` →
+deep `gpt-5.5`) and `model_reasoning_effort`. A role with `model` omitted inherits the parent session model —
 Codex fixes a subagent's model in its role file (no dispatch-time override), so
 the tier intent must live here.
