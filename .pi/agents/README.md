@@ -1,6 +1,6 @@
 # pi subagent roles
 
-These five `*.md` files are sherpa's roles as **pi-subagents agents**. The
+These six `*.md` files are sherpa's roles as **pi-subagents agents**. The
 package manifest declares `pi.subagents.agents: ["./.pi/agents"]`, so
 pi-subagents **auto-registers** them on load — no manual copy or symlink. Each
 shim is a thin pointer: its body resolves the sherpa package root and reads the
@@ -23,6 +23,7 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 | Role | Canonical body | tools | `thinking` |
 |---|---|---|---|
 | step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | low |
+| scout | `agents/scout.md` | read, grep, find, ls, bash | low |
 | acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | low |
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
 | plan-reviewer | `agents/plan-reviewer.md` | read, grep, find, ls, bash | medium |
