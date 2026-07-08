@@ -129,7 +129,7 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ```
 skills/        /spec, /plan, /implement, /scout, /persist
-agents/        spec-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer
+agents/        scout, spec-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

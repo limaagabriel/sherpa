@@ -48,6 +48,7 @@ never a forced router. The user's judgment is the router.
 | `/spec` skill | macro | drives the spec; writes no code, nothing to disk |
 | `spec-reviewer` | macro | reads the spec, no code; read-only `SOLID \| HOLES` |
 | `/scout` skill | macro | reads the codebase to produce a Discover record; changes nothing |
+| `scout` (agent) | cross-cutting | reads the target read-only to produce a Discover record; the worker the `/scout` skill dispatches; owns no layer |
 | `/plan` skill | step | decomposes into steps; writes no code |
 | `plan-reviewer` | step | sees all steps, no code; read-only `SOLID \| HOLES` on the decomposition |
 | `/implement` skill | build | drives one step at a time; never reopens the plan |
