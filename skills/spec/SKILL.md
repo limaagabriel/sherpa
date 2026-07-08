@@ -19,7 +19,7 @@ skill — never automatic.
 - **Conventions:** guard clauses, SRP, short functions, no inline comments, evidence-only (quote file:line).
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** forward pack `knowledge` (cross-cutting) and `spec.knowledge` (spec-layer,
-  additive) SKILL.md paths — when announced — to `spec-reviewer` alongside the spec.
+  additive) inline prose text — when announced — to `spec-reviewer` alongside the spec.
 
 ## Steps
 1. **Refine intent.** Restate the goal in one sentence as a goal contract draft

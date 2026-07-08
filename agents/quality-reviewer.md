@@ -12,8 +12,10 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 ## Input
 - The step's commit range (`<base>..HEAD`).
 - `PRE-EXISTING DIRT` — never attribute it to this step.
-- Project pack cross-cutting `knowledge` SKILL.md path — when announced; `Read` it.
-- Project pack additive `implement.knowledge` SKILL.md path — when announced; `Read` it.
+- Project pack cross-cutting `knowledge` — inline prose supplied in your brief when announced;
+  treat as project knowledge (no Read, no Skill tool).
+- Project pack additive `implement.knowledge` — inline prose, additive to the cross-cutting
+  `knowledge`; when announced, treat as project knowledge the same way.
 - Project pack `implement.codeStyleRules` command output — when announced; cite it in your Architecture judgment.
 
 ## What you audit

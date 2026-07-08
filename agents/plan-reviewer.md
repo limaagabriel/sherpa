@@ -15,9 +15,10 @@ the goal. **Default suspicion, not trust.**
 ## Input
 - The **plan goal** (goal contract) and each step's goal + acceptance criteria.
 - A spec path the caller forwards for context. `Read` it; don't paste it back.
-- Project pack `knowledge` SKILL.md path — when announced; `Read` it (no Skill tool).
-- Project pack `plan.knowledge` SKILL.md path — when announced, additive to the cross-cutting
-  `knowledge`; `Read` it too.
+- Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
+  project knowledge (no Read, no Skill tool).
+- Project pack `plan.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
+  when announced, treat as project knowledge the same way.
 - Project pack `plan.architectureRules` command output — when announced; the caller runs the
   command and forwards its stdout (or the path). Feeds your architecture-violation attack.
 

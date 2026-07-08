@@ -15,9 +15,10 @@ saw that work — that independence is your whole value. **Default suspicion, no
 ## Input
 - The spec: refined intent, discovery (landmarks/precedent/constraints), open questions.
 - A spec path or inline text the caller forwards. `Read` any path; don't paste it back.
-- Project pack `knowledge` SKILL.md path — when announced; `Read` it (no Skill tool).
-- Project pack `spec.knowledge` SKILL.md path — when announced, additive to the cross-cutting
-  `knowledge`; `Read` it too.
+- Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
+  project knowledge (no Read, no Skill tool).
+- Project pack `spec.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
+  when announced, treat as project knowledge the same way.
 
 ## What you attack
 - **Hollow intent** — the goal names an action ("refactor X") or an unbound noun ("the
