@@ -21,9 +21,14 @@
 #   implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #
-# Relative command props resolve against the config's proximate .claude/.codex/.pi dir
-# (detect runs from it; command props are pre-wrapped `cd <base> && ...`).
-# /- and ~-prefixed values are left as-is.
+# `knowledge` (bare or section-prefixed, e.g. plan.knowledge) is inline prose, emitted
+# verbatim (embedded `"` and `\` escaped when the value needs quoting): single-line
+# values pass through as-is; multi-line YAML block scalars collapse to one line via
+# `sub("\n";" ")` with trailing whitespace trimmed.
+# Command keys (architectureRules, codeStyleRules, validate) are shell commands: relative
+# values resolve against the config's proximate .claude/.codex/.pi dir (detect runs from it;
+# command values are pre-wrapped `cd <base> && ...`). /- and ~-prefixed command values are
+# left as-is.
 #
 # Never errors out: a failing SessionStart hook must not block the session.
 #
@@ -104,14 +109,21 @@ for config in "${candidates[@]}"; do
   while IFS= read -r entry; do
     [ -n "$entry" ] || continue
     key="${entry%%=*}"
-    val=$(resolve_pack_value "${entry#*=}" "$base")
+    raw="${entry#*=}"
+    case "${key##*.}" in
+      knowledge) val="$raw" ;;
+      *)         val=$(resolve_pack_value "$raw" "$base") ;;
+    esac
     case "$val" in
-      *" "*) line="$line $key=\"$val\"" ;;
-      *)     line="$line $key=$val" ;;
+      *" "*)
+        esc="${val//\\/\\\\}"
+        esc="${esc//\"/\\\"}"
+        line="$line $key=\"$esc\"" ;;
+      *) line="$line $key=$val" ;;
     esac
   done < <(yq '.pack // {} | to_entries | .[] | .key as $k | .value | (
-      (select(tag == "!!map") | to_entries | .[] | ($k + "." + .key) + "=" + (.value | tostring | sub("\n"; " "))),
-      (select(tag != "!!map") | ($k + "=" + (. | tostring | sub("\n"; " "))))
+      (select(tag == "!!map") | to_entries | .[] | ($k + "." + .key) + "=" + (.value | tostring | sub("\n"; " ") | sub(" +$"; ""))),
+      (select(tag != "!!map") | ($k + "=" + (. | tostring | sub("\n"; " ") | sub(" +$"; ""))))
     )' "$config" 2>/dev/null)
 
   instructions=$(yq '.sessionInstructions // ""' "$config" 2>/dev/null)
