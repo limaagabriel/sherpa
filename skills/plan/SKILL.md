@@ -1,7 +1,6 @@
 ---
 name: plan
 description: Step layer (L2). Decompose a goal into ordered, traceable steps, then get a cold-eyes critique of the decomposition before any code. Reads the spec from context if present; standalone, takes a <task> and does a light scout. Writes nothing to disk. Triggers - "/plan", "/plan <task>", "decompose this", "break it into steps". Counterparts - /spec, /implement.
-Layer: step
 ---
 
 # /plan — decompose into steps

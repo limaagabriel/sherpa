@@ -1,7 +1,6 @@
 ---
 name: persist
 description: Opt-in. Write the current in-context spec and/or plan to disk so a later session can resume. Sherpa persists nothing automatically — call this only when you want the artifacts saved. Triggers - "/persist", "save the spec", "save the plan", "persist this". Takes an optional path; defaults to .sherpa/<slug>.md in the repo.
-Layer: macro
 ---
 
 # /persist — save the spec/plan to disk

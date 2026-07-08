@@ -1,7 +1,6 @@
 ---
 name: spec
 description: Macro layer (L1). Turn a fuzzy task into a spec — restate intent, scout the code, ask open questions as they arise, compose the spec (refined intent + discovery + open questions), present it, and get a cold-eyes critique. Writes nothing to disk. Triggers - "/spec <task>", "spec this", "what's the shape of X". Counterparts - /plan, /implement.
-Layer: macro
 ---
 
 # /spec — refine intent, discover, surface the unknowns
