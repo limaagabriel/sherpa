@@ -9,14 +9,19 @@ Build to completion. The bottom of the ceremony gradient — for a one-obvious-c
 here directly. Pressure lives per step (acceptance + quality), not in a final gate.
 
 ## Operating rules
-- Same Authority / Stance / no-narration / Conventions / Harness rules as `/spec`.
+- **Authority:** the human owns every decision. You propose; they decide.
+- **Stance:** feedback-first — open with a brief take when the human floats an approach.
+- **No narration between tools.** One short sentence only when the *task* changes.
+- **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
+- **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Never push.** Commit only when the human asks. The step-builder owns one commit per step — never
   add a manual commit on top.
 
 ## Steps
 1. **Get context.** Plan in context → build its steps. **No plan** → treat the `<task>` arg as one
    implicit step. If the task is large enough to want decomposition, offer `/plan` first in one
-   declinable line.
+   declinable line. **A persisted spec/plan file path given as the arg** — read it back and
+   consume it exactly as an in-context artifact.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one
    in progress. Per step — dispatch `step-builder` (haiku for pure codegen, else default) with
    `task` + `Goal` + `Acceptance criteria` + pack `knowledge` (cross-cutting) and `implement.knowledge`

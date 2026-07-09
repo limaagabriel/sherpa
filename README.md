@@ -82,8 +82,10 @@ task wants:
 ```
 
 `BLOCK` findings surface to you. `MET`/`PASS`/`FIX` continue automatically (a `FIX` is folded
-into the step-builder's commit and re-checked once). There is no final Validate gate — pressure
-lives at each boundary. See `protocols/layers.md`.
+into the step-builder's commit and re-checked once; still failing after that re-check is terminal,
+surfaced like `BLOCK`). A reviewer that recommends a `/plan` revisit also stops, offering `/plan`
+in one declinable line. There is no final Validate gate — pressure lives at each boundary. See
+`protocols/layers.md`.
 
 ## Project packs (optional)
 
@@ -99,7 +101,7 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked.
 pack:
-  knowledge: my-project-init          # cross-cutting: every layer, every subagent
+  knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
   implement:
     codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
 ```

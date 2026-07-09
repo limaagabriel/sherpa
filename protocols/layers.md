@@ -5,13 +5,13 @@ offers the tools; the user composes the workflow. Each layer has **one job, one 
 artifact, one pressure point.** Pressure lives at the boundary between layers — never nested inside.
 
 **What separates one layer from the next: how much it sees, and what it may change.** The
-discriminator is a single progression — *no code → all steps, no code → one step's code*. The
-moment a component can see code, it is build (L3).
+discriminator is a single progression — *no diff → all steps, no diff → one step's diff*. The
+moment a component can see a diff, it is build (L3).
 
 | Layer | Skill | Owns (artifact) | Question | Sees | May change |
 |---|---|---|---|---|---|
-| **macro** (L1) | `/spec` | the spec (intent + discovery + open questions) | right problem, right framing? | the whole problem, **no code** | anything |
-| **step** (L2) | `/plan` | the plan (the step list) | do these pieces, in this order, add up to the goal? | **all steps at once**, no code | the decomposition (not code) |
+| **macro** (L1) | `/spec` | the spec (intent + discovery + open questions) | right problem, right framing? | the whole problem, **no diff** | anything |
+| **step** (L2) | `/plan` | the plan (the step list) | do these pieces, in this order, add up to the goal? | **all steps at once**, no diff | the decomposition (not code) |
 | **build** (L3) | `/implement` | the commits (the code) | does each step's code do what it promised, built well? | **one step's diff** at a time | that step's code |
 
 A read-only reviewer at any layer changes **nothing** — it emits a verdict. The "may change" column
@@ -45,12 +45,12 @@ never a forced router. The user's judgment is the router.
 
 | Component | Layer | Boundary |
 |---|---|---|
-| `/spec` skill | macro | drives the spec; writes no code, nothing to disk |
-| `spec-reviewer` | macro | reads the spec, no code; read-only `SOLID \| HOLES` |
+| `/spec` skill | macro | drives the spec; nothing to disk, no source edits |
+| `spec-reviewer` | macro | reads the spec + repo read-only, no diff; read-only `SOLID \| HOLES` |
 | `/scout` skill | macro | reads the codebase to produce a Discover record; changes nothing |
 | `scout` (agent) | cross-cutting | reads the target read-only to produce a Discover record; the worker the `/scout` skill dispatches; owns no layer |
-| `/plan` skill | step | decomposes into steps; writes no code |
-| `plan-reviewer` | step | sees all steps, no code; read-only `SOLID \| HOLES` on the decomposition |
+| `/plan` skill | step | decomposes into steps; no source edits |
+| `plan-reviewer` | step | sees all steps + repo read-only, no diff; read-only `SOLID \| HOLES` on the decomposition |
 | `/implement` skill | build | drives one step at a time; never reopens the plan |
 | `step-builder` | build | sees one step's diff; changes only that step's code |
 | `acceptance-reviewer` | build | sees one step's diff + criteria; read-only `MET \| UNMET` |
