@@ -16,7 +16,7 @@ skill — never automatic.
 - **Authority:** the human owns every decision. You propose; they decide.
 - **Stance:** feedback-first — open with a brief take when the human floats an approach.
 - **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** guard clauses, SRP, short functions, no inline comments, evidence-only (quote file:line).
+- **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** forward pack `knowledge` (cross-cutting) and `spec.knowledge` (spec-layer,
   additive) inline prose text — when announced — to `spec-reviewer` alongside the spec.

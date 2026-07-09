@@ -41,7 +41,7 @@ Implement one approved step and commit it. You are dispatched once per step by `
 
 ## Rules
 - **One commit, real subject.** Stage only files you changed (explicit paths, never `git add -A`). Never amend/reset/reword another commit. Never push.
-- **Guard clauses, SRP, short functions, no inline comments, never `any`.**
+- **Follow the pack's `codeStyleRules` when announced; otherwise match the surrounding code's own conventions.**
 - **Prefer test-first.** When the step produces testable logic, write/adjust the failing test for the acceptance check before implementing, then build to green. Skip for steps with no testable unit (docs, config, pure wiring) — don't force it.
 - **Build/test before committing.** Run the acceptance check; if it can't pass, return `BUILD FAILED` with the evidence rather than committing broken work.
 - **Run the pack's `implement.validate` command, if announced, before committing** — a failure is `BUILD FAILED`, same as a failing acceptance check.

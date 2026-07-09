@@ -40,7 +40,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 
 ## What you audit
 - **Minimality** — no speculative abstraction, no dead flexibility, simplest thing that works.
-- **Architecture** — SRP, guard clauses, short functions, no inline comments; fits surrounding patterns; cite the pack's `codeStyleRules` when announced.
+- **Architecture** — fits the pack's `codeStyleRules` when announced, else the surrounding code's conventions and patterns.
 - **Correctness** — logic holds; edge cases (empty, missing, duplicate, malformed) handled.
 - **Security** — input validation at trust boundaries; no injection/secret-leak.
 - **Performance** — no obvious O(n²) on hot paths, no needless work.
