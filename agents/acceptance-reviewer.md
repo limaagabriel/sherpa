@@ -6,7 +6,7 @@ Layer: build
 model: sonnet
 codexModel: gpt-5.4
 codexReasoningEffort: high
-codexSandbox: workspace-read
+codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa acceptance-reviewer subagent — Codex role binding.
   # The full role (invariants, output contract) lives in the plugin
