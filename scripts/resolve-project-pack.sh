@@ -30,6 +30,10 @@
 # command values are pre-wrapped `cd <base> && ...`). /- and ~-prefixed command values are
 # left as-is.
 #
+# jq builds every JSON payload this script emits, so a missing jq means nothing can be
+# emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
+# still emits the using-sherpa primer plus a systemMessage warning that packs are disabled.
+#
 # Never errors out: a failing SessionStart hook must not block the session.
 #
 # Assumption (not independently verified in this session): Codex's hook runtime
@@ -45,11 +49,20 @@ input=$(cat 2>/dev/null) || exit 0
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null) || exit 0
 [ -n "$cwd" ] || exit 0
 
-command -v yq >/dev/null 2>&1 || exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PRIMER=$(sed -n '/^---$/,/^---$/!p' "$dir/../skills/using-sherpa/SKILL.md")
+
+emit_result() {
+  jq -n --arg msg "$1" --arg ctx "$2" \
+    '{systemMessage:$msg, hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}' 2>/dev/null
+  exit 0
+}
+
+command -v yq >/dev/null 2>&1 || emit_result \
+  "🏔️ sherpa: yq not found — project packs disabled (install yq v4+). Layer primer still loaded." \
+  "$PRIMER"
 
 packs_dir="${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}"
 
@@ -130,14 +143,9 @@ for config in "${candidates[@]}"; do
   ctx="$PRIMER"$'\n\n'"$line"
   [ -n "$instructions" ] && ctx="$ctx"$'\n'"$instructions"
 
-  jq -n --arg ctx "$ctx" --arg msg "Project \"$name\" loaded into Sherpa from $config 🏔️" \
-    '{systemMessage:$msg, hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}' 2>/dev/null
-  exit 0
+  emit_result "Project \"$name\" loaded into Sherpa from $config 🏔️" "$ctx"
 done
 
 # No pack matched — tell the user no project-specific knowledge was loaded,
 # but still force-load the layer-selection primer.
-jq -n --arg msg "🏔️ sherpa: no project pack matched this repo — running generic (no project-specific knowledge loaded)." \
-  --arg ctx "$PRIMER" \
-  '{systemMessage:$msg, hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}' 2>/dev/null
-exit 0
+emit_result "🏔️ sherpa: no project pack matched this repo — running generic (no project-specific knowledge loaded)." "$PRIMER"

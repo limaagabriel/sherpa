@@ -195,6 +195,25 @@ out=$(ctx "$repo_l")
 assert_contains "l/knowledge-escaped-quote" "$out" 'knowledge="Follow the \"boy scout rule\"."'
 assert_not_contains "l/knowledge-not-wrapped" "$out" "cd '"
 
+# (m) yq missing, jq present — resolver must still emit the primer plus a
+# distinct warning systemMessage, and must exit 0 without touching pack/YAML work.
+binonly="$tmp/binonly"
+mkdir -p "$binonly"
+for tool in bash cat jq dirname basename sed; do
+  toolpath=$(command -v "$tool" 2>/dev/null) || continue
+  ln -s "$toolpath" "$binonly/$tool"
+done
+nomatch_m="$tmp/nomatch-m"
+mkdir -p "$nomatch_m"
+run_masked() { printf '{"cwd":"%s"}' "$1" | PATH="$binonly" bash "$resolver"; }
+out_m=$(run_masked "$nomatch_m")
+rc_m=$?
+assert_contains "m/primer-without-yq" "$out_m" "check whether one of these fits"
+assert_contains "m/yq-warning-in-ctx" "$out_m" "yq not found"
+msg_m=$(printf '%s' "$out_m" | jq -r '.systemMessage // ""')
+assert_contains "m/yq-warning-message" "$msg_m" "yq not found"
+[ "$rc_m" -eq 0 ] || { echo "FAIL [m/exit-0]: resolver exited $rc_m with yq masked"; fail=1; }
+
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
 mkdir -p "$nomatch"

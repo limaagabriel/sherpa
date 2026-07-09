@@ -26,6 +26,9 @@ makes those first-class — but lets *you* decide how much ceremony a task needs
 
 ## Install
 
+Requires `jq` and `yq` (v4+) on `PATH` for the SessionStart pack resolver — without `jq`
+the hook stays silent; without `yq` it still loads but skips project packs.
+
 Sherpa is a Claude Code plugin. From inside Claude Code:
 
 ```
