@@ -1,6 +1,7 @@
 ---
 name: quality-reviewer
 description: Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. One general reviewer — sherpa ships no dimension-reviewer fan-out. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
+tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
 codexModel: gpt-5.4
@@ -51,6 +52,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
   sit as a hunch.
 
 ## Rules
+- **Read-only.** Never Edit/Write/commit. Bash inspects only.
 - **Aim confidence at the diff, not your verdict.** Never hedge PASS/FIX/BLOCK itself — it stands regardless of what follows.
 - **Name the layer, not just the patch.** When an issue can't be closed by patching this diff
   — the fix means the step itself was wrong, not the code — say so plainly: `recommend /plan
