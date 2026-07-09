@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yq and jq
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.5/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Twin drift
+        run: |
+          bash scripts/generate-agent-twins.sh
+          git diff --exit-code .codex/agents .pi/agents
+
+      - name: Version lockstep
+        run: |
+          root=$(jq -r .version package.json)
+          claude=$(jq -r .version .claude-plugin/plugin.json)
+          codex=$(jq -r .version .codex-plugin/plugin.json)
+          if [ "$root" != "$claude" ] || [ "$root" != "$codex" ]; then
+            echo "version skew: package.json=$root .claude-plugin/plugin.json=$claude .codex-plugin/plugin.json=$codex" >&2
+            exit 1
+          fi
+
+      - name: Resolver test
+        run: bash scripts/test-resolve-project-pack.sh
