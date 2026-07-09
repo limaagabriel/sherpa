@@ -1,7 +1,7 @@
 ---
 name: quality-reviewer
 package: sherpa
-description: Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
+description: Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. One general reviewer — sherpa ships no dimension-reviewer fan-out. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
 tools: read, grep, find, ls, bash
 systemPromptMode: replace
 inheritProjectContext: true

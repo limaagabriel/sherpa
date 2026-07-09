@@ -4,6 +4,23 @@ description: Read-only step-layer adversary (L2). Given the plan goal + the full
 tools: Read, Grep, Glob, Bash
 Layer: step
 model: opus
+codexModel: gpt-5.5
+codexReasoningEffort: high
+codexSandbox: read-only
+codexHeaderComment: |-
+  # sherpa plan-reviewer subagent — Codex role binding.
+  # Full role in plugin file agents/plan-reviewer.md; this TOML binds the model
+  # tier + sandbox. Tier: standard review (Claude: opus). Read-only.
+codexBody: |-
+  You are sherpa's plan-reviewer subagent. Read your full role definition,
+  invariants, and output contract from the sherpa plugin file
+  agents/plan-reviewer.md (resolve via $CLAUDE_PLUGIN_ROOT when set, else the
+  installed sherpa plugin root) and follow it exactly. Read-only: attack the step
+  decomposition with evidence; never edit. Your final message IS the return value
+  (VERDICT: SOLID | HOLES), not a human-facing note.
+piTools: read, grep, find, ls, bash
+piGist: |-
+  The canonical body lives at `<root>/agents/plan-reviewer.md`. Read-only: attack the step decomposition before any step is built; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
 ---
 
 # plan-reviewer — L2
