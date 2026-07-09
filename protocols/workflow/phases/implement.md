@@ -22,8 +22,12 @@ Pure-codegen step → dispatch at model haiku; else default. Each step:
 
 ## Verdicts (one gradation)
 - `UNMET`, or a quality `FIX` → relay to the step-builder to fold into its commit; re-check once.
+- Still `UNMET` or `FIX` after that re-check → stop, same terminal handling as `BLOCK`: surface
+  verbatim to the human, do not loop again.
 - `MET` + `PASS` → next step.
 - `BLOCK` → stop, surface verbatim to the human.
+- Any reviewer output containing `recommend /plan revisit` → stop, surface verbatim to the human,
+  offer `/plan` in one declinable line.
 
 ## Done
 Every step committed, no open `BLOCK`. Present the per-step results; offer the persist skill

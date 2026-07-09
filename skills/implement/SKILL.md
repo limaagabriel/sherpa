@@ -24,8 +24,10 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    On `BUILT`, run `acceptance-reviewer` + `quality-reviewer` in parallel over the step's range —
    `quality-reviewer` also gets pack `knowledge`/`implement.knowledge` inline prose and `implement.codeStyleRules`
    command output when announced.
-3. **Verdicts.** `UNMET` or a quality `FIX` → relay to the step-builder to fold in, re-check once.
-   `MET` + `PASS` → next step. `BLOCK` → stop, surface to the human.
+3. **Verdicts.** `UNMET` or a quality `FIX` → relay to the step-builder to fold in, re-check once;
+   still `UNMET`/`FIX` after that → stop, same terminal handling as `BLOCK`, surface verbatim, no
+   further looping. `MET` + `PASS` → next step. `BLOCK` → stop, surface to the human. Any reviewer
+   output with `recommend /plan revisit` → stop, surface verbatim, offer `/plan` in one declinable line.
 
 ## Done when
 Every step committed, no open `BLOCK`. Present the per-step results; offer `/persist` if wanted.

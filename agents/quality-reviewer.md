@@ -55,8 +55,8 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
 - **Aim confidence at the diff, not your verdict.** Never hedge PASS/FIX/BLOCK itself — it stands regardless of what follows.
 - **Name the layer, not just the patch.** When an issue can't be closed by patching this diff
-  — the fix means the step itself was wrong, not the code — say so plainly: `recommend /plan
-  revisit`, instead of proposing a local patch that won't hold.
+  — the fix means the step itself was wrong, not the code — say so plainly: `recommend /plan revisit`,
+  instead of proposing a local patch that won't hold.
 
 ## Output
 - `PASS` — nothing to change. Or
