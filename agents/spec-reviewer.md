@@ -4,13 +4,13 @@ description: Read-only macro-layer adversary (L1). Cold eyes on a spec — attac
 tools: Read, Grep, Glob, Bash
 Layer: macro
 model: opus
-codexModel: gpt-5.5
+codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa spec-reviewer subagent — Codex role binding.
   # Full role in plugin file agents/spec-reviewer.md; this TOML binds the model
-  # tier + sandbox. Tier: deep adversarial reasoning (Claude: opus). Read-only.
+  # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
 codexBody: |-
   You are sherpa's spec-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file

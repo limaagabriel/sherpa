@@ -1,10 +1,10 @@
 # sherpa quality-reviewer subagent — Codex role binding.
 # The full role (invariants, output contract) lives in the plugin
 # file agents/quality-reviewer.md; this TOML only binds the model tier + sandbox.
-# Tier: review (Claude: haiku). Fast, read-only review of code quality.
+# Tier: review (GPT-5.6 Terra, high). Read-only code-quality review.
 name = "quality-reviewer"
 description = '''Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. One general reviewer — sherpa ships no dimension-reviewer fan-out. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.'''
-model = "gpt-5.4"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = '''

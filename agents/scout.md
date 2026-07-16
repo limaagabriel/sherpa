@@ -3,7 +3,7 @@ name: scout
 description: Read-only codebase scout that explores per the caller's task/target/focus and returns a Discover record (landmarks, precedent, constraints, tests, gaps, confidence).
 tools: Read, Grep, Glob, Bash
 model: sonnet
-codexModel: gpt-5.4
+codexModel: gpt-5.6-luna
 codexReasoningEffort: medium
 codexSandbox: read-only
 codexHeaderComment: |-

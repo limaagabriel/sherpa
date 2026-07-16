@@ -3,7 +3,7 @@
 # tier + sandbox. Tier: discovery (cheap; Claude: sonnet). Read-only.
 name = "scout"
 description = '''Read-only codebase scout that explores per the caller's task/target/focus and returns a Discover record (landmarks, precedent, constraints, tests, gaps, confidence).'''
-model = "gpt-5.4"
+model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = '''

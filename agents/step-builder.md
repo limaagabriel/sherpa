@@ -3,14 +3,14 @@ name: step-builder
 description: The single sherpa step-builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.
 Layer: build
 model: sonnet
-codexModel: gpt-5.4
-codexReasoningEffort: medium
+codexModel: gpt-5.6-luna
+codexReasoningEffort: high
 codexSandbox: workspace-write
 codexHeaderComment: |-
   # sherpa step-builder subagent — Codex role binding.
   # The full role (invariants, output contract) lives in the plugin
   # file agents/step-builder.md; this TOML only binds the model tier + sandbox.
-  # Tier: implementation (model set by caller).
+  # Tier: implementation (GPT-5.6 Luna, high reasoning).
 codexBody: |-
   You are sherpa's step-builder subagent. Read your full role definition
   and output contract from the sherpa plugin file agents/step-builder.md

@@ -4,13 +4,13 @@ description: Read-only step-layer adversary (L2). Given the plan goal + the full
 tools: Read, Grep, Glob, Bash
 Layer: step
 model: opus
-codexModel: gpt-5.5
+codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa plan-reviewer subagent — Codex role binding.
   # Full role in plugin file agents/plan-reviewer.md; this TOML binds the model
-  # tier + sandbox. Tier: standard review (Claude: opus). Read-only.
+  # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
 codexBody: |-
   You are sherpa's plan-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file

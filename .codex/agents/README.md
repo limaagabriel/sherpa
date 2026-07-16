@@ -24,14 +24,17 @@ here are picked up with no install.
 
 | Role | Layer | Tier (Claude model) | `model` | `model_reasoning_effort` | sandbox |
 |---|---|---|---|---|---|
-| step-builder | L3 build | standard (sonnet) | `gpt-5.4` | `medium` | workspace-write |
-| acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.4` | `high` | workspace-read |
-| quality-reviewer | L3 build | standard (sonnet) | `gpt-5.4` | `high` | workspace-read |
-| plan-reviewer | L2 step | deep (opus) | `gpt-5.5` | `high` | read-only |
-| spec-reviewer | L1 macro | deep (opus) | `gpt-5.5` | `high` | read-only |
-| scout | cross-cutting | standard (sonnet) | `gpt-5.4` | `medium` | read-only |
+| step-builder | L3 build | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
+| acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.6-terra` | `high` | workspace-read |
+| quality-reviewer | L3 build | standard (sonnet) | `gpt-5.6-terra` | `high` | workspace-read |
+| plan-reviewer | L2 step | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
+| spec-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
+| scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 
-The standard/deep gradient is carried by both `model` (standard `gpt-5.4` →
-deep `gpt-5.5`) and `model_reasoning_effort`. A role with `model` omitted inherits the parent session model —
-Codex fixes a subagent's model in its role file (no dispatch-time override), so
-the tier intent must live here.
+All roles use the GPT-5.6 family. Independent reviewer roles use
+`gpt-5.6-terra` with high reasoning for adversarial scrutiny. The step-builder
+uses `gpt-5.6-luna` with high reasoning for implementation; the scout keeps its
+efficient discovery posture on `gpt-5.6-luna` with medium reasoning. A role
+with `model` omitted inherits the parent session model — Codex fixes a
+subagent's model in its role file (no dispatch-time override), so this mapping
+must live here.
