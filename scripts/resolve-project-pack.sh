@@ -9,10 +9,13 @@
 # saying the engine runs generic (so the user knows no project knowledge loaded).
 #
 # Config candidates, highest precedence first:
-#   <cwd>/.claude/sherpa.yaml|.yml      project-local, shareable in-repo (single file)
-#   <cwd>/.codex/sherpa.yaml|.yml       project-local, shareable in-repo (single file)
-#   <cwd>/.pi/sherpa.yaml|.yml          project-local, shareable in-repo (single file)
-#   ${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}/*.yaml|*.yml  workspace (many)
+#   <cwd>/.sherpa/sherpa.yaml|.yml       project-local, engine-neutral, shareable in-repo (single file)
+#   <cwd>/.claude/sherpa.yaml|.yml       project-local, engine-specific, shareable in-repo (single file)
+#   <cwd>/.codex/sherpa.yaml|.yml        project-local, engine-specific, shareable in-repo (single file)
+#   <cwd>/.pi/sherpa.yaml|.yml           project-local, engine-specific, shareable in-repo (single file)
+#   ${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects}/*.yaml|*.yml  workspace (many)
+# When WORKFLOW_PACKS_DIR is unset, $HOME/.claude/sherpa/projects is also scanned as a
+# legacy read-fallback workspace dir, after the XDG path.
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # `detect` is optional for project-local configs (file presence at that fixed path is
 # the detection); it's required for workspace configs (one dir shared by many projects).
@@ -64,7 +67,11 @@ command -v yq >/dev/null 2>&1 || emit_result \
   "🏔️ sherpa: yq not found — project packs disabled (install yq v4+). Layer primer still loaded." \
   "$PRIMER"
 
-packs_dir="${WORKFLOW_PACKS_DIR:-$HOME/.claude/sherpa/projects}"
+if [ -n "${WORKFLOW_PACKS_DIR:-}" ]; then
+  packs_dirs=("$WORKFLOW_PACKS_DIR")
+else
+  packs_dirs=("${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects" "$HOME/.claude/sherpa/projects")
+fi
 
 proximate_base() {
   local dir
@@ -72,7 +79,7 @@ proximate_base() {
   local d="$dir"
   while [ "$d" != "/" ]; do
     case "$(basename "$d")" in
-      .claude|.codex|.pi) printf '%s' "$d"; return ;;
+      .sherpa|.claude|.codex|.pi) printf '%s' "$d"; return ;;
     esac
     d=$(dirname "$d")
   done
@@ -89,11 +96,13 @@ resolve_pack_value() {
 
 shopt -s nullglob
 local_candidates=(
+  "$cwd/.sherpa/sherpa.yaml" "$cwd/.sherpa/sherpa.yml"
   "$cwd/.claude/sherpa.yaml" "$cwd/.claude/sherpa.yml"
   "$cwd/.codex/sherpa.yaml"  "$cwd/.codex/sherpa.yml"
   "$cwd/.pi/sherpa.yaml"     "$cwd/.pi/sherpa.yml"
 )
-candidates=("${local_candidates[@]}" "$packs_dir"/*.yaml "$packs_dir"/*.yml)
+candidates=("${local_candidates[@]}")
+for _pd in "${packs_dirs[@]}"; do candidates+=("$_pd"/*.yaml "$_pd"/*.yml); done
 
 is_local() {
   local c
