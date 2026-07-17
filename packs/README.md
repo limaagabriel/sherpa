@@ -15,10 +15,11 @@ ever ships its own hook.
 The resolver checks these candidates, **highest precedence first**:
 
 ```
-<repo>/.claude/sherpa.yaml          # project-local, shareable in-repo (single file)
-<repo>/.codex/sherpa.yaml           # project-local, shareable in-repo (single file)
-<repo>/.pi/sherpa.yaml              # project-local, shareable in-repo (single file)
-${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml   # workspace (user-global, many)
+<repo>/.sherpa/sherpa.yaml          # project-local, engine-neutral (single file)
+<repo>/.claude/sherpa.yaml          # project-local, engine-specific
+<repo>/.codex/sherpa.yaml           # project-local, engine-specific
+<repo>/.pi/sherpa.yaml              # project-local, engine-specific
+${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/<project>.yaml   # workspace (user-global, many)
 ```
 
 The **project-local** form is a single `sherpa.yaml` (or `.yml`) committed inside
@@ -29,7 +30,9 @@ per project (each with a real `detect`, since one shared dir serves many repos)
 and is where you keep packs for repos you can't commit into. The first config
 whose `detect` matches (or, for a project-local config, whose file is simply
 found) wins, so a project-local pack **overrides** the workspace. Set
-`WORKFLOW_PACKS_DIR` to relocate the workspace dir.
+`WORKFLOW_PACKS_DIR` to relocate the workspace dir. When it is unset, the legacy
+`~/.claude/sherpa/projects` is also scanned as a read-fallback after the XDG dir,
+so packs created before the engine-neutral move keep working.
 
 At session start the hook announces, via a user-visible `systemMessage`, either
 **`Project "<name>" loaded into Sherpa from <yaml path>`** or **`no project pack
@@ -79,10 +82,10 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 ### Relative paths
 
 Path-ish values may be **absolute or relative**. A relative value resolves against
-the config's **proximate `.claude`/`.codex`/`.pi` directory** — the nearest ancestor of
-the YAML named `.claude`, `.codex`, or `.pi`. So `<repo>/.codex/sherpa.yaml` resolves
-against `<repo>/.codex`, and `~/.claude/sherpa/projects/<p>.yaml` against
-`~/.claude`. This lets a committed pack reference scripts/files next to it:
+the config's **proximate `.sherpa`/`.claude`/`.codex`/`.pi` directory** — the nearest ancestor of
+the YAML named `.sherpa`, `.claude`, `.codex`, or `.pi`. So `<repo>/.codex/sherpa.yaml` resolves
+against `<repo>/.codex`, and `~/.config/sherpa/projects/<p>.yaml` against
+`~/.config/sherpa/projects`. This lets a committed pack reference scripts/files next to it:
 
 ```yaml
 detect: ./detect.sh                  # runs from the proximate dir
@@ -115,11 +118,11 @@ runs them and never assumes how the rules are stored.
 
 ```sh
 # project-local (commit it in the repo — recommended for one project):
-cp TEMPLATE.yaml /path/to/my-repo/.codex/sherpa.yaml   # or .claude/ or .pi/
+cp TEMPLATE.yaml /path/to/my-repo/.sherpa/sherpa.yaml   # or .claude/ .codex/ .pi/
 # edit pack (drop `detect` entirely — it's this repo); sessionInstructions
 
 # OR workspace (user-global, for repos you can't commit into):
-cp TEMPLATE.yaml "${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/my-project.yaml"
+cp TEMPLATE.yaml "${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/my-project.yaml"
 # edit detect / sessionInstructions / pack
 
 cp -r TEMPLATE my-project-init-skill     # optional init skill; only needed if your knowledge prose invokes one

@@ -1,4 +1,4 @@
-# Copy to ${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml and edit.
+# Copy to ${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/<project>.yaml (or <repo>/.sherpa/sherpa.yaml) and edit.
 # Drop any pack key you don't fill — its engine seam simply no-ops.
 # See README.md for what each key does.
 

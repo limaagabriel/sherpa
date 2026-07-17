@@ -92,7 +92,7 @@ in one declinable line. There is no final Validate gate — pressure lives at ea
 The engine ships generic. To layer in your project's conventions, drop one YAML file per project:
 
 ```
-${WORKFLOW_PACKS_DIR:-~/.claude/sherpa/projects}/<project>.yaml
+${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/<project>.yaml
 ```
 
 ```yaml

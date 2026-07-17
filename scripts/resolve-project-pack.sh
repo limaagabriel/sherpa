@@ -29,7 +29,7 @@
 # values pass through as-is; multi-line YAML block scalars collapse to one line via
 # `sub("\n";" ")` with trailing whitespace trimmed.
 # Command keys (architectureRules, codeStyleRules, validate) are shell commands: relative
-# values resolve against the config's proximate .claude/.codex/.pi dir (detect runs from it;
+# values resolve against the config's proximate .sherpa/.claude/.codex/.pi dir (detect runs from it;
 # command values are pre-wrapped `cd <base> && ...`). /- and ~-prefixed command values are
 # left as-is.
 #
