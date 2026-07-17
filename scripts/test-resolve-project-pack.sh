@@ -214,6 +214,94 @@ msg_m=$(printf '%s' "$out_m" | jq -r '.systemMessage // ""')
 assert_contains "m/yq-warning-message" "$msg_m" "yq not found"
 [ "$rc_m" -eq 0 ] || { echo "FAIL [m/exit-0]: resolver exited $rc_m with yq masked"; fail=1; }
 
+# (n) project-local .sherpa/sherpa.yaml — relative command resolves against the proximate base
+repo_n="$tmp/repo-sherpa"
+mkdir -p "$repo_n/.sherpa"
+cat >"$repo_n/.sherpa/sherpa.yaml" <<'YAML'
+name: proj-n
+detect: "exit 0"
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+out=$(ctx "$repo_n")
+assert_contains "n/command" "$out" "cd '$repo_n/.sherpa' && cat ./rules.md"
+assert_contains "n/message" "$(msg "$repo_n")" "Project \"proj-n\" loaded into Sherpa from $repo_n/.sherpa/sherpa.yaml 🏔️"
+
+# (o) .sherpa wins over a co-present .claude — .sherpa is first in local_candidates
+repo_o="$tmp/repoo"
+mkdir -p "$repo_o/.sherpa" "$repo_o/.claude"
+cat >"$repo_o/.sherpa/sherpa.yaml" <<'YAML'
+name: proj-sherpa-win
+detect: "exit 0"
+pack:
+  knowledge: "sherpa wins"
+YAML
+cat >"$repo_o/.claude/sherpa.yaml" <<'YAML'
+name: proj-claude-lose
+detect: "exit 0"
+pack:
+  knowledge: "claude loses"
+YAML
+msg_o=$(msg "$repo_o")
+assert_contains "o/sherpa-wins" "$msg_o" "proj-sherpa-win"
+assert_not_contains "o/claude-loses" "$msg_o" "proj-claude-lose"
+
+# (p) XDG workspace pack resolves without WORKFLOW_PACKS_DIR — base is the XDG dir itself
+xdg_p="$tmp/xdg-p"
+fakehome_p="$tmp/home-p"
+packs_p="$xdg_p/sherpa/projects"
+mkdir -p "$packs_p" "$fakehome_p"
+cat >"$packs_p/proj-p.yaml" <<'YAML'
+name: proj-p
+detect: "exit 0"
+pack:
+  plan:
+    architectureRules: cat ./arch.md
+YAML
+cleancwd_p="$tmp/elsewhere-p"
+mkdir -p "$cleancwd_p"
+out_p=$(printf '{"cwd":"%s"}' "$cleancwd_p" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_p" HOME="$fakehome_p" bash "$resolver" | jq -r '.hookSpecificOutput.additionalContext // ""')
+assert_contains "p/xdg-base" "$out_p" "cd '$packs_p' && cat ./arch.md"
+
+# (q) legacy .claude/sherpa/projects still resolves as a fallback when WORKFLOW_PACKS_DIR
+# is unset and XDG_CONFIG_HOME points at a dir with no sherpa/projects
+fakehome_q="$tmp/home-q"
+legacy_q="$fakehome_q/.claude/sherpa/projects"
+mkdir -p "$legacy_q"
+cat >"$legacy_q/proj-q.yaml" <<'YAML'
+name: proj-q
+detect: "exit 0"
+YAML
+xdg_q="$tmp/xdg-q"
+mkdir -p "$xdg_q"
+cleancwd_q="$tmp/elsewhere-q"
+mkdir -p "$cleancwd_q"
+msg_q=$(printf '{"cwd":"%s"}' "$cleancwd_q" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_q" HOME="$fakehome_q" bash "$resolver" | jq -r '.systemMessage // ""')
+assert_contains "q/legacy-fallback" "$msg_q" "Project \"proj-q\" loaded into Sherpa from $legacy_q/proj-q.yaml 🏔️"
+
+# (r) XDG workspace wins over legacy .claude workspace when both have a matching pack —
+# packs_dirs lists the XDG dir before the legacy dir, so XDG's match is found first
+fakehome_r="$tmp/home-r"
+legacy_r="$fakehome_r/.claude/sherpa/projects"
+mkdir -p "$legacy_r"
+cat >"$legacy_r/proj-legacy-lose.yaml" <<'YAML'
+name: proj-legacy-lose
+detect: "exit 0"
+YAML
+xdg_r="$tmp/xdg-r"
+packs_r="$xdg_r/sherpa/projects"
+mkdir -p "$packs_r"
+cat >"$packs_r/proj-xdg-win.yaml" <<'YAML'
+name: proj-xdg-win
+detect: "exit 0"
+YAML
+cleancwd_r="$tmp/elsewhere-r"
+mkdir -p "$cleancwd_r"
+msg_r=$(printf '{"cwd":"%s"}' "$cleancwd_r" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_r" HOME="$fakehome_r" bash "$resolver" | jq -r '.systemMessage // ""')
+assert_contains "r/xdg-wins" "$msg_r" "proj-xdg-win"
+assert_not_contains "r/legacy-loses" "$msg_r" "proj-legacy-lose"
+
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
 mkdir -p "$nomatch"
