@@ -42,7 +42,8 @@ one that judges it.
 
 ## Output
 - A ranked shortlist of 2 to 4 candidates, each keeping its originating `precedent`
-  citation and `risk` intact.
+  citation and `risk` intact, plus a one-line ranking rationale — why it sits where it sits
+  relative to the others.
 - `traps` — candidates that look attractive but are not, each with the ONE-LINE reason
   (hidden cost, false economy, will not scale, premature abstraction).
 - The collapse record — which candidates were merged as one underlying angle and which
