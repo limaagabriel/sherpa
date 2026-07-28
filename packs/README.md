@@ -73,6 +73,9 @@ pack:
     validate: |
       npm run lint
       npm test
+
+  diverge:
+    knowledge: Additive diverge-layer notes for the diverge-reviewer.   # optional, additive
 ```
 
 On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` line
@@ -110,6 +113,7 @@ repo, so cwd-glob detects are unaffected).
 | `implement.knowledge` | additive inline prose for the implement layer, forwarded verbatim alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
 | `implement.codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `implement.validate` | shell command(s) `step-builder` runs before committing | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
+| `diverge.knowledge` | additive inline prose for the diverge layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/diverge` skill, `diverge-reviewer` | cross-cutting `knowledge` only |
 
 `architectureRules`, `codeStyleRules`, and `validate` are **commands**, not paths — the engine
 runs them and never assumes how the rules are stored.
