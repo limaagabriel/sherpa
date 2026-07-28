@@ -22,7 +22,14 @@ Always carries the three blocks — even a one-line fix gets the full shape.
 Each step is its own block. Every step carries:
 - **Goal** — a step goal contract (§ Goal contract). Must trace up to the plan goal.
 - **Change** — the concrete delta (this step only).
-- **Example** — a small before→after snippet or sample input→output of what the step produces.
+- **Interfaces** — `consumes: <exact signatures this step relies on from earlier steps>; produces:
+  <exact names + param/return types later steps rely on>`. `none` on either side when that side
+  doesn't apply to this step — a first step's `consumes`, a terminal step's `produces` — and `none`
+  for the whole field only when the step is fully self-contained. Each step-builder sees only its
+  own step; this is how it learns the names its neighbours use.
+- **Example** — the *shape* of what the step produces — a before→after signature/skeleton or
+  sample input→output — never a finished implementation: plan-time code is authored before any
+  builder reads the target file, and a wrong prescription gets followed rather than corrected.
 - **Acceptance criteria** — `done = <X>, confirmed by <re-runnable automated check>`. Manual
   observation only when the step states why no automated check is possible.
 - **Blast contract** — `reversibility: one-way-door | revertible; touches: <files/symbols touched
@@ -54,11 +61,15 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 5. **Self-critique** — ask: "What am I least confident about right now?" and "What's the
    biggest thing I'm missing about this decomposition right now? What don't I realize?" Fold
    the answer in, or carry it forward as an open question — don't just note it and move on.
+6. **Interface closure** — every step's `Interfaces` consumes entry is produced by an earlier
+   step; every produces entry has a consumer or a stated reason. A mismatch here is cheaper to
+   fix now than at the consuming step.
 
 ## Adversarial decomposition review (plan-reviewer)
 After the silent self-review, before presenting, dispatch `plan-reviewer` via Agent. Forward the
-plan goal + the full step list (each goal in contract form) + the spec path for context. It attacks
-traceability, missing foundation, gaps, overlap, ordering, hidden coupling and returns `SOLID | HOLES`. Handle:
+plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the spec
+path for context. It attacks traceability, missing foundation, gaps, overlap, ordering, hidden
+coupling, interface-mismatch and returns `SOLID | HOLES`. Handle:
 `SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → surface verbatim
 and wait. This is the independent eyes your own self-review can't be.
 
