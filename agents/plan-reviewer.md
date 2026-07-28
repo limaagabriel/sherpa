@@ -31,6 +31,8 @@ the goal. **Default suspicion, not trust.**
 
 ## Input
 - The **plan goal** (goal contract) and each step's goal + acceptance criteria.
+- Each step's `Interfaces` — its `consumes` / `produces` signatures — when the plan declares them.
+  Feeds your interface-mismatch attack.
 - A spec path the caller forwards for context. `Read` it; don't paste it back.
 - Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
   project knowledge (no Read, no Skill tool).
@@ -42,6 +44,10 @@ the goal. **Default suspicion, not trust.**
 ## What you attack
 - **Traceability** — a step whose Outcome doesn't advance the plan goal is an orphan.
 - **Missing foundation** — something steps 2..N depend on that no earlier step builds.
+- **Interface mismatch** — a step `consumes` a signature no earlier step `produces`, two steps
+  `produce` the same name with different shapes, or a `produces` entry no step consumes; quote both
+  sides. `missing foundation` reasons at step level — this one reasons at symbol level. `none` on
+  either side is a valid sentinel, not a hole — it means that side doesn't apply.
 - **Gap** — the steps don't sum to the after-state; the goal can't be reached as listed.
 - **Overlap** — two steps build the same thing; one is dead weight.
 - **Ordering** — a step depends on a later step's output.
@@ -67,5 +73,5 @@ the goal. **Default suspicion, not trust.**
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <step quote> — <orphan / missing-foundation / gap / overlap / ordering / hidden-coupling / self-doubt / blind-spot>; <what must change>
+- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / self-doubt / blind-spot>; <what must change>
 ```
