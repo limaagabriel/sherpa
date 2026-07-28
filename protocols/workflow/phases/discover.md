@@ -6,6 +6,8 @@ per-step step-builder dispatches when a plan exists).
 ## Steps
 - `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local),
   `medium`/`very thorough` (cross-cutting).
+- **Direction record in context?** Its `precedent` entries are already-bound discovery and its
+  `risk` is a known constraint — scout only the surface it doesn't cover.
 - Draft the **goal contract** (`phases/plan.md` § Goal contract) from request + scout:
   `<Outcome> for <consumers> because <motivation>; done when <verification>`. Its **unbound
   slots are your clarification questions** — a slot you can't fill *is* a hole.

@@ -24,9 +24,14 @@ skill — never automatic.
 ## Steps
 1. **Refine intent.** Restate the goal in one sentence as a goal contract draft
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/plan.md` § Goal contract). Show the user your read; let them correct it.
+   **Direction record in context?** Bind `Outcome` from its `direction` field instead of drafting
+   from scratch — the human already picked that direction; bind the other three slots as normal.
 2. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: `/scout` first; bind discoverable slots
    evidence-first; **ask preference/framing questions the moment they arise** (one at a time,
    brainstorming-style) — don't defer.
+   **Direction record in context?** Its `precedent` entries are already-bound discovery and its
+   `risk` is a known constraint — run `/scout` only for surface the record doesn't cover; don't
+   re-derive what it already cites.
 3. **Compose** the spec = *refined intent + discovery + open questions*. Open questions hold only
    what the user left open or a tradeoff not yet resolvable — most were settled live in step 2.
 4. **Self-critique (silent).** Ask: "What am I least confident about right now?" and "What's
