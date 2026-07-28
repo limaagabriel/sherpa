@@ -26,7 +26,7 @@ Each step is its own block. Every step carries:
   <exact names + param/return types later steps rely on>`. `none` on either side when that side
   doesn't apply to this step — a first step's `consumes`, a terminal step's `produces` — and `none`
   for the whole field only when the step is fully self-contained. Each step-builder sees only its
-  own step; this is how it learns the names its neighbours use.
+  own step; this is how it learns the names its neighbors use.
 - **Example** — the *shape* of what the step produces — a before→after signature/skeleton or
   sample input→output — never a finished implementation: plan-time code is authored before any
   builder reads the target file, and a wrong prescription gets followed rather than corrected.

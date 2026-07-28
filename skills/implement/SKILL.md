@@ -24,8 +24,9 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    consume it exactly as an in-context artifact.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one
    in progress. Per step — dispatch `step-builder` (haiku for pure codegen, else default) with
-   `task` + `Goal` + `Acceptance criteria` + pack `knowledge` (cross-cutting) and `implement.knowledge`
-   (additive) inline prose, plus `implement.codeStyleRules` and `implement.validate` commands, when announced.
+   `task` + `Goal` + `Interfaces` + `Acceptance criteria` + pack `knowledge` (cross-cutting) and
+   `implement.knowledge` (additive) inline prose, plus `implement.codeStyleRules` and
+   `implement.validate` commands, when announced.
    On `BUILT`, run `acceptance-reviewer` + `quality-reviewer` in parallel over the step's range —
    `quality-reviewer` also gets pack `knowledge`/`implement.knowledge` inline prose and `implement.codeStyleRules`
    command output when announced, plus the current step index + remaining step goals.

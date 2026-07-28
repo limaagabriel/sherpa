@@ -9,9 +9,9 @@ No separate Validate phase — adversarial pressure lives per step.
 - **No plan in context?** Treat the `<task>` arg as one implicit step — build it directly.
 
 ## Per-step build
-Dispatch `step-builder` with the step's `task` + `Goal` + `Acceptance criteria` (+ pack
-`knowledge`/`implement.knowledge` inline prose and `implement.codeStyleRules`/`implement.validate`
-commands, when announced).
+Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
+(+ pack `knowledge`/`implement.knowledge` inline prose and
+`implement.codeStyleRules`/`implement.validate` commands, when announced).
 Pure-codegen step → dispatch at model haiku; else default. Each step:
 - Builds in isolation — module still builds, no half-applied artifacts, unless that build failure
   is covered by a later step's goal.

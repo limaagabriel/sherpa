@@ -33,6 +33,9 @@ Implement one approved step and commit it. You are dispatched once per step by `
 ## Inputs (from caller)
 - `task` — the step to implement.
 - `Goal` — one-sentence outcome (goal contract).
+- `Interfaces` — this step's `consumes` / `produces` signatures: the exact names and types
+  neighboring steps rely on. Bind them verbatim — you cannot see the other steps. `none` on
+  either side means that side doesn't apply.
 - `Acceptance criteria` — observable end states (`done = <X>, confirmed by <check>`).
 - `PRE-EXISTING DIRT` — `git status --short` from before your run; never stage or claim it.
 - Project pack cross-cutting `knowledge` and additive `implement.knowledge` — inline prose
