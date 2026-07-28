@@ -2,7 +2,8 @@
 
 Sherpa is three layers of decreasing altitude, each an **independently callable skill**. Sherpa
 offers the tools; the user composes the workflow. Each layer has **one job, one driver, one
-artifact, one pressure point.** Pressure lives at the boundary between layers — never nested inside.
+artifact, and its pressure at the boundary.** Pressure lives at the boundary between layers — never
+nested inside; a boundary may carry more than one critique.
 
 **What separates one layer from the next: how much it sees, and what it may change.** The
 discriminator is a single progression — *no diff → all steps, no diff → one step's diff*. The
@@ -49,6 +50,9 @@ never a forced router. The user's judgment is the router.
 | `spec-reviewer` | macro | reads the spec + repo read-only, no diff; read-only `SOLID \| HOLES` |
 | `/scout` skill | macro | reads the codebase to produce a Discover record; changes nothing |
 | `scout` (agent) | cross-cutting | reads the target read-only to produce a Discover record; the worker the `/scout` skill dispatches; owns no layer |
+| `/diverge` skill | macro | reads the problem + codebase to produce candidate directions and a Direction record; changes nothing |
+| `diverger` (agent) | cross-cutting | reads the target read-only to produce candidate directions; the worker the `/diverge` skill dispatches; owns no layer |
+| `diverge-reviewer` | macro | reads the candidate pool read-only, no diff; returns a ranked shortlist + traps + collapse record |
 | `/plan` skill | step | decomposes into steps; no source edits |
 | `plan-reviewer` | step | sees all steps + repo read-only, no diff; read-only `SOLID \| HOLES` on the decomposition |
 | `/implement` skill | build | drives one step at a time; never reopens the plan |
@@ -57,10 +61,14 @@ never a forced router. The user's judgment is the router.
 | `quality-reviewer` | build | sees one step's diff; read-only `PASS \| FIX \| BLOCK` |
 | `/persist` skill | cross-cutting | writes the in-context spec/plan to disk on request; owns no layer |
 
+Like `/scout`, `/diverge` is a macro-layer **tool**, not the layer's driver — it produces candidate
+directions and a Direction record, but `/spec` still drives the macro artifact.
+
 An optional **project pack** extends each layer's components with project-specific knowledge
 (and, for plan/implement, extra rules/validation) — see `packs/README.md`.
 
 ## No separate Validate
-Adversarial pressure lives at each boundary — the spec critique (L1), the decomposition critique
-(L2), and per-step acceptance + quality (L3). There is no final goal-gate: if the decomposition was
-sound and each step met its criteria, the goal holds by construction.
+Adversarial pressure lives at each boundary — the candidate-pool critique (`/diverge`), the spec
+critique (L1), the decomposition critique (L2), and per-step acceptance + quality (L3). There is no
+final goal-gate: if the decomposition was sound and each step met its criteria, the goal holds by
+construction.

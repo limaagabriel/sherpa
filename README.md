@@ -54,6 +54,7 @@ project pack), and start a new thread. Verify with `/spec` — if the skill show
 | `/spec <task>` | macro | Refine intent, scout, ask questions as they arise, compose + present a spec, get a cold-eyes critique. | the task is fuzzy or has design calls |
 | `/plan <task>` | step | Decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
 | `/implement <task>` | build | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
+| `/diverge <task>` | — | Dispatch divergers per concern, pool + critique candidates, present a ranked shortlist, wait for your pick. | you know the problem but not which approach to take |
 | `/scout <task>` | — | Standalone codebase scout; also called by `/spec` and `/plan`. | you just want a lay of the land |
 | `/persist` | — | Write the in-context spec/plan to disk so a later session can resume. | you want to save or resume |
 
@@ -116,6 +117,8 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 - **`/spec`** — refine intent + discover; presents a spec, nothing on disk.
 - **`/scout`** — standalone codebase scout; also called by `/spec` and `/plan`.
 - **`spec-reviewer`** (agent) — cold eyes on the spec's intent, discovery, and open questions.
+- **`/diverge`** — dispatches divergers per concern, pools + critiques candidates, presents a ranked shortlist for your pick.
+- **`diverge-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
 
 ### L2 Step
 - **`/plan`** — decompose into steps; waits for your approval.
@@ -129,12 +132,13 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ### Cross-cutting
 - **`/persist`** — writes the in-context spec/plan to disk on request.
+- **`diverger`** (agent) — read-only per-concern idea generator; the worker `/diverge` dispatches.
 
 ## Layout
 
 ```
-skills/        /spec, /plan, /implement, /scout, /persist
-agents/        scout, spec-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer
+skills/        /spec, /plan, /implement, /scout, /diverge, /persist
+agents/        scout, spec-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer, diverger, diverge-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

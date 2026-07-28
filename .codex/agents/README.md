@@ -30,11 +30,13 @@ here are picked up with no install.
 | plan-reviewer | L2 step | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | spec-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
+| diverger | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
+| diverge-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 
 All roles use the GPT-5.6 family. Independent reviewer roles use
 `gpt-5.6-terra` with high reasoning for adversarial scrutiny. The step-builder
-uses `gpt-5.6-luna` with high reasoning for implementation; the scout keeps its
-efficient discovery posture on `gpt-5.6-luna` with medium reasoning. A role
-with `model` omitted inherits the parent session model — Codex fixes a
-subagent's model in its role file (no dispatch-time override), so this mapping
-must live here.
+uses `gpt-5.6-luna` with high reasoning for implementation; the scout and
+diverger keep their efficient discovery posture on `gpt-5.6-luna` with medium
+reasoning. A role with `model` omitted inherits the parent session model —
+Codex fixes a subagent's model in its role file (no dispatch-time override),
+so this mapping must live here.
