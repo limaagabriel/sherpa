@@ -17,8 +17,9 @@ Pure-codegen step → dispatch at model haiku; else default. Each step:
   is covered by a later step's goal.
 - Lands exactly one commit (real subject). The step-builder owns it; never add a manual commit on top.
 - On `BUILT`, two L3 reviewers run in parallel over the step's commit range:
-  `acceptance-reviewer` (met its criteria?) and `quality-reviewer` (clean, correct, secure, no
-  regression; also gets pack `knowledge`/`implement.knowledge` inline prose and
+  `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to judge the
+  declared `produces` against the built symbols) and `quality-reviewer` (clean, correct, secure,
+  no regression; also gets pack `knowledge`/`implement.knowledge` inline prose and
   `implement.codeStyleRules` command output when announced, plus the current step index +
   remaining step goals, so it can tell whether a failure is covered by a later step).
 

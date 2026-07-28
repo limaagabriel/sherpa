@@ -31,12 +31,14 @@ Check one built step against **what it promised**. You judge intent-met, not cod
 
 ## Input
 - The step's `Goal` + `Acceptance criteria` (verbatim).
+- The step's declared `Interfaces` (its `consumes`/`produces` signatures) — `none` on either side means that side doesn't apply and isn't a gap.
 - The commit range for this step (`<base>..HEAD`).
 - `PRE-EXISTING DIRT` — never attribute it to this step.
 
 ## What you do
 - For each acceptance criterion, run/inspect its stated check and judge it met or not, with evidence (the check + its result, or the file:line that satisfies it). A criterion you can't verify counts as not met — say why.
-- You do NOT judge style, naming, or architecture — that's the `quality-reviewer`'s lens.
+- Check the commit range's actual symbols against each `produces` entry in the step's declared `Interfaces` (skip `none`) — same name, same param/return shape, actually reachable. Absent, renamed, or reshaped is `UNMET`.
+- You do NOT judge style, naming, or architecture — that's the `quality-reviewer`'s lens. Matching a declared `produces` symbol is different: that name was pinned by the plan pre-build, so fidelity to it is yours.
 - **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
   answer until it produces a real `UNMET` or you're satisfied the criterion is actually met.
 - **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this step right

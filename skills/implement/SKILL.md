@@ -28,8 +28,10 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    `implement.knowledge` (additive) inline prose, plus `implement.codeStyleRules` and
    `implement.validate` commands, when announced.
    On `BUILT`, run `acceptance-reviewer` + `quality-reviewer` in parallel over the step's range —
-   `quality-reviewer` also gets pack `knowledge`/`implement.knowledge` inline prose and `implement.codeStyleRules`
-   command output when announced, plus the current step index + remaining step goals.
+   `acceptance-reviewer` also gets the step's `Interfaces`, to judge the declared `produces`
+   against the built symbols; `quality-reviewer` also gets pack `knowledge`/`implement.knowledge`
+   inline prose and `implement.codeStyleRules` command output when announced, plus the current
+   step index + remaining step goals.
 3. **Verdicts.** `UNMET` or a quality `FIX` → relay to the step-builder to fold in, re-check once;
    still `UNMET`/`FIX` after that → stop, same terminal handling as `BLOCK`, surface verbatim, no
    further looping. `MET` + `PASS` → next step. `BLOCK` → stop, surface to the human. Any reviewer
