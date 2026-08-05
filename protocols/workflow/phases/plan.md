@@ -5,9 +5,9 @@ Input is the spec (in context) — or, standalone, a `<task>` + a light `/scout`
 
 ## Before decomposing
 - **Settle only what blocks a step.** If the spec left open questions, resolve the ones that
-  actually block a step boundary — ask via `AskUserQuestion`, or use answers already in the
-  conversation. Questions that don't block decomposition ride into `/implement` as step-builder-time
-  calls; don't force them here.
+  actually block a step boundary — ask via `AskUserQuestion`, shaped per `protocols/questions.md`,
+  or use answers already in the conversation. Questions that don't block decomposition ride into
+  `/implement`, asked by its driver before that step's dispatch; don't force them here.
 - **Standalone (no spec):** quick `/scout`, then decompose. Do NOT refine intent or write an
   open-questions section — that is `/spec`'s job; if it was skipped, you're working without it.
 

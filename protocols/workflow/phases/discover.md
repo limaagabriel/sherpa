@@ -14,8 +14,9 @@ per-step step-builder dispatches when a plan exists).
 - **Bind each unbound slot evidence-first** — scout answers "who calls it", "what's the column
   max"; don't ask what a 30-second `Explore` settles. **Never assume** a preference.
 - **Ask as it arises.** When a slot needs a user preference/decision (not a discoverable fact),
-  surface it right then via `AskUserQuestion` — one at a time, in the moment, brainstorming-style.
-  Don't batch them to the end. A genuine framing choice is a question, never an assumption.
+  surface it right then via `AskUserQuestion`, shaped per `protocols/questions.md` — one at a
+  time, in the moment, brainstorming-style. Don't batch them to the end. A genuine framing choice
+  is a question, never an assumption.
 - **Residual → open questions.** Anything the user chooses to leave open, or a tradeoff not yet
   resolvable, becomes a line in the spec's **open questions** section — not a forced decision.
 

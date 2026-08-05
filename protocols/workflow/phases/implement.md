@@ -9,6 +9,10 @@ No separate Validate phase — adversarial pressure lives per step.
 - **No plan in context?** Treat the `<task>` arg as one implicit step — build it directly.
 
 ## Per-step build
+- **Ask before dispatch.** Any step-scoped question the driver still needs answered is asked by
+  the driver, shaped per `protocols/questions.md`, before dispatching that step's `step-builder` —
+  the step-builder never asks the user.
+
 Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
 (+ pack `knowledge`/`implement.knowledge` inline prose and
 `implement.codeStyleRules`/`implement.validate` commands, when announced).
