@@ -1,6 +1,6 @@
 # Discover
 
-Scout the codebase BEFORE asking the user anything. Feeds the spec (and seeds `/implement`'s
+Scout the codebase BEFORE asking the user anything. Feeds the frame (and seeds `/implement`'s
 per-step step-builder dispatches when a plan exists).
 
 ## Steps
@@ -8,9 +8,9 @@ per-step step-builder dispatches when a plan exists).
   `medium`/`very thorough` (cross-cutting).
 - **Direction record in context?** Its `precedent` entries are already-bound discovery and its
   `risk` is a known constraint — scout only the surface it doesn't cover.
-- Draft the **goal contract** (`phases/plan.md` § Goal contract) from request + scout:
-  `<Outcome> for <consumers> because <motivation>; done when <verification>`. Its **unbound
-  slots are your clarification questions** — a slot you can't fill *is* a hole.
+- Draft the **problem contract** (`phases/frame.md` § Problem contract) from request + scout:
+  who / capability / obstacle / costs / solved-signal. Its **unbound slots are your
+  clarification questions** — a slot you can't fill *is* a hole.
 - **Bind each unbound slot evidence-first** — scout answers "who calls it", "what's the column
   max"; don't ask what a 30-second `Explore` settles. **Never assume** a preference.
 - **Ask as it arises.** When a slot needs a user preference/decision (not a discoverable fact),
@@ -18,8 +18,8 @@ per-step step-builder dispatches when a plan exists).
   time, in the moment, brainstorming-style. Don't batch them to the end. A genuine framing choice
   is a question, never an assumption.
 - **Residual → open questions.** Anything the user chooses to leave open, or a tradeoff not yet
-  resolvable, becomes a line in the spec's **open questions** section — not a forced decision.
+  resolvable, becomes a line in the frame's **open questions** section — not a forced decision.
 
 ## Brief (one line each)
-`Scout` (key file:line landmarks + precedent) · `Goal` (the goal contract) · `Constraints` ·
+`Scout` (key file:line landmarks + precedent) · `Problem` (the problem contract) · `Constraints` ·
 `Non-goals` · `Assumptions` · `Open questions`.
