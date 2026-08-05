@@ -1,0 +1,45 @@
+---
+name: frame
+description: Macro layer (L1). Turn a fuzzy task into the frame — scout the code, compose a problem contract, surface open questions as they arise — binding no solution. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /plan, /implement.
+---
+
+# /frame — discover, then bind the problem
+
+Produce **the frame** for `<task>`: the right problem, well-framed, with discovery and the open
+questions named. The top of the ceremony gradient — use it when the task is fuzzy. For a task
+with a clear goal, the user may skip straight to `/plan`.
+
+The frame lives **in context** (printed, not on disk). Persisting it is the opt-in `/persist`
+skill — never automatic.
+
+## Operating rules
+- **Authority:** the human owns every decision. You propose; they decide.
+- **Stance:** feedback-first — open with a brief take when the human floats an approach.
+- **No narration between tools.** One short sentence only when the *task* changes.
+- **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
+- **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
+- **Pack forwarding:** forward pack `knowledge` (cross-cutting) and `frame.knowledge` (frame-layer,
+  additive) inline prose text — when announced — to `frame-reviewer` alongside the frame.
+
+## Steps
+1. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: `/scout`
+   first, before any framing exists; bind discoverable slots evidence-first; **ask
+   preference/framing questions the moment they arise** (one at a time, brainstorming-style),
+   shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md` — don't defer.
+   **Direction record in context?** Its `precedent` entries are already-bound discovery and its
+   `risk` is a known constraint — run `/scout` only for surface the record doesn't cover; don't
+   re-derive what it already cites.
+2. **Compose the frame** = *problem contract + discovery + open questions*
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract). Apply
+   § Vocabulary test to the solved-signal before presenting. Open questions hold only what the
+   user left open or a tradeoff not yet resolvable — most were settled live in step 1.
+3. **Self-critique (silent).** Ask: "What am I least confident about right now?" and "What's
+   the biggest thing I'm missing about this frame right now? What don't I realize?" Fold the
+   answer into discovery or open questions; don't present it as an inline hedge.
+4. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
+5. **Critique.** Dispatch `frame-reviewer` (one shot) over the composed frame. `HOLES` → surface
+   verbatim and fix what you can; a hole only the human can close → wait.
+
+## Done when
+The frame is composed, presented, and critiqued. Hand off to `/plan` (it reads the frame from
+context), or offer `/persist` if the user wants it on disk.
