@@ -7,7 +7,7 @@ offers the tools.
 
 - Three layers, three entry points (pick by task complexity):
   `/spec <task>` (macro — refine intent + discover), `/plan <task>` (step —
-  decompose), `/implement <task>` (build). Smaller block: `/scout`.
+  decompose), `/implement <task>` (build). Smaller block: `/scout`, `/diverge`.
 - Each skill is a standalone entry point: it consumes the upstream artifact if it's
   in context, else does the minimum to proceed — never re-running the layer above.
 - **Nothing persists unless asked** — `/persist` writes the in-context spec/plan to

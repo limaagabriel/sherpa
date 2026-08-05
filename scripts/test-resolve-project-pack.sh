@@ -302,6 +302,21 @@ msg_r=$(printf '{"cwd":"%s"}' "$cleancwd_r" | env -u WORKFLOW_PACKS_DIR XDG_CONF
 assert_contains "r/xdg-wins" "$msg_r" "proj-xdg-win"
 assert_not_contains "r/legacy-loses" "$msg_r" "proj-legacy-lose"
 
+# (s) diverge.knowledge — additive prose for the diverge layer/tool, quoted
+# verbatim like implement.knowledge, never cd-wrapped
+repo_s="$tmp/repos"
+mkdir -p "$repo_s/.claude"
+cat >"$repo_s/.claude/sherpa.yaml" <<'YAML'
+name: proj-s
+detect: "exit 0"
+pack:
+  diverge:
+    knowledge: "Prefer OSGi-friendly directions."
+YAML
+out=$(ctx "$repo_s")
+assert_contains "s/diverge-knowledge-quoted" "$out" 'diverge.knowledge="Prefer OSGi-friendly directions."'
+assert_not_contains "s/diverge-knowledge-not-wrapped" "$out" "&& Prefer OSGi-friendly"
+
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
 mkdir -p "$nomatch"

@@ -43,3 +43,6 @@ pack:
     validate: |
       npm run lint
       npm test
+
+  diverge:
+    knowledge: Additive diverge-layer notes for the diverge-reviewer.   # optional, additive

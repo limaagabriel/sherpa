@@ -6,7 +6,7 @@
 
 ## Read-only roles
 
-`acceptance-reviewer`, `quality-reviewer`, `plan-reviewer`, `spec-reviewer`, code-review personas, and scout agents: Bash is inspection only — `git status`, `git diff`, `git log`, `git show`, `git blame`, `grep`, `cat`, `ls`, `rg`. Any listed verb is forbidden.
+`acceptance-reviewer`, `quality-reviewer`, `plan-reviewer`, `spec-reviewer`, code-review personas, scout agents, `diverger`, and `diverge-reviewer`: Bash is inspection only — `git status`, `git diff`, `git log`, `git show`, `git blame`, `grep`, `cat`, `ls`, `rg`. Any listed verb is forbidden.
 
 ## Exceptions (intentional)
 
