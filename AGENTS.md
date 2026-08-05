@@ -27,8 +27,8 @@ Read every Claude-specific tool mention (the Agent tool, `subagent_type`,
 table in **`protocols/harness/codex.md`**. The intent is identical; only the
 mechanism differs. Key points:
 
-- `AskUserQuestion` → ask **one numbered free-text question** and wait (Codex has
-  no structured-question tool).
+- `AskUserQuestion` → ask **one numbered free-text question**, preamble included,
+  and wait (Codex has no structured-question tool).
 - "dispatch X via the Agent tool / `subagent_type: X`" → invoke the Codex agent
   role **X** from `.codex/agents/X.toml` (install per `.codex/agents/README.md`).
 - Per-subagent model lives in those role TOMLs; `${CLAUDE_PLUGIN_ROOT}` and the
@@ -42,7 +42,8 @@ through the equivalence table in **`protocols/harness/pi.md`** — the intent is
 identical; only the mechanism differs. Key points:
 
 - `ask_user_question` (rpiv) maps to `AskUserQuestion` **1:1** — a structured
-  equivalent, used directly (numbered free-text only when that tool is absent).
+  equivalent, used directly (numbered free-text only when that tool is absent,
+  preamble included either way).
 - "dispatch X via the Agent tool / `subagent_type: X`" → dispatch the role **X**
   through **pi-subagents** (registered from `.pi/agents/X.md`; see
   `.pi/agents/README.md`).
