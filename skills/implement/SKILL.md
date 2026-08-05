@@ -23,7 +23,9 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    declinable line. **A persisted spec/plan file path given as the arg** — read it back and
    consume it exactly as an in-context artifact.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one
-   in progress. Per step — dispatch `step-builder` (haiku for pure codegen, else default) with
+   in progress. Per step — the driver asks any step-scoped question first, shaped per
+   `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` (haiku for pure
+   codegen, else default) with
    `task` + `Goal` + `Interfaces` + `Acceptance criteria` + pack `knowledge` (cross-cutting) and
    `implement.knowledge` (additive) inline prose, plus `implement.codeStyleRules` and
    `implement.validate` commands, when announced.

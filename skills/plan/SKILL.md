@@ -29,7 +29,8 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
    **A persisted spec/plan file path given as the arg** — read it back and consume it exactly as
    an in-context artifact.
 2. **Settle what blocks a step.** Resolve any open questions that block a step boundary —
-   `AskUserQuestion`, or answers already in the conversation. Leave the rest open.
+   `AskUserQuestion` (shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`), or answers
+   already in the conversation. Leave the rest open.
 3. **Decompose + review + present.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/plan.md`: write the steps
    (Block 1/2/3, goal contracts), run the silent self-review, dispatch `plan-reviewer` (one shot)
    over the step list, then present and wait for **explicit** approval.

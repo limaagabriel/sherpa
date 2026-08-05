@@ -28,7 +28,7 @@ skill — never automatic.
    from scratch — the human already picked that direction; bind the other three slots as normal.
 2. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: `/scout` first; bind discoverable slots
    evidence-first; **ask preference/framing questions the moment they arise** (one at a time,
-   brainstorming-style) — don't defer.
+   brainstorming-style), shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md` — don't defer.
    **Direction record in context?** Its `precedent` entries are already-bound discovery and its
    `risk` is a known constraint — run `/scout` only for surface the record doesn't cover; don't
    re-derive what it already cites.
