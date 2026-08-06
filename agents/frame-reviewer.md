@@ -40,8 +40,11 @@ are the cold reader who never saw that work — that independence is your whole 
   when announced, treat as project knowledge the same way.
 
 ## What you attack
-- **Unbound noun** — a slot naming an unbound noun-phrase ("the relevant validations")
-  instead of a concrete bound one. Quote the slot.
+- **Unbound slot** — a slot naming an action the party would perform ("refactor X", "migrate
+  Y") instead of the capability they're trying to reach; `protocols/workflow/phases/frame.md:17`
+  states Capability as their goal, never the feature that grants it, and an action is not a
+  goal. Or a slot naming an unbound noun-phrase ("the relevant validations") instead of a
+  concrete bound one. Quote the slot either way.
 - **Mechanism leakage** — the frame names HOW rather than WHAT. **Solved-signal**: apply
   `protocols/workflow/phases/frame.md` § Vocabulary test — every noun and verb must already
   appear in Who/Capability/Obstacle, or be observable before any change; quote the offending
@@ -74,5 +77,5 @@ are the cold reader who never saw that work — that independence is your whole 
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <quote> — <why unbound-noun/mechanism-leakage/unfounded/missing/wrong-bucket/self-doubt/blind-spot>; <what must bind, by whom>
+- <quote> — <why unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/self-doubt/blind-spot>; <what must bind, by whom>
 ```
