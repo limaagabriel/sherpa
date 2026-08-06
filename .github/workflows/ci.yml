@@ -29,8 +29,11 @@ jobs:
           root=$(jq -r .version package.json)
           claude=$(jq -r .version .claude-plugin/plugin.json)
           codex=$(jq -r .version .codex-plugin/plugin.json)
-          if [ "$root" != "$claude" ] || [ "$root" != "$codex" ]; then
-            echo "version skew: package.json=$root .claude-plugin/plugin.json=$claude .codex-plugin/plugin.json=$codex" >&2
+          mkt_meta=$(jq -r .metadata.version .claude-plugin/marketplace.json)
+          mkt_plugin=$(jq -r .plugins[0].version .claude-plugin/marketplace.json)
+          if [ "$root" != "$claude" ] || [ "$root" != "$codex" ] \
+            || [ "$root" != "$mkt_meta" ] || [ "$root" != "$mkt_plugin" ]; then
+            echo "version skew: package.json=$root .claude-plugin/plugin.json=$claude .codex-plugin/plugin.json=$codex .claude-plugin/marketplace.json(metadata)=$mkt_meta .claude-plugin/marketplace.json(plugins[0])=$mkt_plugin" >&2
             exit 1
           fi
 
