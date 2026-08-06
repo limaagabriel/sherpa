@@ -33,7 +33,10 @@ the goal. **Default suspicion, not trust.**
 - The **plan goal** (goal contract) and each step's goal + acceptance criteria.
 - Each step's `Interfaces` — its `consumes` / `produces` signatures — when the plan declares them.
   Feeds your interface-mismatch attack.
-- A spec path the caller forwards for context. `Read` it; don't paste it back.
+- A frame path the caller forwards for context. `Read` it; don't paste it back.
+- A **problem contract** — forwarded when the plan drafted one at its step 0 (no frame existed),
+  or inherited from the frame in context. On the standalone path there is no `frame-reviewer`
+  pass, so you are the only enforcement point for its vocabulary test.
 - Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
   project knowledge (no Read, no Skill tool).
 - Project pack `plan.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
@@ -53,6 +56,10 @@ the goal. **Default suspicion, not trust.**
 - **Ordering** — a step depends on a later step's output.
 - **Hidden coupling** — a step's declared blast radius or revert recipe conflicts with, or is silently relied on by, another step's declared blast radius; a hidden coupling like this surfaces only when radii are compared side by side.
 - **Architecture violation** — a step's Change contradicts the pack's `architectureRules` (when announced); quote the constraint and the step.
+- **Vocabulary leak** — when a problem contract is forwarded, apply `frame.md` § Vocabulary test
+  to its solved-signal: every noun and verb must already appear in Who/Capability/Obstacle, or be
+  observable before any change. A noun or verb naming one particular mechanism is leakage; quote
+  the offending word and the contract.
 - **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
   answer until it produces a real hole or you're satisfied it isn't one.
 - **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this plan right
@@ -66,12 +73,12 @@ the goal. **Default suspicion, not trust.**
 - **Aim confidence at the plan, not your verdict.** Never hedge the VERDICT itself — SOLID/HOLES stands regardless of what follows.
 - **Name the layer, not just the patch.** When a hole can't be closed by editing the current
   step list — the fix means the plan's premise, not a step — say so plainly: `recommend
-  /spec` or `redo the plan goal, by the human`, instead of proposing a local patch that won't hold.
+  /frame` or `redo the plan goal, by the human`, instead of proposing a local patch that won't hold.
 
 ## Output
 ```
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / self-doubt / blind-spot>; <what must change>
+- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / vocabulary-leak / self-doubt / blind-spot>; <what must change>
 ```

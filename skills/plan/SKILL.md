@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Step layer (L2). Decompose a goal into ordered, traceable steps, then get a cold-eyes critique of the decomposition before any code. Reads the spec from context if present; standalone, takes a <task> and does a light scout. Writes nothing to disk. Triggers - "/plan", "/plan <task>", "decompose this", "break it into steps". Counterparts - /spec, /implement.
+description: Step layer (L2). Binds the goal's `Outcome` at step 0 — from the frame, a direction record, or drafted inline when neither exists — then decomposes into ordered, traceable steps, and gets a cold-eyes critique of the decomposition before any code. Reads the frame from context if present; standalone, takes a <task>, does a light scout, and drafts a problem contract inline. Writes nothing to disk. Triggers - "/plan", "/plan <task>", "decompose this", "break it into steps". Counterparts - /frame, /implement.
 ---
 
 # /plan — decompose into steps
@@ -23,10 +23,18 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
   the step list.
 
 ## Steps
-1. **Get context.** Spec in context → use it as the goal + discovery. **No spec** → treat the
-   `<task>` arg as the goal, run a quick `/scout`; do not refine intent or write open questions
-   (that's `/spec`). If the task is genuinely fuzzy, offer `/spec` first in one declinable line.
-   **A persisted spec/plan file path given as the arg** — read it back and consume it exactly as
+0. **Bind the goal — `/plan`'s step 0, the sole `Outcome` bind site.**
+   - **Frame in context** → bind `Outcome` from its problem contract's solved-signal (what
+     `Outcome` must achieve); bind `for` / `because` / `done when` as normal.
+   - **Direction record in context** → its `direction` field is a proposed `Outcome`; bind from it.
+   - **No frame** → draft a problem contract inline per
+     `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract, apply its
+     § Vocabulary test, then bind `Outcome` from it. Standalone path — don't skip the contract
+     just because `/frame` was skipped.
+1. **Get context.** Frame in context → use it as the goal + discovery. **No frame** → treat the
+   `<task>` arg as the goal, run a quick `/scout`; don't write an open-questions section (that's
+   `/frame`'s job). If the task is genuinely fuzzy, offer `/frame` first in one declinable line.
+   **A persisted frame/plan file path given as the arg** — read it back and consume it exactly as
    an in-context artifact.
 2. **Settle what blocks a step.** Resolve any open questions that block a step boundary —
    `AskUserQuestion` (shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`), or answers

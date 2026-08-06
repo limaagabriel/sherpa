@@ -1,15 +1,23 @@
 # Plan (step layer)
 
 Decompose the goal into steps, present them, wait for approval. Driven by `/plan`.
-Input is the spec (in context) — or, standalone, a `<task>` + a light `/scout`.
+Input is the frame (in context) — or, standalone, a `<task>` + a light `/scout`.
+
+## Step 0 — bind the goal
+`Outcome` binds here, at step 0, and nowhere earlier. **Frame in context** → bind `Outcome` from
+its problem contract's solved-signal (what `Outcome` must achieve); bind `for`/`because`/`done
+when` as normal. **Direction record in context** → its `direction` field is a proposed `Outcome`;
+bind from it. **No frame** → draft a problem contract inline (`phases/frame.md` § Problem
+contract), apply its § Vocabulary test, then bind `Outcome` from it — the standalone path; don't
+skip the contract just because `/frame` was skipped.
 
 ## Before decomposing
-- **Settle only what blocks a step.** If the spec left open questions, resolve the ones that
+- **Settle only what blocks a step.** If the frame left open questions, resolve the ones that
   actually block a step boundary — ask via `AskUserQuestion`, shaped per `protocols/questions.md`,
   or use answers already in the conversation. Questions that don't block decomposition ride into
   `/implement`, asked by its driver before that step's dispatch; don't force them here.
-- **Standalone (no spec):** quick `/scout`, then decompose. Do NOT refine intent or write an
-  open-questions section — that is `/spec`'s job; if it was skipped, you're working without it.
+- **Standalone (no frame):** quick `/scout`, then decompose — step 0 already drafted the problem
+  contract when none existed. Don't write an open-questions section — still `/frame`'s job.
 
 ## Plan proposal format
 Always carries the three blocks — even a one-line fix gets the full shape.
@@ -67,8 +75,8 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 
 ## Adversarial decomposition review (plan-reviewer)
 After the silent self-review, before presenting, dispatch `plan-reviewer` via Agent. Forward the
-plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the spec
-path for context. It attacks traceability, missing foundation, gaps, overlap, ordering, hidden
+plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the frame
+path for context, or the problem contract drafted at step 0 when no frame existed. It attacks traceability, missing foundation, gaps, overlap, ordering, hidden
 coupling, interface-mismatch and returns `SOLID | HOLES`. Handle:
 `SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → surface verbatim
 and wait. This is the independent eyes your own self-review can't be.
@@ -79,6 +87,6 @@ A question, critique, or your own answer is **not** approval. When in doubt, you
 
 ## Don't
 - Skip approval, even for small fixes.
-- Re-refine intent or surface open questions (that's `/spec`).
+- Re-refine intent beyond step 0's binding, or surface open questions (that's `/frame`'s job).
 - Reference a file before verifying it exists.
 - Present without the silent self-review and the plan-reviewer pass.
