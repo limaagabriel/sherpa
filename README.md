@@ -51,7 +51,7 @@ project pack), and start a new thread. Verify with `/frame` — if the skill sho
 
 | Skill | Layer | Does | Start here when |
 |---|---|---|---|
-| `/frame <task>` | macro | Refine intent, scout, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
+| `/frame <task>` | macro | Scout, bind a problem contract, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
 | `/plan <task>` | step | Decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
 | `/implement <task>` | build | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
 | `/diverge <task>` | — | Dispatch divergers per concern, pool + critique candidates, present a ranked shortlist, wait for your pick. | you know the problem but not which approach to take |
@@ -75,7 +75,7 @@ task wants:
 ## How it works
 
 ```
-/frame      scout + refine intent + ask as questions arise  →  frame  (in context)
+/frame      scout + bind a problem contract + ask questions as they arise  →  frame  (in context)
             frame-reviewer attacks the framing (L1)
 /plan       decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
             plan-reviewer attacks the decomposition (L2)
@@ -114,9 +114,9 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 ## Components
 
 ### L1 Macro
-- **`/frame`** — refine intent + discover; presents a frame, nothing on disk.
+- **`/frame`** — scout + bind a problem contract; presents a frame, nothing on disk.
 - **`/scout`** — standalone codebase scout; also called by `/frame` and `/plan`.
-- **`frame-reviewer`** (agent) — cold eyes on the frame's intent, discovery, and open questions.
+- **`frame-reviewer`** (agent) — cold eyes on the frame's problem contract, discovery, and open questions.
 - **`/diverge`** — dispatches divergers per concern, pools + critiques candidates, presents a ranked shortlist for your pick.
 - **`diverge-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
 

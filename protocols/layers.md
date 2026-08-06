@@ -11,7 +11,7 @@ moment a component can see a diff, it is build (L3).
 
 | Layer | Skill | Owns (artifact) | Question | Sees | May change |
 |---|---|---|---|---|---|
-| **macro** (L1) | `/frame` | the frame (intent + discovery + open questions) | right problem, right framing? | the whole problem, **no diff** | anything |
+| **macro** (L1) | `/frame` | the frame (problem contract + discovery + open questions) | right problem, right framing? | the whole problem, **no diff** | anything |
 | **step** (L2) | `/plan` | the plan (the step list) | do these pieces, in this order, add up to the goal? | **all steps at once**, no diff | the decomposition (not code) |
 | **build** (L3) | `/implement` | the commits (the code) | does each step's code do what it promised, built well? | **one step's diff** at a time | that step's code |
 
@@ -23,7 +23,7 @@ is the layer's *driver* boundary; reviewers inherit the layer's *sees* boundary.
 The three skills are independent tools, not a fixed chain. The entry point matches task complexity:
 
 ```
-fuzzy / unknown scope / design calls   →  /frame      (refine, discover, surface unknowns)
+fuzzy / unknown scope / design calls   →  /frame      (scout, bind a problem contract, surface unknowns)
 clear goal, just needs decomposition   →  /plan        (skip /frame)
 one obvious change                     →  /implement   (skip both)
 ```

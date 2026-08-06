@@ -6,7 +6,7 @@ under **both Claude Code and Codex CLI**. The user composes the workflow; sherpa
 offers the tools.
 
 - Three layers, three entry points (pick by task complexity):
-  `/frame <task>` (macro — refine intent + discover), `/plan <task>` (step —
+  `/frame <task>` (macro — scout + bind a problem contract), `/plan <task>` (step —
   decompose), `/implement <task>` (build). Smaller block: `/scout`, `/diverge`.
 - Each skill is a standalone entry point: it consumes the upstream artifact if it's
   in context, else does the minimum to proceed — never re-running the layer above.

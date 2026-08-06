@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Sherpa",
     "shortDescription": "Composable frame, plan, and implement layers",
-    "longDescription": "Adds opt-in Sherpa skills — /frame (refine intent + discover), /plan (decompose into steps), /implement (build with per-step review) — that the user composes into a workflow. Nothing persists unless you call /persist.",
+    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind a problem contract), /plan (decompose into steps), /implement (build with per-step review) — that the user composes into a workflow. Nothing persists unless you call /persist.",
     "developerName": "Gabriel Lima",
     "category": "Productivity",
     "capabilities": [
