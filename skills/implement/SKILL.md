@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build layer (L3). Build an approved plan one step at a time — one step-builder per step + acceptance and quality reviewers, with adversarial pressure per step. Reads the plan from context if present; standalone, treats the <task> as one implicit step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /spec, /plan.
+description: Build layer (L3). Build an approved plan one step at a time — one step-builder per step + acceptance and quality reviewers, with adversarial pressure per step. Reads the plan from context if present; standalone, treats the <task> as one implicit step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /plan.
 ---
 
 # /implement — build, with pressure per step
@@ -20,8 +20,9 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
 ## Steps
 1. **Get context.** Plan in context → build its steps. **No plan** → treat the `<task>` arg as one
    implicit step. If the task is large enough to want decomposition, offer `/plan` first in one
-   declinable line. **A persisted spec/plan file path given as the arg** — read it back and
-   consume it exactly as an in-context artifact.
+   declinable line. **A persisted frame/plan file path given as the arg** — read it back and
+   consume it exactly as an in-context artifact; a legacy file may carry `## Spec` instead of
+   `## Frame` — read it the same way.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one
    in progress. Per step — the driver asks any step-scoped question first, shaped per
    `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` (haiku for pure

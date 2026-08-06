@@ -35,7 +35,8 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
    `<task>` arg as the goal (step 0 already scouted it); don't write an open-questions section
    (that's `/frame`'s job). If the task is genuinely fuzzy, offer `/frame` first in one declinable
    line. **A persisted frame/plan file path given as the arg** — read it back and consume it
-   exactly as an in-context artifact.
+   exactly as an in-context artifact; a legacy file may carry `## Spec` instead of `## Frame` —
+   read it the same way.
 2. **Settle what blocks a step.** Resolve any open questions that block a step boundary —
    `AskUserQuestion` (shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`), or answers
    already in the conversation. Leave the rest open.
