@@ -7,8 +7,8 @@ description: Macro-layer TOOL that fans out isolated divergers per concern, crit
 
 `/diverge` is a macro-layer TOOL, not a layer driver — it changes nothing and owns no artifact
 of its own, exactly as `/scout` doesn't. It answers "which direction should this take?" BEFORE
-`/spec` frames one. It is not part of the three-layer spine; `/spec` still drives the macro
-layer's artifact.
+`/frame` frames one; its Direction record is consumed at `/plan` step 0, where `Outcome` binds.
+It is not part of the three-layer spine; `/frame` still drives the macro layer's artifact.
 
 ## Inputs
 - `PROBLEM` (required) — the open problem, NOT a chosen approach.
@@ -37,7 +37,7 @@ layer's artifact.
 
 ## Procedure
 1. **State the problem.** Read `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/plan.md` §
-   Goal contract so you know the shape `/spec` needs downstream — then deliberately emit NO
+   Goal contract so you know the shape `/plan` needs downstream — then deliberately emit NO
    goal contract. Bind nothing but the problem itself; the candidates ARE the competing
    `Outcome` fills, so binding `Outcome` here would pre-pick the answer the fan-out exists to
    find. Show the human your problem statement before dispatching.
@@ -63,7 +63,7 @@ layer's artifact.
 
 ## Output
 The **Direction record** — five fields, one line each:
-- `direction` — the picked candidate, one sentence, as a proposed `Outcome` for `/spec` to bind.
+- `direction` — the picked candidate, one sentence, as a proposed `Outcome` for `/plan` to bind at step 0.
 - `precedent` — `file:line — what_it_exemplifies` entries carried over from the winning
   candidate.
 - `risk` — the load-bearing risk.
@@ -72,8 +72,8 @@ The **Direction record** — five fields, one line each:
 - `confidence` — one line, justified by how much of the relevant surface the divergers actually
   covered.
 
-Nothing on disk. `/spec` consumes this record as pre-bound discovery.
+Nothing on disk. `/plan` consumes this record at step 0.
 
 ## Done when
 A Direction record exists in context (or the human rejected the shortlist). Hand off to
-`/spec` (it consumes the record), or offer `/persist` if the human wants it saved.
+`/plan` (it consumes the record at step 0), or offer `/persist` if the human wants it saved.

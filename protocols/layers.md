@@ -61,8 +61,10 @@ never a forced router. The user's judgment is the router.
 | `quality-reviewer` | build | sees one step's diff; read-only `PASS \| FIX \| BLOCK` |
 | `/persist` skill | cross-cutting | writes the in-context spec/plan to disk on request; owns no layer |
 
-Like `/scout`, `/diverge` is a macro-layer **tool**, not the layer's driver — it produces candidate
-directions and a Direction record, but `/spec` still drives the macro artifact.
+Like `/scout`, `/diverge` is a macro-layer **tool**, not the layer's driver: classification comes
+from what it sees — the problem and the codebase, no steps, no diff, exactly like `/scout` — not
+from who consumes its output. Its Direction record is consumed by `/plan` step 0, where `Outcome`
+binds.
 
 An optional **project pack** extends each layer's components with project-specific knowledge
 (and, for plan/implement, extra rules/validation) — see `packs/README.md`.
