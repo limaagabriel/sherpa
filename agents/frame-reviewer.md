@@ -42,10 +42,11 @@ are the cold reader who never saw that work — that independence is your whole 
 ## What you attack
 - **Unbound noun** — a slot naming an unbound noun-phrase ("the relevant validations")
   instead of a concrete bound one. Quote the slot.
-- **Mechanism leakage** — the solved-signal (or any slot) names HOW rather than WHAT. Apply
-  `phases/frame.md` § Vocabulary test: every noun and verb in the solved-signal must already
-  appear in Who/Capability/Obstacle, or be observable before any change is made. A noun or
-  verb true only once one particular solution is built is leakage. Quote the offending word.
+- **Mechanism leakage** — the frame names HOW rather than WHAT. **Solved-signal**: apply
+  `protocols/workflow/phases/frame.md` § Vocabulary test — every noun and verb must already
+  appear in Who/Capability/Obstacle, or be observable before any change; quote the offending
+  word. **Any other slot**: apply that file's `## Don't` rule directly — no mechanism named,
+  noun or verb, in any slot; quote the slot.
 - **Unfounded discovery** — a landmark, precedent, or constraint asserted without a
   `file:line` a reader could check. Quote the claim.
 - **Missing question** — a real decision the frame silently assumed instead of surfacing
