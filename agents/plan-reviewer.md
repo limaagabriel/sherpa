@@ -56,10 +56,10 @@ the goal. **Default suspicion, not trust.**
 - **Ordering** — a step depends on a later step's output.
 - **Hidden coupling** — a step's declared blast radius or revert recipe conflicts with, or is silently relied on by, another step's declared blast radius; a hidden coupling like this surfaces only when radii are compared side by side.
 - **Architecture violation** — a step's Change contradicts the pack's `architectureRules` (when announced); quote the constraint and the step.
-- **Vocabulary leak** — when a problem contract is forwarded, apply `frame.md` § Vocabulary test
-  to its solved-signal: every noun and verb must already appear in Who/Capability/Obstacle, or be
-  observable before any change. A noun or verb naming one particular mechanism is leakage; quote
-  the offending word and the contract.
+- **Vocabulary leak** — when a problem contract is forwarded, apply
+  `protocols/workflow/phases/frame.md` § Vocabulary test to its solved-signal: every noun and verb
+  must already appear in Who/Capability/Obstacle, or be observable before any change. A noun or
+  verb naming one particular mechanism is leakage; quote the offending word and the contract.
 - **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
   answer until it produces a real hole or you're satisfied it isn't one.
 - **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this plan right

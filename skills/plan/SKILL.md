@@ -27,15 +27,15 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
    - **Frame in context** → bind `Outcome` from its problem contract's solved-signal (what
      `Outcome` must achieve); bind `for` / `because` / `done when` as normal.
    - **Direction record in context** → its `direction` field is a proposed `Outcome`; bind from it.
-   - **No frame** → draft a problem contract inline per
-     `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract, apply its
-     § Vocabulary test, then bind `Outcome` from it. Standalone path — don't skip the contract
-     just because `/frame` was skipped.
+   - **No frame** → run a quick `/scout`, then draft a problem contract inline from request +
+     scout evidence (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem
+     contract), apply its § Vocabulary test, then bind `Outcome` from it. Standalone path — don't
+     skip the contract just because `/frame` was skipped.
 1. **Get context.** Frame in context → use it as the goal + discovery. **No frame** → treat the
-   `<task>` arg as the goal, run a quick `/scout`; don't write an open-questions section (that's
-   `/frame`'s job). If the task is genuinely fuzzy, offer `/frame` first in one declinable line.
-   **A persisted frame/plan file path given as the arg** — read it back and consume it exactly as
-   an in-context artifact.
+   `<task>` arg as the goal (step 0 already scouted it); don't write an open-questions section
+   (that's `/frame`'s job). If the task is genuinely fuzzy, offer `/frame` first in one declinable
+   line. **A persisted frame/plan file path given as the arg** — read it back and consume it
+   exactly as an in-context artifact.
 2. **Settle what blocks a step.** Resolve any open questions that block a step boundary —
    `AskUserQuestion` (shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`), or answers
    already in the conversation. Leave the rest open.
