@@ -1,7 +1,7 @@
 # Sherpa
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
-**composable skills**, one per layer of altitude — `/spec` (macro), `/plan` (step),
+**composable skills**, one per layer of altitude — `/frame` (macro), `/plan` (step),
 `/implement` (build) — with bundled scout, step-builder, and reviewer subagents that rope up
 and check the rope at every pitch.
 
@@ -16,12 +16,12 @@ Asking an agent to "just build it" skips the parts that make work trustworthy: s
 precedent, pinning down acceptance criteria, and adversarially checking the result. Sherpa
 makes those first-class — but lets *you* decide how much ceremony a task needs:
 
-- **A ceremony gradient.** A fuzzy task starts at `/spec`. A clear goal starts at `/plan`.
+- **A ceremony gradient.** A fuzzy task starts at `/frame`. A clear goal starts at `/plan`.
   One obvious change goes straight to `/implement`. You pick the entry point.
-- **Reviewed at every layer.** A spec-reviewer attacks the framing, a plan-reviewer attacks
+- **Reviewed at every layer.** A frame-reviewer attacks the framing, a plan-reviewer attacks
   the decomposition, and per-step acceptance + quality reviewers check "right thing?" and
   "built right?" independently.
-- **No magic state.** The spec and plan live in the conversation. Want them on disk to resume
+- **No magic state.** The frame and plan live in the conversation. Want them on disk to resume
   later? Call `/persist`. Otherwise sherpa leaves no trace.
 
 ## Install
@@ -45,27 +45,27 @@ git clone https://github.com/limaagabriel/sherpa.git
 ```
 
 Then open `/hooks`, review and **trust** sherpa's `SessionStart` hook (it detects your
-project pack), and start a new thread. Verify with `/spec` — if the skill shows up, you're set.
+project pack), and start a new thread. Verify with `/frame` — if the skill shows up, you're set.
 
 ## Usage
 
 | Skill | Layer | Does | Start here when |
 |---|---|---|---|
-| `/spec <task>` | macro | Refine intent, scout, ask questions as they arise, compose + present a spec, get a cold-eyes critique. | the task is fuzzy or has design calls |
+| `/frame <task>` | macro | Refine intent, scout, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
 | `/plan <task>` | step | Decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
 | `/implement <task>` | build | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
 | `/diverge <task>` | — | Dispatch divergers per concern, pool + critique candidates, present a ranked shortlist, wait for your pick. | you know the problem but not which approach to take |
-| `/scout <task>` | — | Standalone codebase scout; also called by `/spec` and `/plan`. | you just want a lay of the land |
-| `/persist` | — | Write the in-context spec/plan to disk so a later session can resume. | you want to save or resume |
+| `/scout <task>` | — | Standalone codebase scout; also called by `/frame` and `/plan`. | you just want a lay of the land |
+| `/persist` | — | Write the in-context frame/plan to disk so a later session can resume. | you want to save or resume |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context,
 else does the minimum to proceed — never re-running the layer above. Compose them however the
 task wants:
 
 ```
-/spec add rate limiting to the public API   # fuzzy → shape it first
-   → scouts, asks a few questions, presents a spec
-/plan                                        # decompose the spec into steps
+/frame add rate limiting to the public API   # fuzzy → shape it first
+   → scouts, asks a few questions, presents a frame
+/plan                                        # decompose the frame into steps
    → presents steps, waits for your approval
 /implement                                   # build them, reviewed per step
 ```
@@ -75,8 +75,8 @@ task wants:
 ## How it works
 
 ```
-/spec       scout + refine intent + ask as questions arise  →  spec  (in context)
-            spec-reviewer attacks the framing (L1)
+/frame      scout + refine intent + ask as questions arise  →  frame  (in context)
+            frame-reviewer attacks the framing (L1)
 /plan       decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
             plan-reviewer attacks the decomposition (L2)
 /implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L3)
@@ -114,9 +114,9 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 ## Components
 
 ### L1 Macro
-- **`/spec`** — refine intent + discover; presents a spec, nothing on disk.
-- **`/scout`** — standalone codebase scout; also called by `/spec` and `/plan`.
-- **`spec-reviewer`** (agent) — cold eyes on the spec's intent, discovery, and open questions.
+- **`/frame`** — refine intent + discover; presents a frame, nothing on disk.
+- **`/scout`** — standalone codebase scout; also called by `/frame` and `/plan`.
+- **`frame-reviewer`** (agent) — cold eyes on the frame's intent, discovery, and open questions.
 - **`/diverge`** — dispatches divergers per concern, pools + critiques candidates, presents a ranked shortlist for your pick.
 - **`diverge-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
 
@@ -131,14 +131,14 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 - **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
 
 ### Cross-cutting
-- **`/persist`** — writes the in-context spec/plan to disk on request.
+- **`/persist`** — writes the in-context frame/plan to disk on request.
 - **`diverger`** (agent) — read-only per-concern idea generator; the worker `/diverge` dispatches.
 
 ## Layout
 
 ```
-skills/        /spec, /plan, /implement, /scout, /diverge, /persist
-agents/        scout, spec-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer, diverger, diverge-reviewer
+skills/        /frame, /plan, /implement, /scout, /diverge, /persist
+agents/        scout, frame-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer, diverger, diverge-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

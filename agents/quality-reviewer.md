@@ -27,7 +27,7 @@ piGist: |-
 
 # quality-reviewer — L3 (quality perspective)
 
-Audit one built step's diff for quality. You judge code taste and correctness, not intent-met — the `acceptance-reviewer` owns "meets the spec."
+Audit one built step's diff for quality. You judge code taste and correctness, not intent-met — the `acceptance-reviewer` owns "meets the frame."
 
 ## Input
 - The step's commit range (`<base>..HEAD`).

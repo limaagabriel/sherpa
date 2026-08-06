@@ -1,7 +1,7 @@
 {
   "name": "sherpa",
   "version": "0.11.0",
-  "description": "Composable /spec, /plan, /implement skills — one per layer (macro, step, build) — with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
+  "description": "Composable /frame, /plan, /implement skills — one per layer (macro, step, build) — with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
   "author": {
     "name": "Gabriel Lima",
     "url": "https://github.com/limaagabriel"
@@ -20,8 +20,8 @@
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Sherpa",
-    "shortDescription": "Composable spec, plan, and implement layers",
-    "longDescription": "Adds opt-in Sherpa skills — /spec (refine intent + discover), /plan (decompose into steps), /implement (build with per-step review) — that the user composes into a workflow. Nothing persists unless you call /persist.",
+    "shortDescription": "Composable frame, plan, and implement layers",
+    "longDescription": "Adds opt-in Sherpa skills — /frame (refine intent + discover), /plan (decompose into steps), /implement (build with per-step review) — that the user composes into a workflow. Nothing persists unless you call /persist.",
     "developerName": "Gabriel Lima",
     "category": "Productivity",
     "capabilities": [
@@ -30,7 +30,7 @@
     ],
     "websiteURL": "https://github.com/limaagabriel/sherpa",
     "defaultPrompt": [
-      "Use /spec to shape this fuzzy task.",
+      "Use /frame to shape this fuzzy task.",
       "Use /plan to decompose this into steps.",
       "Use /implement to build the approved plan."
     ],

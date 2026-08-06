@@ -20,7 +20,7 @@
 # `detect` is optional for project-local configs (file presence at that fixed path is
 # the detection); it's required for workspace configs (one dir shared by many projects).
 # Config schema (camelCase): name, detect (a command; exit 0 = match; optional for project-local),
-#   sessionInstructions, pack:{knowledge, spec:{knowledge}, plan:{knowledge,architectureRules},
+#   sessionInstructions, pack:{knowledge, frame:{knowledge}, plan:{knowledge,architectureRules},
 #   implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #

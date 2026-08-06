@@ -30,8 +30,8 @@ sessionInstructions: |
 pack:
   knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
 
-  spec:
-    knowledge: Additive spec-layer notes for the reviewer.   # optional, additive
+  frame:
+    knowledge: Additive frame-layer notes for the reviewer.   # optional, additive
 
   plan:
     knowledge: Additive plan-layer notes for the reviewer.   # optional, additive

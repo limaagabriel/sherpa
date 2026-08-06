@@ -60,8 +60,8 @@ sessionInstructions: |
 pack:
   knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
 
-  spec:
-    knowledge: Additive spec-layer notes for the reviewer.   # optional, additive
+  frame:
+    knowledge: Additive frame-layer notes for the reviewer.   # optional, additive
 
   plan:
     knowledge: Additive plan-layer notes for the reviewer.   # optional, additive
@@ -107,7 +107,7 @@ repo, so cwd-glob detects are unaffected).
 | Key | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|
 | `knowledge` (top-level) | inline prose, forwarded verbatim in the WORKFLOW_PACK announcement to every layer and subagent — the prose may itself say "invoke Skill X" | every layer, every subagent | engine defaults only |
-| `spec.knowledge` | additive inline prose for the spec layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/spec` skill, `spec-reviewer` | cross-cutting `knowledge` only |
+| `frame.knowledge` | additive inline prose for the frame layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/frame` skill, `frame-reviewer` | cross-cutting `knowledge` only |
 | `plan.knowledge` | additive inline prose for the plan layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/plan` skill, `plan-reviewer` | cross-cutting `knowledge` only |
 | `plan.architectureRules` | shell **command** that dumps architecture constraints to stdout | `/plan` drafts steps mindful of it; `plan-reviewer` checks the decomposition against it | no architecture check |
 | `implement.knowledge` | additive inline prose for the implement layer, forwarded verbatim alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
@@ -136,5 +136,5 @@ No hook to write or register — sherpa's `SessionStart` hook reads your YAML.
 
 ## State
 
-Sherpa persists nothing automatically. The spec and plan live in conversation; the
+Sherpa persists nothing automatically. The frame and plan live in conversation; the
 opt-in `/persist` skill writes them to disk when you ask. Packs carry no state path.

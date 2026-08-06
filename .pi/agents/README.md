@@ -28,7 +28,7 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 | acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | low |
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
 | plan-reviewer | `agents/plan-reviewer.md` | read, grep, find, ls, bash | medium |
-| spec-reviewer | `agents/spec-reviewer.md` | read, grep, find, ls, bash | high |
+| frame-reviewer | `agents/frame-reviewer.md` | read, grep, find, ls, bash | high |
 | diverge-reviewer | `agents/diverge-reviewer.md` | read, grep, find, ls, bash | high |
 
 The step-builder is the only writer (`edit, write`); scout and diverger are

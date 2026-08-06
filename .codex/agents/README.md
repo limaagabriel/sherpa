@@ -28,7 +28,7 @@ here are picked up with no install.
 | acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.6-terra` | `high` | workspace-read |
 | quality-reviewer | L3 build | standard (sonnet) | `gpt-5.6-terra` | `high` | workspace-read |
 | plan-reviewer | L2 step | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
-| spec-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
+| frame-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 | diverger | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 | diverge-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
