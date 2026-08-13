@@ -20,11 +20,11 @@
 # `detect` is optional for project-local configs (file presence at that fixed path is
 # the detection); it's required for workspace configs (one dir shared by many projects).
 # Config schema (camelCase): name, detect (a command; exit 0 = match; optional for project-local),
-#   sessionInstructions, pack:{knowledge, frame:{knowledge}, plan:{knowledge,architectureRules},
-#   implement:{knowledge,codeStyleRules,validate}}.
+#   sessionInstructions, pack:{knowledge, frame:{knowledge}, shape:{knowledge},
+#   decompose:{knowledge,architectureRules}, implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #
-# `knowledge` (bare or section-prefixed, e.g. plan.knowledge) is inline prose, emitted
+# `knowledge` (bare or section-prefixed, e.g. decompose.knowledge) is inline prose, emitted
 # verbatim (embedded `"` and `\` escaped when the value needs quoting): single-line
 # values pass through as-is; multi-line YAML block scalars collapse to one line via
 # `sub("\n";" ")` with trailing whitespace trimmed.
