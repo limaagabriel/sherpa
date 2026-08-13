@@ -2,6 +2,7 @@
 # Self-check for resolve-project-pack.sh path resolution. Runs the real resolver
 # against temp fixtures and asserts the emitted SessionStart payload. No framework.
 set -u
+unset SHERPA_CONFIG_DIR
 
 here=$(cd "$(dirname "$0")" && pwd)
 resolver="$here/resolve-project-pack.sh"
@@ -431,6 +432,60 @@ cleancwd_y="$tmp/elsewhere-y"
 mkdir -p "$cleancwd_y"
 out_y=$(WORKFLOW_PACKS_DIR="$packs_y" ctx "$cleancwd_y")
 assert_contains "y/space-in-packs-dir" "$out_y" "cd '$packs_y/proj-y' && cat ./rules.md"
+
+# (z) SHERPA_CONFIG_DIR alone — packs dir is $SHERPA_CONFIG_DIR/projects (the
+# `/projects` suffix), unset WORKFLOW_PACKS_DIR so it can't also satisfy this
+config_z="$tmp/config-z"
+packs_z="$config_z/projects"
+mkdir -p "$packs_z/proj-z"
+cat >"$packs_z/proj-z/project.yaml" <<'YAML'
+name: proj-z
+detect: "exit 0"
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+cleancwd_z="$tmp/elsewhere-z"
+mkdir -p "$cleancwd_z"
+run_z() { printf '{"cwd":"%s"}' "$1" | env -u WORKFLOW_PACKS_DIR SHERPA_CONFIG_DIR="$config_z" bash "$resolver"; }
+out_z=$(run_z "$cleancwd_z" | jq -r '.hookSpecificOutput.additionalContext // ""')
+msg_z=$(run_z "$cleancwd_z" | jq -r '.systemMessage // ""')
+assert_contains "z/sherpa-config-dir-loads" "$msg_z" "Project \"proj-z\" loaded into Sherpa"
+assert_contains "z/sherpa-config-dir-projects-suffix" "$out_z" "cd '$packs_z/proj-z' && cat ./rules.md"
+
+# (aa) WORKFLOW_PACKS_DIR alone — packs dir is $WORKFLOW_PACKS_DIR itself, NO
+# `/projects` suffix applied; unset SHERPA_CONFIG_DIR so it can't also satisfy this
+packs_aa="$tmp/packs-aa"
+mkdir -p "$packs_aa/proj-aa"
+cat >"$packs_aa/proj-aa/project.yaml" <<'YAML'
+name: proj-aa
+detect: "exit 0"
+YAML
+cleancwd_aa="$tmp/elsewhere-aa"
+mkdir -p "$cleancwd_aa"
+msg_aa=$(printf '{"cwd":"%s"}' "$cleancwd_aa" | env -u SHERPA_CONFIG_DIR WORKFLOW_PACKS_DIR="$packs_aa" bash "$resolver" | jq -r '.systemMessage // ""')
+assert_contains "aa/workflow-packs-dir-no-suffix-loads" "$msg_aa" "Project \"proj-aa\" loaded into Sherpa"
+
+# (ab) both set — SHERPA_CONFIG_DIR wins over WORKFLOW_PACKS_DIR; two different,
+# both-matching packs prove precedence, not mere pack existence
+config_ab="$tmp/config-ab"
+packs_ab_sherpa="$config_ab/projects"
+mkdir -p "$packs_ab_sherpa/proj-ab-sherpa-win"
+cat >"$packs_ab_sherpa/proj-ab-sherpa-win/project.yaml" <<'YAML'
+name: proj-ab-sherpa-win
+detect: "exit 0"
+YAML
+packs_ab_workflow="$tmp/packs-ab-workflow"
+mkdir -p "$packs_ab_workflow/proj-ab-workflow-lose"
+cat >"$packs_ab_workflow/proj-ab-workflow-lose/project.yaml" <<'YAML'
+name: proj-ab-workflow-lose
+detect: "exit 0"
+YAML
+cleancwd_ab="$tmp/elsewhere-ab"
+mkdir -p "$cleancwd_ab"
+msg_ab=$(printf '{"cwd":"%s"}' "$cleancwd_ab" | env SHERPA_CONFIG_DIR="$config_ab" WORKFLOW_PACKS_DIR="$packs_ab_workflow" bash "$resolver" | jq -r '.systemMessage // ""')
+assert_contains "ab/sherpa-config-dir-wins" "$msg_ab" "proj-ab-sherpa-win"
+assert_not_contains "ab/workflow-packs-dir-loses" "$msg_ab" "proj-ab-workflow-lose"
 
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"

@@ -13,9 +13,20 @@
 #   <cwd>/.claude/sherpa.yaml|.yml       project-local, engine-specific, shareable in-repo (single file)
 #   <cwd>/.codex/sherpa.yaml|.yml        project-local, engine-specific, shareable in-repo (single file)
 #   <cwd>/.pi/sherpa.yaml|.yml           project-local, engine-specific, shareable in-repo (single file)
-#   ${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects}/*/project.yaml|.yml  workspace (many, one dir per pack)
-# When WORKFLOW_PACKS_DIR is unset, $HOME/.claude/sherpa/projects is also scanned as a
-# legacy read-fallback workspace dir, after the XDG path, using the same per-pack layout.
+#   Workspace packs dir (many, one dir per pack: <dir>/*/project.yaml|.yml), chosen by
+#   this precedence:
+#     1. $SHERPA_CONFIG_DIR set   -> packs dir is $SHERPA_CONFIG_DIR/projects
+#        SHERPA_CONFIG_DIR names the sherpa config ROOT, not the packs dir itself, so
+#        packs resolve at $SHERPA_CONFIG_DIR/projects/<name>/project.yaml|.yml. This is
+#        the var for relocating sherpa's whole config root (packs plus any future
+#        non-pack config), for pack authors who don't want to live under ~/.config.
+#     2. else $WORKFLOW_PACKS_DIR set -> packs dir is $WORKFLOW_PACKS_DIR (unchanged)
+#        WORKFLOW_PACKS_DIR points DIRECTLY at the packs dir, no `/projects` suffix, so
+#        packs resolve at $WORKFLOW_PACKS_DIR/<name>/project.yaml|.yml. This var can
+#        only move the packs dir, never the root above it.
+#     3. else -> ${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects, and
+#        $HOME/.claude/sherpa/projects is also scanned as a legacy read-fallback
+#        workspace dir, after the XDG path, using the same per-pack layout.
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # `detect` is optional for project-local configs (file presence at that fixed path is
 # the detection); it's required for workspace configs (one dir shared by many projects).
@@ -68,7 +79,9 @@ command -v yq >/dev/null 2>&1 || emit_result \
   "🏔️ sherpa: yq not found — project packs disabled (install yq v4+). Layer primer still loaded." \
   "$PRIMER"
 
-if [ -n "${WORKFLOW_PACKS_DIR:-}" ]; then
+if [ -n "${SHERPA_CONFIG_DIR:-}" ]; then
+  packs_dirs=("$SHERPA_CONFIG_DIR/projects")
+elif [ -n "${WORKFLOW_PACKS_DIR:-}" ]; then
   packs_dirs=("$WORKFLOW_PACKS_DIR")
 else
   packs_dirs=("${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects" "$HOME/.claude/sherpa/projects")
