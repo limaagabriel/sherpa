@@ -1,4 +1,6 @@
-# Copy to ${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/<project>.yaml (or <repo>/.sherpa/sherpa.yaml) and edit.
+# Copy to <packs dir>/<project>/project.yaml (or <repo>/.sherpa/sherpa.yaml) and edit.
+# <packs dir> is $SHERPA_CONFIG_DIR/projects if set, else $WORKFLOW_PACKS_DIR if set,
+# else ${XDG_CONFIG_HOME:-~/.config}/sherpa/projects.
 # Drop any pack key you don't fill — its engine seam simply no-ops.
 # See README.md for what each key does.
 
@@ -24,8 +26,12 @@ sessionInstructions: |
 # single-line scalars (the WORKFLOW_PACK announcement is one line; newlines
 # are collapsed to spaces).
 #
-# A command may be absolute OR relative to this file's proximate .claude/.codex dir
-# (e.g. for a committed .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`).
+# A command may be absolute OR relative. For a committed project-local config it
+# resolves against this file's proximate .claude/.codex dir (e.g. a committed
+# .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`). For a workspace pack it
+# resolves against this pack's own directory instead (<packs dir>/<project>/), so
+# `detect: ./detect.sh` runs the copy that lives next to THIS project.yaml — two
+# packs can each keep their own same-named detect.sh without colliding.
 # See README.md § Relative paths.
 pack:
   knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent

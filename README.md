@@ -95,11 +95,14 @@ gate — pressure lives at each boundary. See `protocols/layers.md`.
 
 ## Project packs (optional)
 
-The engine ships generic. To layer in your project's conventions, drop one YAML file per project:
+The engine ships generic. To layer in your project's conventions, drop one directory per project:
 
 ```
-${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/<project>.yaml
+<packs dir>/<project>/project.yaml
 ```
+
+`<packs dir>` is `$SHERPA_CONFIG_DIR/projects` if set, else `$WORKFLOW_PACKS_DIR` if set, else
+`${XDG_CONFIG_HOME:-~/.config}/sherpa/projects`.
 
 ```yaml
 name: my-project
@@ -112,7 +115,7 @@ pack:
     codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
 ```
 
-Sherpa's single `SessionStart` hook scans the dir, detects the active project, and announces
+Sherpa's single `SessionStart` hook scans the packs dir, detects the active project, and announces
 its pack — no per-project hook to write. If nothing matches, the engine runs generic and every
 pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 

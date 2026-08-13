@@ -19,20 +19,25 @@ The resolver checks these candidates, **highest precedence first**:
 <repo>/.claude/sherpa.yaml          # project-local, engine-specific
 <repo>/.codex/sherpa.yaml           # project-local, engine-specific
 <repo>/.pi/sherpa.yaml              # project-local, engine-specific
-${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/<project>.yaml   # workspace (user-global, many)
+<packs dir>/<project>/project.yaml  # workspace (user-global, many, one dir per pack)
 ```
 
+`<packs dir>` resolves in this order: `$SHERPA_CONFIG_DIR/projects` if `SHERPA_CONFIG_DIR` is
+set (it names sherpa's whole config root, not the packs dir itself), else `$WORKFLOW_PACKS_DIR`
+if set (it points directly at the packs dir, no `/projects` suffix), else
+`${XDG_CONFIG_HOME:-~/.config}/sherpa/projects`.
+
 The **project-local** form is a single `sherpa.yaml` (or `.yml`) committed inside
-the repo — one project, so no `projects/` dir or multi-tenancy needed, and no
+the repo — one project, so no per-project directory or multi-tenancy needed, and no
 `detect` needed either: the file only exists at that fixed path inside this repo,
-so finding it already *is* the detection. The **workspace** dir holds one YAML
-per project (each with a real `detect`, since one shared dir serves many repos)
-and is where you keep packs for repos you can't commit into. The first config
-whose `detect` matches (or, for a project-local config, whose file is simply
-found) wins, so a project-local pack **overrides** the workspace. Set
-`WORKFLOW_PACKS_DIR` to relocate the workspace dir. When it is unset, the legacy
-`~/.claude/sherpa/projects` is also scanned as a read-fallback after the XDG dir,
-so packs created before the engine-neutral move keep working.
+so finding it already *is* the detection. The **workspace** dir holds one directory
+per project, each holding its own `project.yaml` (with a real `detect`, since one
+shared dir serves many repos), and is where you keep packs for repos you can't commit
+into. The first config whose `detect` matches (or, for a project-local config, whose
+file is simply found) wins, so a project-local pack **overrides** the workspace. When
+neither env var is set, the legacy `~/.claude/sherpa/projects` dir is also scanned,
+after the XDG dir, as a read-fallback — same per-pack layout, so packs living there
+keep working.
 
 At session start the hook announces, via a user-visible `systemMessage`, either
 **`Project "<name>" loaded into Sherpa from <yaml path>`** or **`no project pack
@@ -84,14 +89,21 @@ On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` li
 
 ### Relative paths
 
-Path-ish values may be **absolute or relative**. A relative value resolves against
-the config's **proximate `.sherpa`/`.claude`/`.codex`/`.pi` directory** — the nearest ancestor of
-the YAML named `.sherpa`, `.claude`, `.codex`, or `.pi`. So `<repo>/.codex/sherpa.yaml` resolves
-against `<repo>/.codex`, and `~/.config/sherpa/projects/<p>.yaml` against
-`~/.config/sherpa/projects`. This lets a committed pack reference scripts/files next to it:
+Path-ish values may be **absolute or relative**. What a relative value resolves against
+depends on which form the config is:
+
+- **Project-local** (`<repo>/.sherpa|.claude|.codex|.pi/sherpa.yaml`): resolves against the
+  config's **proximate `.sherpa`/`.claude`/`.codex`/`.pi` directory** — the nearest ancestor
+  of the YAML named `.sherpa`, `.claude`, `.codex`, or `.pi`. So `<repo>/.codex/sherpa.yaml`
+  resolves against `<repo>/.codex`.
+- **Workspace** (`<packs dir>/<project>/project.yaml`): resolves against **the pack's own
+  directory**, `<packs dir>/<project>/` — not the shared `<packs dir>`. So
+  `<packs dir>/my-project/project.yaml` resolves against `<packs dir>/my-project/`.
+
+Either way, this lets a pack reference scripts/files next to it:
 
 ```yaml
-detect: ./detect.sh                  # runs from the proximate dir
+detect: ./detect.sh                  # runs from the config's base dir (see split above)
 pack:
   implement:
     codeStyleRules: cat ./rules.md   # pre-wrapped: cd <base> && cat ./rules.md
@@ -99,8 +111,23 @@ pack:
 
 Values starting with `/` (an absolute path, or a `/slash-skill` like
 `/my-style-audit`) are left **as-is** — never rewritten. `detect` runs with its
-working directory set to the proximate dir (its `$CWD` export still points at the
+working directory set to that base dir (its `$CWD` export still points at the
 repo, so cwd-glob detects are unaffected).
+
+### Colocated assets
+
+Because a workspace pack's relative paths resolve against its own directory, two packs
+can each ship a same-named file — e.g. both a `detect.sh` — without colliding:
+
+```
+<packs dir>/pack-a/project.yaml   # detect: ./detect.sh
+<packs dir>/pack-a/detect.sh
+<packs dir>/pack-b/project.yaml   # detect: ./detect.sh
+<packs dir>/pack-b/detect.sh
+```
+
+Each pack's `project.yaml` just says `detect: ./detect.sh` and gets its own script — no
+naming coordination between packs needed.
 
 ## What each `pack` key does
 
@@ -126,7 +153,10 @@ cp TEMPLATE.yaml /path/to/my-repo/.sherpa/sherpa.yaml   # or .claude/ .codex/ .p
 # edit pack (drop `detect` entirely — it's this repo); sessionInstructions
 
 # OR workspace (user-global, for repos you can't commit into):
-cp TEMPLATE.yaml "${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}/my-project.yaml"
+packs_dir="${SHERPA_CONFIG_DIR:+$SHERPA_CONFIG_DIR/projects}"
+packs_dir="${packs_dir:-${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa/projects}}"
+mkdir -p "$packs_dir/my-project"
+cp TEMPLATE.yaml "$packs_dir/my-project/project.yaml"
 # edit detect / sessionInstructions / pack
 
 cp -r TEMPLATE my-project-init-skill     # optional init skill; only needed if your knowledge prose invokes one
