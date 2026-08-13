@@ -44,11 +44,12 @@ assert_contains "a/command" "$out" "cd '$repo/.codex' && cat ./rules.md"
 assert_contains "a/message" "$(msg "$repo")" "Project \"proj-a\" loaded into Sherpa from $repo/.codex/sherpa.yaml 🏔️"
 assert_contains "a/primer" "$out" "check whether one of these fits"
 
-# (b) workspace YAML under a .claude ancestor — base must walk up to <tmp>/home/.claude
+# (b) workspace pack under a .claude ancestor — base is the pack's own dir, NOT
+# a walk-up to the .claude ancestor (that walk-up applies only to project-local configs)
 ws_home="$tmp/home"
 packs="$ws_home/.claude/sherpa/projects"
-mkdir -p "$packs"
-cat >"$packs/proj-b.yaml" <<'YAML'
+mkdir -p "$packs/proj-b"
+cat >"$packs/proj-b/project.yaml" <<'YAML'
 name: proj-b
 detect: "exit 0"
 pack:
@@ -58,7 +59,8 @@ YAML
 cleancwd="$tmp/elsewhere"
 mkdir -p "$cleancwd"
 out=$(WORKFLOW_PACKS_DIR="$packs" ctx "$cleancwd")
-assert_contains "b/base-is-.claude" "$out" "cd '$ws_home/.claude' && cat ./arch.md"
+assert_contains "b/base-is-pack-dir" "$out" "cd '$packs/proj-b' && cat ./arch.md"
+assert_not_contains "b/base-is-not-.claude" "$out" "cd '$ws_home/.claude'"
 
 # (c) knowledge prose + absolute command passthrough — knowledge is emitted verbatim,
 # never cd-wrapped; a command embedding an absolute path is still wrapped (harmless —
@@ -247,12 +249,12 @@ msg_o=$(msg "$repo_o")
 assert_contains "o/sherpa-wins" "$msg_o" "proj-sherpa-win"
 assert_not_contains "o/claude-loses" "$msg_o" "proj-claude-lose"
 
-# (p) XDG workspace pack resolves without WORKFLOW_PACKS_DIR — base is the XDG dir itself
+# (p) XDG workspace pack resolves without WORKFLOW_PACKS_DIR — base is the pack's own dir
 xdg_p="$tmp/xdg-p"
 fakehome_p="$tmp/home-p"
 packs_p="$xdg_p/sherpa/projects"
-mkdir -p "$packs_p" "$fakehome_p"
-cat >"$packs_p/proj-p.yaml" <<'YAML'
+mkdir -p "$packs_p/proj-p" "$fakehome_p"
+cat >"$packs_p/proj-p/project.yaml" <<'YAML'
 name: proj-p
 detect: "exit 0"
 pack:
@@ -262,14 +264,14 @@ YAML
 cleancwd_p="$tmp/elsewhere-p"
 mkdir -p "$cleancwd_p"
 out_p=$(printf '{"cwd":"%s"}' "$cleancwd_p" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_p" HOME="$fakehome_p" bash "$resolver" | jq -r '.hookSpecificOutput.additionalContext // ""')
-assert_contains "p/xdg-base" "$out_p" "cd '$packs_p' && cat ./arch.md"
+assert_contains "p/xdg-base" "$out_p" "cd '$packs_p/proj-p' && cat ./arch.md"
 
 # (q) legacy .claude/sherpa/projects still resolves as a fallback when WORKFLOW_PACKS_DIR
 # is unset and XDG_CONFIG_HOME points at a dir with no sherpa/projects
 fakehome_q="$tmp/home-q"
 legacy_q="$fakehome_q/.claude/sherpa/projects"
-mkdir -p "$legacy_q"
-cat >"$legacy_q/proj-q.yaml" <<'YAML'
+mkdir -p "$legacy_q/proj-q"
+cat >"$legacy_q/proj-q/project.yaml" <<'YAML'
 name: proj-q
 detect: "exit 0"
 YAML
@@ -278,21 +280,21 @@ mkdir -p "$xdg_q"
 cleancwd_q="$tmp/elsewhere-q"
 mkdir -p "$cleancwd_q"
 msg_q=$(printf '{"cwd":"%s"}' "$cleancwd_q" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_q" HOME="$fakehome_q" bash "$resolver" | jq -r '.systemMessage // ""')
-assert_contains "q/legacy-fallback" "$msg_q" "Project \"proj-q\" loaded into Sherpa from $legacy_q/proj-q.yaml 🏔️"
+assert_contains "q/legacy-fallback" "$msg_q" "Project \"proj-q\" loaded into Sherpa from $legacy_q/proj-q/project.yaml 🏔️"
 
 # (r) XDG workspace wins over legacy .claude workspace when both have a matching pack —
 # packs_dirs lists the XDG dir before the legacy dir, so XDG's match is found first
 fakehome_r="$tmp/home-r"
 legacy_r="$fakehome_r/.claude/sherpa/projects"
-mkdir -p "$legacy_r"
-cat >"$legacy_r/proj-legacy-lose.yaml" <<'YAML'
+mkdir -p "$legacy_r/proj-legacy-lose"
+cat >"$legacy_r/proj-legacy-lose/project.yaml" <<'YAML'
 name: proj-legacy-lose
 detect: "exit 0"
 YAML
 xdg_r="$tmp/xdg-r"
 packs_r="$xdg_r/sherpa/projects"
-mkdir -p "$packs_r"
-cat >"$packs_r/proj-xdg-win.yaml" <<'YAML'
+mkdir -p "$packs_r/proj-xdg-win"
+cat >"$packs_r/proj-xdg-win/project.yaml" <<'YAML'
 name: proj-xdg-win
 detect: "exit 0"
 YAML
@@ -331,6 +333,104 @@ YAML
 out=$(ctx "$repo_t")
 assert_contains "t/decompose-knowledge-quoted" "$out" 'decompose.knowledge="Keep steps traceable to the Outcome."'
 assert_not_contains "t/decompose-knowledge-not-wrapped" "$out" "&& Keep steps traceable"
+
+# (u) per-pack colocated asset executes — a workspace pack's `detect` runs from
+# the pack's own dir, so a relative ./detect.sh resolves and executes from there
+packs_u="$tmp/packs-u"
+mkdir -p "$packs_u/proj-u"
+cat >"$packs_u/proj-u/detect.sh" <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+chmod +x "$packs_u/proj-u/detect.sh"
+cat >"$packs_u/proj-u/project.yaml" <<'YAML'
+name: proj-u
+detect: "./detect.sh"
+YAML
+cleancwd_u="$tmp/elsewhere-u"
+mkdir -p "$cleancwd_u"
+assert_contains "u/colocated-detect-runs" "$(WORKFLOW_PACKS_DIR="$packs_u" msg "$cleancwd_u")" "Project \"proj-u\" loaded into Sherpa"
+
+# (v) two workspace packs with a same-named helper — no collision, since each
+# pack resolves relative commands against its own dir. The resolver emit_results
+# and exits on the first match, so this invokes it twice (one cwd per pack) and
+# asserts each invocation resolves to its own pack's base dir.
+packs_v="$tmp/packs-v"
+mkdir -p "$packs_v/proj-v1" "$packs_v/proj-v2"
+cwd_v1="$tmp/proj-v1-repo"
+cwd_v2="$tmp/proj-v2-repo"
+mkdir -p "$cwd_v1" "$cwd_v2"
+echo "v1 rules" >"$packs_v/proj-v1/rules.md"
+echo "v2 rules" >"$packs_v/proj-v2/rules.md"
+cat >"$packs_v/proj-v1/project.yaml" <<'YAML'
+name: proj-v1
+detect: 'test "$CWD" = "__CWD_V1__"'
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+sed -i "s#__CWD_V1__#$cwd_v1#" "$packs_v/proj-v1/project.yaml"
+cat >"$packs_v/proj-v2/project.yaml" <<'YAML'
+name: proj-v2
+detect: 'test "$CWD" = "__CWD_V2__"'
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+sed -i "s#__CWD_V2__#$cwd_v2#" "$packs_v/proj-v2/project.yaml"
+out_v1=$(WORKFLOW_PACKS_DIR="$packs_v" ctx "$cwd_v1")
+out_v2=$(WORKFLOW_PACKS_DIR="$packs_v" ctx "$cwd_v2")
+assert_contains "v/pack1-own-base" "$out_v1" "cd '$packs_v/proj-v1' && cat ./rules.md"
+assert_not_contains "v/pack1-not-pack2-base" "$out_v1" "cd '$packs_v/proj-v2'"
+assert_contains "v/pack2-own-base" "$out_v2" "cd '$packs_v/proj-v2' && cat ./rules.md"
+assert_not_contains "v/pack2-not-pack1-base" "$out_v2" "cd '$packs_v/proj-v1'"
+
+# (w) hard cut — the old flat <name>.yaml layout under a workspace packs dir no
+# longer loads; only the per-pack project.yaml layout is scanned
+packs_w="$tmp/packs-w"
+mkdir -p "$packs_w"
+cat >"$packs_w/proj-flat.yaml" <<'YAML'
+name: proj-flat
+detect: "exit 0"
+YAML
+cleancwd_w="$tmp/elsewhere-w"
+mkdir -p "$cleancwd_w"
+msg_w=$(WORKFLOW_PACKS_DIR="$packs_w" msg "$cleancwd_w")
+assert_not_contains "w/flat-layout-ignored" "$msg_w" "proj-flat"
+assert_contains "w/no-pack-matched" "$msg_w" "no project pack matched"
+
+# (x) workspace pack with NO `detect` key, per-pack layout — must NOT match;
+# the workspace branch requires a real detect since one packs dir is shared
+# by many projects (case (i) covers the same rule at the flat pre-pack layout;
+# this exercises the branch through the current "$_pd"/*/project.yaml glob)
+packs_x="$tmp/packs-x"
+mkdir -p "$packs_x/proj-x"
+cat >"$packs_x/proj-x/project.yaml" <<'YAML'
+name: proj-x
+pack:
+  knowledge: /my-project-init
+YAML
+cleancwd_x="$tmp/elsewhere-x"
+mkdir -p "$cleancwd_x"
+msg_x=$(WORKFLOW_PACKS_DIR="$packs_x" msg "$cleancwd_x")
+assert_not_contains "x/workspace-no-detect-skipped" "$msg_x" "proj-x"
+assert_contains "x/no-pack-matched" "$msg_x" "no project pack matched"
+
+# (y) workspace packs dir with a space in its path — the "$_pd"/*/project.yaml
+# glob at :106 must still find it and the emitted cd must quote it correctly
+packs_y="$tmp/my packs"
+mkdir -p "$packs_y/proj-y"
+cat >"$packs_y/proj-y/project.yaml" <<'YAML'
+name: proj-y
+detect: "exit 0"
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+cleancwd_y="$tmp/elsewhere-y"
+mkdir -p "$cleancwd_y"
+out_y=$(WORKFLOW_PACKS_DIR="$packs_y" ctx "$cleancwd_y")
+assert_contains "y/space-in-packs-dir" "$out_y" "cd '$packs_y/proj-y' && cat ./rules.md"
 
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"

@@ -13,9 +13,9 @@
 #   <cwd>/.claude/sherpa.yaml|.yml       project-local, engine-specific, shareable in-repo (single file)
 #   <cwd>/.codex/sherpa.yaml|.yml        project-local, engine-specific, shareable in-repo (single file)
 #   <cwd>/.pi/sherpa.yaml|.yml           project-local, engine-specific, shareable in-repo (single file)
-#   ${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects}/*.yaml|*.yml  workspace (many)
+#   ${WORKFLOW_PACKS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects}/*/project.yaml|.yml  workspace (many, one dir per pack)
 # When WORKFLOW_PACKS_DIR is unset, $HOME/.claude/sherpa/projects is also scanned as a
-# legacy read-fallback workspace dir, after the XDG path.
+# legacy read-fallback workspace dir, after the XDG path, using the same per-pack layout.
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # `detect` is optional for project-local configs (file presence at that fixed path is
 # the detection); it's required for workspace configs (one dir shared by many projects).
@@ -29,9 +29,10 @@
 # values pass through as-is; multi-line YAML block scalars collapse to one line via
 # `sub("\n";" ")` with trailing whitespace trimmed.
 # Command keys (architectureRules, codeStyleRules, validate) are shell commands: relative
-# values resolve against the config's proximate .sherpa/.claude/.codex/.pi dir (detect runs from it;
-# command values are pre-wrapped `cd <base> && ...`). /- and ~-prefixed command values are
-# left as-is.
+# values resolve against a base dir (detect also runs from it; command values are
+# pre-wrapped `cd <base> && ...`). Project-local configs base on the proximate
+# .sherpa/.claude/.codex/.pi dir; workspace configs base on the pack's own directory.
+# /- and ~-prefixed command values are left as-is.
 #
 # jq builds every JSON payload this script emits, so a missing jq means nothing can be
 # emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
@@ -102,7 +103,7 @@ local_candidates=(
   "$cwd/.pi/sherpa.yaml"     "$cwd/.pi/sherpa.yml"
 )
 candidates=("${local_candidates[@]}")
-for _pd in "${packs_dirs[@]}"; do candidates+=("$_pd"/*.yaml "$_pd"/*.yml); done
+for _pd in "${packs_dirs[@]}"; do candidates+=("$_pd"/*/project.yaml "$_pd"/*/project.yml); done
 
 is_local() {
   local c
@@ -113,7 +114,11 @@ is_local() {
 for config in "${candidates[@]}"; do
   [ -f "$config" ] || continue
   detect=$(yq '.detect // ""' "$config" 2>/dev/null) || continue
-  base=$(proximate_base "$config")
+  if is_local "$config"; then
+    base=$(proximate_base "$config")
+  else
+    base=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || base=$(dirname "$config")
+  fi
 
   # Project-local configs live at a fixed path under $cwd — finding the file
   # there already proves the project is active, so `detect` is optional.
