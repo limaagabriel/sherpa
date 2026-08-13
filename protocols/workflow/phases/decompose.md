@@ -1,16 +1,16 @@
-# Plan (step layer)
+# Decompose (step layer, L3)
 
-Decompose the goal into steps, present them, wait for approval. Driven by `/plan`.
+Decompose the goal into steps, present them, wait for approval. Driven by `/decompose`.
 Input is the frame (in context) — or, standalone, a `<task>` + a light `/scout`.
 
 ## Step 0 — bind the goal
 `Outcome` binds here, at step 0, and nowhere earlier. **Frame in context** → bind `Outcome` from
 its problem contract's solved-signal (what `Outcome` must achieve); bind `for`/`because`/`done
-when` as normal. **Direction record in context** → its `direction` field is a proposed `Outcome`;
-bind from it. **No frame** → run a quick `/scout`, then draft a problem contract inline from
-request + scout evidence (`phases/frame.md` § Problem contract), apply its § Vocabulary test, then
-bind `Outcome` from it — the standalone path; don't skip the contract just because `/frame` was
-skipped.
+when` as normal. **Pitch in context** → its `solution` field (`phases/shape.md` § Pitch) is a
+proposed `Outcome`; bind from it. **No frame** → run a quick `/scout`, then draft a problem
+contract inline from request + scout evidence (`phases/frame.md` § Problem contract), apply its §
+Vocabulary test, then bind `Outcome` from it — the standalone path; don't skip the contract just
+because `/frame` was skipped.
 
 ## Before decomposing
 - **Settle only what blocks a step.** If the frame left open questions, resolve the ones that
@@ -74,8 +74,8 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
    step; every produces entry has a consumer or a stated reason. A mismatch here is cheaper to
    fix now than at the consuming step.
 
-## Adversarial decomposition review (plan-reviewer)
-After the silent self-review, before presenting, dispatch `plan-reviewer` via Agent. Forward the
+## Adversarial decomposition review (decompose-reviewer)
+After the silent self-review, before presenting, dispatch `decompose-reviewer` via Agent. Forward the
 plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the frame
 path for context, or the problem contract drafted at step 0 when no frame existed. It attacks
 traceability, missing foundation, gaps, overlap, ordering, hidden coupling, interface-mismatch and
@@ -91,4 +91,4 @@ A question, critique, or your own answer is **not** approval. When in doubt, you
 - Skip approval, even for small fixes.
 - Re-refine intent beyond step 0's binding, or surface open questions (that's `/frame`'s job).
 - Reference a file before verifying it exists.
-- Present without the silent self-review and the plan-reviewer pass.
+- Present without the silent self-review and the decompose-reviewer pass.

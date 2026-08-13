@@ -33,8 +33,8 @@ Pure-codegen step → dispatch at model haiku; else default. Each step:
   verbatim to the human, do not loop again.
 - `MET` + `PASS` → next step.
 - `BLOCK` → stop, surface verbatim to the human.
-- Any reviewer output containing `recommend /plan revisit` → stop, surface verbatim to the human,
-  offer `/plan` in one declinable line.
+- Any reviewer output containing `recommend /decompose revisit` → stop, surface verbatim to the human,
+  offer `/decompose` in one declinable line.
 
 ## Done
 Every step committed, no open `BLOCK`. Present the per-step results; offer the persist skill

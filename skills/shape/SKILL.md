@@ -1,0 +1,61 @@
+---
+name: shape
+description: Shape layer (L2). Fan out N candidates from the frame's problem contract along its vantages, skeleton each to Shape Up's three properties, critique the pool, and hand the human a pitch to pick from. Requires a frame in context — offers /frame when none exists. Triggers - "/shape", "/shape <problem>", "brainstorm directions", "what are the options". Counterparts - /frame, /decompose, /implement.
+---
+
+# /shape — fan out candidate directions, let the human pick
+
+Produce **the pitch** for the frame's problem: N coarse step lists, skeletoned, critiqued, one
+picked. `/shape` is L2 in the four-layer spine, running AFTER `/frame`; it owns the pitch,
+consumed by `/decompose` at its step 0. Lives **in context** (printed, not on disk); persisting is
+the opt-in `/persist` skill.
+
+**Requires a frame.** With none in context there is no vantage axis to fan out on at all — OFFER
+`/frame` in one declinable line and stop; there is no lighter fallback.
+
+## Inputs
+- `PROBLEM` — the frame's problem contract, in context. Vantages derive from it per run; no
+  shipped list (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Vantages).
+- `TARGET_DIR` — absolute path to explore. Default: current working directory.
+- `COUNT` — candidates per builder. Default 3.
+- Appetite — a step budget the human sets before dispatch
+  (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Appetite).
+
+## Operating rules
+- **Authority:** the human owns every decision. You propose; they decide.
+- **Stance:** feedback-first — open with a brief take when the human floats an approach.
+- **No narration between tools.** One short sentence only when the *task* changes.
+- **Conventions:** the project's own style — pack `codeStyleRules` when announced, else the
+  surrounding code; evidence-only (quote file:line).
+- **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
+- **Pack forwarding:** forward `knowledge` (cross-cutting) and `shape.knowledge` (additive) — when
+  announced — to `shape-reviewer` as its `SHAPE_KNOWLEDGE` input.
+- **Explicit invocation only, 4 agent calls per run** (3 `shape-builder` + 1 `shape-reviewer`).
+  Never auto-fire; OFFER `/shape <problem>` in one declinable line instead.
+- **No `/scout` dispatch** — each `shape-builder` reads the codebase itself; a shared evidence
+  base would anchor the branches, the failure mode the fan-out exists to avoid.
+
+## Procedure
+1. **Derive the vantages** from the frame's obstacle / capability / costs slots
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Vantages). Show the human the
+   vantages and the appetite before dispatching.
+2. **Generate.** One `shape-builder` per vantage, all in ONE message, concurrent. THE ISOLATION
+   INVARIANT IS YOURS TO ENFORCE, not the builder's
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — Isolation invariant):
+   brief each with only its own premise, `TARGET_DIR`, `COUNT` — never a sibling's output, never
+   the pool so far.
+3. **Critique.** One `shape-reviewer` dispatch over the pooled candidates
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `SHAPE_KNOWLEDGE`
+   when a pack announced it. Returns the shortlist with precedent, risk, skeletons, traps, and the
+   collapse record.
+4. **Present, then wait for the pick** — never auto-select; rejecting the whole shortlist is a
+   valid outcome, not a failure. **Emit the pitch** — see `## Output`.
+
+## Output
+**The pitch** — five fields per `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch
+(problem, constraints, solution, rabbit holes, limitations), carrying the picked skeleton, its
+precedent, and the rejected candidates with why they lost. Nothing on disk.
+
+## Done when
+A pitch exists in context (or the human rejected the shortlist). Hand off to `/decompose` (it
+consumes the pitch at its step 0), or offer `/persist` if the human wants it saved.

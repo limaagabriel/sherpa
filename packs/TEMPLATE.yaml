@@ -33,8 +33,11 @@ pack:
   frame:
     knowledge: Additive frame-layer notes for the reviewer.   # optional, additive
 
-  plan:
-    knowledge: Additive plan-layer notes for the reviewer.   # optional, additive
+  shape:
+    knowledge: Additive shape-layer notes for the shape-reviewer.   # optional, additive
+
+  decompose:
+    knowledge: Additive decompose-layer notes for the reviewer.   # optional, additive
     architectureRules: cat /abs/path/to/architecture.md
 
   implement:
@@ -43,6 +46,3 @@ pack:
     validate: |
       npm run lint
       npm test
-
-  diverge:
-    knowledge: Additive diverge-layer notes for the diverge-reviewer.   # optional, additive

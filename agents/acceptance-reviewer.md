@@ -49,7 +49,7 @@ Check one built step against **what it promised**. You judge intent-met, not cod
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
 - **Aim confidence at the work, not your verdict.** Never hedge MET/UNMET itself — it stands regardless of what follows.
 - **Name the layer, not just the patch.** When a gap can't be closed by patching this step —
-  the criteria themselves were wrong — say so plainly: `recommend /plan revisit`, instead of
+  the criteria themselves were wrong — say so plainly: `recommend /decompose revisit`, instead of
   proposing a local patch that won't hold.
 
 ## Output

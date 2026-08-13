@@ -1,13 +1,15 @@
 ---
 name: frame
-description: Macro layer (L1). Turn a fuzzy task into the frame — scout the code, compose a problem contract, surface open questions as they arise — binding no solution. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /plan, /implement.
+description: Macro layer (L1). Turn a fuzzy task into the frame — scout the code, compose a problem contract, surface open questions as they arise — binding no solution. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /decompose, /implement.
 ---
 
 # /frame — discover, then bind the problem
 
 Produce **the frame** for `<task>`: the right problem, well-framed, with discovery and the open
-questions named. The top of the ceremony gradient — use it when the task is fuzzy. For a task
-with a clear goal, the user may skip straight to `/plan`.
+questions named. The top of the ceremony gradient — use it when the task is fuzzy. A task with a
+clear goal and a known approach may skip straight to `/decompose`; a clear problem with no chosen
+direction goes to `/shape` instead
+(`${CLAUDE_PLUGIN_ROOT}/protocols/layers.md` § A ceremony gradient).
 
 The frame lives **in context** (printed, not on disk). Persisting it is the opt-in `/persist`
 skill — never automatic.
@@ -26,9 +28,8 @@ skill — never automatic.
    first, before any framing exists; bind discoverable slots evidence-first; **ask
    preference/framing questions the moment they arise** (one at a time, brainstorming-style),
    shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md` — don't defer.
-   **Direction record in context?** Its `precedent` entries are already-bound discovery and its
-   `risk` is a known constraint — run `/scout` only for surface the record doesn't cover; don't
-   re-derive what it already cites.
+   **Pitch in context?** Its `solution` field's precedent citations are already-bound discovery and
+   its `rabbit holes` are a known constraint — scout only the surface it doesn't cover.
 2. **Compose the frame** = *problem contract + discovery + open questions*
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract). Apply
    § Vocabulary test to the solved-signal before presenting. Open questions hold only what the
@@ -41,5 +42,5 @@ skill — never automatic.
    verbatim and fix what you can; a hole only the human can close → wait.
 
 ## Done when
-The frame is composed, presented, and critiqued. Hand off to `/plan` (it reads the frame from
+The frame is composed, presented, and critiqued. Hand off to `/shape` (it reads the frame from
 context), or offer `/persist` if the user wants it on disk.

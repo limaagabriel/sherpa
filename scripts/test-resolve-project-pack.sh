@@ -52,7 +52,7 @@ cat >"$packs/proj-b.yaml" <<'YAML'
 name: proj-b
 detect: "exit 0"
 pack:
-  plan:
+  decompose:
     architectureRules: cat ./arch.md
 YAML
 cleancwd="$tmp/elsewhere"
@@ -256,7 +256,7 @@ cat >"$packs_p/proj-p.yaml" <<'YAML'
 name: proj-p
 detect: "exit 0"
 pack:
-  plan:
+  decompose:
     architectureRules: cat ./arch.md
 YAML
 cleancwd_p="$tmp/elsewhere-p"
@@ -302,7 +302,7 @@ msg_r=$(printf '{"cwd":"%s"}' "$cleancwd_r" | env -u WORKFLOW_PACKS_DIR XDG_CONF
 assert_contains "r/xdg-wins" "$msg_r" "proj-xdg-win"
 assert_not_contains "r/legacy-loses" "$msg_r" "proj-legacy-lose"
 
-# (s) diverge.knowledge — additive prose for the diverge layer/tool, quoted
+# (s) shape.knowledge — additive prose for the shape layer, quoted
 # verbatim like implement.knowledge, never cd-wrapped
 repo_s="$tmp/repos"
 mkdir -p "$repo_s/.claude"
@@ -310,12 +310,27 @@ cat >"$repo_s/.claude/sherpa.yaml" <<'YAML'
 name: proj-s
 detect: "exit 0"
 pack:
-  diverge:
+  shape:
     knowledge: "Prefer OSGi-friendly directions."
 YAML
 out=$(ctx "$repo_s")
-assert_contains "s/diverge-knowledge-quoted" "$out" 'diverge.knowledge="Prefer OSGi-friendly directions."'
-assert_not_contains "s/diverge-knowledge-not-wrapped" "$out" "&& Prefer OSGi-friendly"
+assert_contains "s/shape-knowledge-quoted" "$out" 'shape.knowledge="Prefer OSGi-friendly directions."'
+assert_not_contains "s/shape-knowledge-not-wrapped" "$out" "&& Prefer OSGi-friendly"
+
+# (t) decompose.knowledge — additive prose for the decompose layer, quoted
+# verbatim like implement.knowledge, never cd-wrapped
+repo_t="$tmp/repot"
+mkdir -p "$repo_t/.claude"
+cat >"$repo_t/.claude/sherpa.yaml" <<'YAML'
+name: proj-t
+detect: "exit 0"
+pack:
+  decompose:
+    knowledge: "Keep steps traceable to the Outcome."
+YAML
+out=$(ctx "$repo_t")
+assert_contains "t/decompose-knowledge-quoted" "$out" 'decompose.knowledge="Keep steps traceable to the Outcome."'
+assert_not_contains "t/decompose-knowledge-not-wrapped" "$out" "&& Keep steps traceable"
 
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"

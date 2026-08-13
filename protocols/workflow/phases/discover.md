@@ -6,8 +6,8 @@ per-step step-builder dispatches when a plan exists).
 ## Steps
 - `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local),
   `medium`/`very thorough` (cross-cutting).
-- **Direction record in context?** Its `precedent` entries are already-bound discovery and its
-  `risk` is a known constraint — scout only the surface it doesn't cover.
+- **Pitch in context?** Its `solution` field's precedent citations are already-bound discovery and
+  its `rabbit holes` are a known constraint — scout only the surface it doesn't cover.
 - Draft the **problem contract** (`phases/frame.md` § Problem contract) from request + scout:
   who / capability / obstacle / costs / solved-signal. Its **unbound slots are your
   clarification questions** — a slot you can't fill *is* a hole.

@@ -5,20 +5,23 @@ plugin whose skills/protocols are authored in Claude Code's vocabulary but run
 under **both Claude Code and Codex CLI**. The user composes the workflow; sherpa
 offers the tools.
 
-- Three layers, three entry points (pick by task complexity):
-  `/frame <task>` (macro — scout + bind a problem contract), `/plan <task>` (step —
-  decompose), `/implement <task>` (build). Smaller block: `/scout`, `/diverge`.
+- Four layers, four entry points (pick by task complexity):
+  `/frame <task>` (macro — scout + bind a problem contract), `/shape <task>` (shape —
+  fan out directions, pick one), `/decompose <task>` (step — decompose into steps),
+  `/implement <task>` (build). Smaller block: `/scout`.
 - Each skill is a standalone entry point: it consumes the upstream artifact if it's
   in context, else does the minimum to proceed — never re-running the layer above.
-- **Nothing persists unless asked** — `/persist` writes the in-context frame/plan to
-  disk; there is no automatic run-state.
+- **Nothing persists unless asked** — `/persist` writes the in-context frame, pitch,
+  or plan to disk; there is no automatic run-state.
 - See `protocols/layers.md` for the layer/skill/reviewer binding.
 
 ## Versioning
 
-Bump the plugin version on every new commit to `main`. Keep all three manifests
-in lockstep — `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and
-`package.json` must carry the **same** version string.
+Bump the plugin version on every new commit to `main`. CI enforces lockstep across
+four files, five fields — `package.json` (`.version`), `.claude-plugin/plugin.json`
+(`.version`), `.codex-plugin/plugin.json` (`.version`), and
+`.claude-plugin/marketplace.json` (both `.metadata.version` and `.plugins[0].version`)
+— must all carry the **same** version string. See `.github/workflows/ci.yml`.
 
 ## Running under Codex CLI
 

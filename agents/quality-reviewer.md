@@ -67,7 +67,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
   - Not covered by any remaining step's goal, but in current-step scope & patchable → `FIX` —
     fold into this step's commit.
   - Not covered by any remaining step's goal, and the fix means the step's premise was wrong
-    (can't be closed by patching this diff) → `recommend /plan revisit`. Last resort — it
+    (can't be closed by patching this diff) → `recommend /decompose revisit`. Last resort — it
     requires positive evidence that no remaining step's goal covers the failure.
 
 ## Output
