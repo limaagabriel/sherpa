@@ -68,7 +68,7 @@ router.
 | `step-builder` | build | sees one step's diff; changes only that step's code |
 | `acceptance-reviewer` | build | sees one step's diff + criteria; read-only `MET \| UNMET` |
 | `quality-reviewer` | build | sees one step's diff; read-only `PASS \| FIX \| BLOCK` |
-| `/persist` skill | cross-cutting | writes the in-context frame/plan to disk on request; owns no layer |
+| `/persist` skill | cross-cutting | writes the in-context frame, pitch, or plan to disk on request; owns no layer |
 
 `/scout` produces no step list and owns no artifact of its own; `/shape` produces N coarse step
 lists and owns the pitch.
