@@ -54,7 +54,7 @@ Every candidate carries one, bound to Shape Up part 1's three properties:
 A skeleton detailed enough to build from makes `/decompose` dead weight — the failure **rough** prevents.
 
 ## Pitch
-Replaces today's Direction record. Five fields, per Shape Up: **problem**, **constraints**,
+Five fields, per Shape Up: **problem**, **constraints**,
 **solution**, **rabbit holes**, **limitations** — carrying the picked skeleton, its precedent
 citations, and the rejected candidates with why they lost. Consumed by `/decompose` at its step 0,
 where `Outcome` binds. The human picks; the driver NEVER auto-selects — a synthesized direction

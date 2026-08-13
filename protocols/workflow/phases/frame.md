@@ -2,7 +2,7 @@
 
 Bind the problem before any solution — restate it as a contract, discover, surface open
 questions. Driven by `/frame`. Its artifact is **the frame** — problem contract + discovery +
-open questions. It binds no `Outcome` — that happens at `/plan` step 0. Binding an end-state
+open questions. It binds no `Outcome` — that happens at `/decompose` step 0. Binding an end-state
 before discovery completes anchors scouting to one direction.
 
 ## Problem contract
@@ -35,6 +35,6 @@ noun is — it bakes in one mechanism over equally valid alternatives.
 > every noun (macro-layer run, discovery, direction) is observable today.
 
 ## Don't
-- Bind an `Outcome` — that's `/plan` step 0's job.
+- Bind an `Outcome` — that's `/decompose` step 0's job.
 - Name a mechanism — noun or verb — in any slot, including the solved-signal.
-- Defer a framing question to the plan layer. If it's about the problem, resolve it here.
+- Defer a framing question to the step layer. If it's about the problem, resolve it here.
