@@ -1,9 +1,9 @@
 # Sherpa
 
-A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
-**composable skills**, one per layer of altitude — `/frame` (macro), `/plan` (step),
-`/implement` (build) — with bundled scout, step-builder, and reviewer subagents that rope up
-and check the rope at every pitch.
+A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: four
+**composable skills**, one per layer of altitude — `/frame` (macro), `/shape` (shape),
+`/decompose` (step), `/implement` (build) — with bundled scout, shape-generator,
+step-builder, and reviewer subagents that rope up and check the rope at every pitch.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until
 you call a skill), **lean** (nothing persists unless you call `/persist`), and
@@ -16,13 +16,14 @@ Asking an agent to "just build it" skips the parts that make work trustworthy: s
 precedent, pinning down acceptance criteria, and adversarially checking the result. Sherpa
 makes those first-class — but lets *you* decide how much ceremony a task needs:
 
-- **A ceremony gradient.** A fuzzy task starts at `/frame`. A clear goal starts at `/plan`.
-  One obvious change goes straight to `/implement`. You pick the entry point.
-- **Reviewed at every layer.** A frame-reviewer attacks the framing, a plan-reviewer attacks
-  the decomposition, and per-step acceptance + quality reviewers check "right thing?" and
-  "built right?" independently.
-- **No magic state.** The frame and plan live in the conversation. Want them on disk to resume
-  later? Call `/persist`. Otherwise sherpa leaves no trace.
+- **A ceremony gradient.** A fuzzy task starts at `/frame`. A clear problem with multiple
+  directions to weigh starts at `/shape`. One direction that just needs decomposing starts at
+  `/decompose`. One obvious change goes straight to `/implement`. You pick the entry point.
+- **Reviewed at every layer.** A frame-reviewer attacks the framing, a shape-reviewer attacks
+  the candidate pool, a decompose-reviewer attacks the decomposition, and per-step acceptance +
+  quality reviewers check "right thing?" and "built right?" independently.
+- **No magic state.** The frame, pitch, and plan live in the conversation. Want them on disk to
+  resume later? Call `/persist`. Otherwise sherpa leaves no trace.
 
 ## Install
 
@@ -51,21 +52,23 @@ project pack), and start a new thread. Verify with `/frame` — if the skill sho
 
 | Skill | Layer | Does | Start here when |
 |---|---|---|---|
-| `/frame <task>` | macro | Scout, bind a problem contract, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
-| `/plan <task>` | step | Decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
-| `/implement <task>` | build | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
-| `/diverge <task>` | — | Dispatch divergers per concern, pool + critique candidates, present a ranked shortlist, wait for your pick. | you know the problem but not which approach to take |
-| `/scout <task>` | — | Standalone codebase scout; also called by `/frame` and `/plan`. | you just want a lay of the land |
-| `/persist` | — | Write the in-context frame/plan to disk so a later session can resume. | you want to save or resume |
+| `/frame <task>` | macro (L1) | Scout, bind a problem contract, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
+| `/shape <task>` | shape (L2) | Fan out candidate directions along the frame's vantages, skeleton + critique the pool, present a pitch; **wait for your pick**. | the problem's framed and there are multiple directions to weigh (needs a frame — offers `/frame` first if none exists) |
+| `/decompose <task>` | step (L3) | Bind the goal's `Outcome`, decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
+| `/implement <task>` | build (L4) | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
+| `/scout <task>` | — | Standalone codebase scout; also called by `/frame` and `/decompose`. | you just want a lay of the land |
+| `/persist` | — | Write the in-context frame, pitch, or plan to disk so a later session can resume. | you want to save or resume |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context,
 else does the minimum to proceed — never re-running the layer above. Compose them however the
 task wants:
 
 ```
-/frame add rate limiting to the public API   # fuzzy → shape it first
+/frame add rate limiting to the public API   # fuzzy → frame it first
    → scouts, asks a few questions, presents a frame
-/plan                                        # decompose the frame into steps
+/shape                                       # fan out directions, pick one
+   → presents a pitch, waits for your pick
+/decompose                                   # decompose the pick into steps
    → presents steps, waits for your approval
 /implement                                   # build them, reviewed per step
 ```
@@ -77,16 +80,18 @@ task wants:
 ```
 /frame      scout + bind a problem contract + ask questions as they arise  →  frame  (in context)
             frame-reviewer attacks the framing (L1)
-/plan       decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
-            plan-reviewer attacks the decomposition (L2)
-/implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L3)
+/shape      fan out directions, skeleton + critique the pool  →  pitch  (in context)
+            shape-reviewer attacks the pool: solved, bounded, collapse (L2)
+/decompose  decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
+            decompose-reviewer attacks the decomposition (L3)
+/implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L4)
 ```
 
 `BLOCK` findings surface to you. `MET`/`PASS`/`FIX` continue automatically (a `FIX` is folded
 into the step-builder's commit and re-checked once; still failing after that re-check is terminal,
-surfaced like `BLOCK`). A reviewer that recommends a `/plan` revisit also stops, offering `/plan`
-in one declinable line. There is no final Validate gate — pressure lives at each boundary. See
-`protocols/layers.md`.
+surfaced like `BLOCK`). Any reviewer output containing `recommend /decompose revisit` also stops,
+surfacing verbatim and offering `/decompose` in one declinable line. There is no final Validate
+gate — pressure lives at each boundary. See `protocols/layers.md`.
 
 ## Project packs (optional)
 
@@ -115,30 +120,32 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ### L1 Macro
 - **`/frame`** — scout + bind a problem contract; presents a frame, nothing on disk.
-- **`/scout`** — standalone codebase scout; also called by `/frame` and `/plan`.
+- **`/scout`** — standalone codebase scout; also called by `/frame` and `/decompose`.
 - **`frame-reviewer`** (agent) — cold eyes on the frame's problem contract, discovery, and open questions.
-- **`/diverge`** — dispatches divergers per concern, pools + critiques candidates, presents a ranked shortlist for your pick.
-- **`diverge-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
 
-### L2 Step
-- **`/plan`** — decompose into steps; waits for your approval.
-- **`plan-reviewer`** (agent) — attacks the decomposition (traceability, gaps, overlap, order).
+### L2 Shape
+- **`/shape`** — fans out candidate directions from the frame, skeletons + critiques the pool, presents a pitch for your pick.
+- **`shape-generator`** (agent) — read-only idea generator holding one premise false; the worker `/shape` dispatches.
+- **`shape-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
 
-### L3 Build
+### L3 Step
+- **`/decompose`** — binds the goal's `Outcome`, decomposes into ordered steps; waits for your approval.
+- **`decompose-reviewer`** (agent) — attacks the decomposition (traceability, gaps, overlap, order).
+
+### L4 Build
 - **`/implement`** — runs approved steps via step-builder + reviewers, pressure per step.
 - **`step-builder`** (agent) — implements one step and lands one commit.
 - **`acceptance-reviewer`** (agent) — judges whether each acceptance criterion is met.
 - **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
 
 ### Cross-cutting
-- **`/persist`** — writes the in-context frame/plan to disk on request.
-- **`diverger`** (agent) — read-only per-concern idea generator; the worker `/diverge` dispatches.
+- **`/persist`** — writes the in-context frame, pitch, or plan to disk on request.
 
 ## Layout
 
 ```
-skills/        /frame, /plan, /implement, /scout, /diverge, /persist
-agents/        scout, frame-reviewer, plan-reviewer, step-builder, acceptance-reviewer, quality-reviewer, diverger, diverge-reviewer
+skills/        /frame, /shape, /decompose, /implement, /scout, /persist
+agents/        scout, frame-reviewer, shape-generator, shape-reviewer, decompose-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver
