@@ -17,7 +17,7 @@ the opt-in `/persist` skill.
 - `PROBLEM` — the frame's problem contract, in context. Vantages derive from it per run; no
   shipped list (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Vantages).
 - `TARGET_DIR` — absolute path to explore. Default: current working directory.
-- `COUNT` — candidates per generator. Default 3.
+- `COUNT` — candidates per builder. Default 3.
 - Appetite — a step budget the human sets before dispatch
   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Appetite).
 
@@ -30,17 +30,17 @@ the opt-in `/persist` skill.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** forward `knowledge` (cross-cutting) and `shape.knowledge` (additive) — when
   announced — to `shape-reviewer` as its `SHAPE_KNOWLEDGE` input.
-- **Explicit invocation only, 4 agent calls per run** (3 `shape-generator` + 1 `shape-reviewer`).
+- **Explicit invocation only, 4 agent calls per run** (3 `shape-builder` + 1 `shape-reviewer`).
   Never auto-fire; OFFER `/shape <problem>` in one declinable line instead.
-- **No `/scout` dispatch** — each `shape-generator` reads the codebase itself; a shared evidence
+- **No `/scout` dispatch** — each `shape-builder` reads the codebase itself; a shared evidence
   base would anchor the branches, the failure mode the fan-out exists to avoid.
 
 ## Procedure
 1. **Derive the vantages** from the frame's obstacle / capability / costs slots
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Vantages). Show the human the
    vantages and the appetite before dispatching.
-2. **Generate.** One `shape-generator` per vantage, all in ONE message, concurrent. THE ISOLATION
-   INVARIANT IS YOURS TO ENFORCE, not the generator's
+2. **Generate.** One `shape-builder` per vantage, all in ONE message, concurrent. THE ISOLATION
+   INVARIANT IS YOURS TO ENFORCE, not the builder's
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — Isolation invariant):
    brief each with only its own premise, `TARGET_DIR`, `COUNT` — never a sibling's output, never
    the pool so far.

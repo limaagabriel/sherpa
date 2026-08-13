@@ -60,7 +60,7 @@ router.
 | `/scout` skill | macro | reads the codebase to produce a Discover record; changes nothing |
 | `scout` (agent) | cross-cutting | reads the target read-only to produce a Discover record; the worker the `/scout` skill dispatches; owns no layer |
 | `/shape` skill | shape | drives the pitch; nothing to disk, no source edits |
-| `shape-generator` (agent) | shape | reads the target read-only to produce candidate directions; the worker the `/shape` skill dispatches |
+| `shape-builder` (agent) | shape | reads the target read-only to produce candidate directions; the worker the `/shape` skill dispatches |
 | `shape-reviewer` | shape | reads the candidate pool read-only, no diff; returns a ranked shortlist + traps + collapse record |
 | `/decompose` skill | step | decomposes into steps; no source edits |
 | `decompose-reviewer` | step | sees all steps + repo read-only, no diff; read-only `SOLID \| HOLES` on the decomposition |

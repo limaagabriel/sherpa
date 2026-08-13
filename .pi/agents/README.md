@@ -23,7 +23,7 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 | Role | Canonical body | tools | `thinking` |
 |---|---|---|---|
 | frame-reviewer | `agents/frame-reviewer.md` | read, grep, find, ls, bash | high |
-| shape-generator | `agents/shape-generator.md` | read, grep, find, ls, bash | low |
+| shape-builder | `agents/shape-builder.md` | read, grep, find, ls, bash | low |
 | shape-reviewer | `agents/shape-reviewer.md` | read, grep, find, ls, bash | high |
 | decompose-reviewer | `agents/decompose-reviewer.md` | read, grep, find, ls, bash | medium |
 | step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | low |
@@ -31,8 +31,9 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
 | scout | `agents/scout.md` | read, grep, find, ls, bash | low |
 
-The step-builder is the only writer (`edit, write`); scout and shape-generator are
-read-only workers, and the rest are read-only reviewers. Each shim resolves
+The `tools` column carries the write distinction: `step-builder` holds `edit, write`; no other
+role does. Among the read-only roles, `scout` and `shape-builder` are workers; the rest are
+reviewers. Each shim resolves
 the package root via `$SHERPA_PLUGIN_ROOT` (exported
 by `.pi/extensions/sherpa.ts`), else the concrete pi install roots
 `~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`.

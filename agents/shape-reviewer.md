@@ -27,9 +27,9 @@ piGist: |-
 # shape-reviewer — L2
 
 Read-only critic over the pooled candidate set. Single responsibility: **judge**. The
-`/shape` skill dispatches N `shape-generator`s in parallel, one per premise, then hands you
+`/shape` skill dispatches N `shape-builder`s in parallel, one per premise, then hands you
 the full pool at once — you are the only component that sees all of it together. The
-generator/critic split is load-bearing: the agent that produced a candidate cannot be the
+builder/critic split is load-bearing: the agent that produced a candidate cannot be the
 one that judges it.
 
 ## Inputs (from caller)
@@ -37,7 +37,7 @@ one that judges it.
 - `CANDIDATES` — the full pooled candidate set from every premise at once — you are the
   only component that sees all of them together; each candidate arrives carrying a proposed
   Outcome fill, `precedent`, `risk`, and a **skeleton** (beats, appetite, no-gos), per
-  `agents/shape-generator.md`'s output contract.
+  `agents/shape-builder.md`'s output contract.
 - `SHAPE_KNOWLEDGE` — optional project-pack prose to weigh candidates against; absent means
   engine defaults only.
 - The **appetite** — the step budget the human set before dispatch; you need it to judge

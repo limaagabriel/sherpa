@@ -2,7 +2,7 @@
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: four
 **composable skills**, one per layer of altitude — `/frame` (macro), `/shape` (shape),
-`/decompose` (step), `/implement` (build) — with bundled scout, shape-generator,
+`/decompose` (step), `/implement` (build) — with bundled scout, shape-builder,
 step-builder, and reviewer subagents that rope up and check the rope at every pitch.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until
@@ -125,7 +125,7 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ### L2 Shape
 - **`/shape`** — fans out candidate directions from the frame, skeletons + critiques the pool, presents a pitch for your pick.
-- **`shape-generator`** (agent) — read-only idea generator holding one premise false; the worker `/shape` dispatches.
+- **`shape-builder`** (agent) — read-only candidate builder holding one premise false; the worker `/shape` dispatches.
 - **`shape-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
 
 ### L3 Step
@@ -145,7 +145,7 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ```
 skills/        /frame, /shape, /decompose, /implement, /scout, /persist
-agents/        scout, frame-reviewer, shape-generator, shape-reviewer, decompose-reviewer, step-builder, acceptance-reviewer, quality-reviewer
+agents/        scout, frame-reviewer, shape-builder, shape-reviewer, decompose-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

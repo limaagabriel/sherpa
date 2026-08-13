@@ -19,11 +19,11 @@ contention, so time isn't the scarce thing — what's scarce is how much work th
 before seeing it land.
 
 ## Vantages
-Derived per-run from the frame's problem contract — NO SHIPPED LIST. One `shape-generator` per
+Derived per-run from the frame's problem contract — NO SHIPPED LIST. One `shape-builder` per
 falsifiable slot, N=3, each holding one premise and returning candidates that hold ONLY IF it's
 false:
 
-| Slot | Premise the generator holds false |
+| Slot | Premise the builder holds false |
 |---|---|
 | **obstacle** | `<obstacle>` is what actually blocks the capability |
 | **capability** | `<capability>` is what the party actually needs |
@@ -31,7 +31,7 @@ false:
 
 `Who` and `solved-signal` are OFF LIMITS — negating either re-opens L1's bound artifact rather than
 exploring within it. This replaces a fixed taxonomy of engineering "concerns" (architecture,
-ergonomics, ops, cost): a concern is an EVALUATION axis, so all N generators would describe the SAME
+ergonomics, ops, cost): a concern is an EVALUATION axis, so all N builders would describe the SAME
 candidate scored N ways, and the critic's collapse record would then merge them back. A premise,
 unlike a concern, changes what a candidate CAN BE — not how it's judged.
 
@@ -69,14 +69,14 @@ so a judgment needing acceptance criteria or interfaces is out of reach — that
 resolutions, and `shape-reviewer`'s stops where exact steps begin — beat adjacency IS coarse
 ordering, not an axis it's barred from.
 
-**Isolation invariant** — generators run concurrently, never seeing each other's output or a
+**Isolation invariant** — builders run concurrently, never seeing each other's output or a
 sibling's summary; branches that see each other anchor each other and the fan-out collapses to one
-wider thought. **Generator/critic split** — the agent that produced a candidate is never the one
+wider thought. **Builder/critic split** — the agent that produced a candidate is never the one
 that judges it.
 
 ## Don't
 - Re-narrow the problem — `/frame`'s job, already critiqued.
 - Ship a fixed vantage taxonomy — vantages derive from the frame's slots, per run.
-- Let a generator see another generator's output or the pool so far.
+- Let a builder see another builder's output or the pool so far.
 - Hand a skeleton acceptance criteria or interfaces — `/decompose`'s to fill, not `/shape`'s.
 - Auto-select a candidate, or state the critique ceiling as "must not judge ordering."

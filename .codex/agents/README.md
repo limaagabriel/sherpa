@@ -25,7 +25,7 @@ here are picked up with no install.
 | Role | Layer | Tier (Claude model) | `model` | `model_reasoning_effort` | sandbox |
 |---|---|---|---|---|---|
 | frame-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
-| shape-generator | L2 shape | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
+| shape-builder | L2 shape | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 | shape-reviewer | L2 shape | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | decompose-reviewer | L3 step | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | step-builder | L4 build | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
@@ -34,9 +34,10 @@ here are picked up with no install.
 | scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 
 All roles use the GPT-5.6 family. Independent reviewer roles use
-`gpt-5.6-terra` with high reasoning for adversarial scrutiny. The step-builder
-uses `gpt-5.6-luna` with high reasoning for implementation; the scout and
-shape-generator keep their efficient discovery posture on `gpt-5.6-luna` with medium
-reasoning. A role with `model` omitted inherits the parent session model —
+`gpt-5.6-terra` with high reasoning for adversarial scrutiny. The `sandbox` column carries the
+write distinction: the sole `workspace-write` role, step-builder, uses `gpt-5.6-luna` with high
+reasoning for implementation; the `read-only` roles — scout and shape-builder among them — keep
+their efficient discovery posture on `gpt-5.6-luna` with medium reasoning. A role with `model`
+omitted inherits the parent session model —
 Codex fixes a subagent's model in its role file (no dispatch-time override),
 so this mapping must live here.
