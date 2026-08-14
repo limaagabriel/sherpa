@@ -38,7 +38,8 @@ the opt-in `/persist` skill.
 ## Procedure
 1. **Derive the vantages** from the frame's obstacle / capability / costs slots
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Vantages). Show the human the
-   vantages and the appetite before dispatching.
+   vantages, then ASK the appetite
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Appetite).
 2. **Generate.** One `shape-builder` per vantage, all in ONE message, concurrent. THE ISOLATION
    INVARIANT IS YOURS TO ENFORCE, not the builder's
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — Isolation invariant):

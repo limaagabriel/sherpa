@@ -18,6 +18,30 @@ human sets it; `shape-reviewer` checks each skeleton against it. Sherpa has no c
 contention, so time isn't the scarce thing — what's scarce is how much work the human accepts built
 before seeing it land.
 
+The driver ASKS the appetite — it never just shows a number. The question is shaped per
+`protocols/questions.md`. The options are qualitative levels — `tight`, `balanced`, `comfortable`
+— each shown WITH a step count alongside. The level is what the human picks; the count is the
+translation, not the unit they reason in.
+
+The counts offered are anchored on the frame's discovery — the surfaces the frame already names,
+never invented. `/shape` cannot dispatch `/scout` (`skills/shape/SKILL.md:35-36`) and a frame is
+always in context (`protocols/layers.md:41`), so the frame's discovery is the only legitimate
+source for the numbers. Discovery anchors the RANGE offered; the human's pick is a budget, not a
+prediction — the line that keeps appetite from becoming an estimate.
+
+Each count is DEFENSIBLE, not derived by formula: the driver names which discovered surfaces that
+level's budget would cover and which it would leave out. The count is defended by naming its
+coverage, not computed by tallying landmarks — a landmark count is not a step count, and a
+mechanical tally would ship a rule that is precise and wrong.
+
+Each option's description is one clause naming what that budget buys and cuts — the downstream
+consequence, never a restatement of the label (`protocols/questions.md` § The options). No default
+appetite: the human always chooses.
+
+> Fail: `tight` / `balanced` / `comfortable` offered with no counts attached — a level label with
+> no per-problem anchoring is theater; `tight` must mean something different on a small problem
+> than on a large one, or the words carry nothing.
+
 ## Vantages
 Derived per-run from the frame's problem contract — NO SHIPPED LIST. One `shape-builder` per
 falsifiable slot, N=3, each holding one premise and returning candidates that hold ONLY IF it's
