@@ -28,7 +28,7 @@ never the emission itself. Forwarding it verbatim as the whole message hands the
 machine channel's coordinates instead of a composed one. A real `/shape` run once relayed
 `shape-reviewer`'s raw return straight to the human — that agent's own contract marks the text
 as a machine channel: `agents/shape-reviewer.md:61` "Compact markdown, no preamble, no
-narration"; `agents/shape-reviewer.md:93` "The final message is the return value";
+narration"; `agents/shape-reviewer.md:93` "The final message is the return value.";
 `agents/shape-reviewer.md:20-21` "Your final message IS the return value (the ranked shortlist),
 not a human-facing note." The relay named pool bookkeeping IDs (`A1`, `C1`, `C3`) the human had
 never seen a pool for, and domain symbols (`frontendTokensValues`, `cssVariableMapping`) never
@@ -36,15 +36,10 @@ introduced anywhere in the conversation. A correct critique read as noise and wa
 unresolved.
 
 ## The reader test
-The gate, adapted from `protocols/questions.md:45-46`, which states it as:
-
-> This is a TEST, not a suggestion: **"Could the user answer this without reading the code? Yes →
-> no preamble."**
-
-Generalized to any human-facing prose, not only questions: could the reader act on this without
-opening the code? No → introduce or translate. Skip the introduction when the reader already
-demonstrated familiarity with that surface earlier in the conversation — re-explaining what they
-just told you reads as condescending; the failure this guards against is briefing everything
-until the ceremony becomes noise the reader learns to skim. No automated check proves prose
-readable: a grep for section names or word presence can pass while the prose stays opaque. This
-test is applied by a reader, not a gate.
+This is a TEST, not a suggestion, generalized to any human-facing prose, not only questions:
+could the reader act on this without opening the code? No → introduce or translate. Skip the
+introduction when the reader already demonstrated familiarity with that surface earlier in the
+conversation — re-explaining what they just told you reads as condescending; the failure this
+guards against is briefing everything until the ceremony becomes noise the reader learns to skim.
+No automated check proves prose readable: a grep for section names or word presence can pass
+while the prose stays opaque. This test is applied by a reader, not a gate.

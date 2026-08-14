@@ -32,8 +32,7 @@ Hard cap: three lines. A fourth line is allowed **explicitly**, and only for a g
 finding — take the fourth line openly rather than silently stretching all three.
 
 ## Translate, don't cite
-State findings as behavior the reader can recognize, not as symbols they have never read. When an
-internal name is unavoidable, gloss it inline, once.
+See `protocols/prose.md` § The referent rule.
 
 > Bad: "`PackLoader.resolve()` only walks `.claude/`."
 > Good: "Config is only picked up from `.claude/` — so a Codex user's settings are silently
@@ -42,11 +41,8 @@ internal name is unavoidable, gloss it inline, once.
 Same fact; the second is answerable without having read the codebase.
 
 ## When to brief
-This is a TEST, not a suggestion: **"Could the user answer this without reading the code? Yes →
-no preamble."** A pure preference question ("which name do you prefer") gets no walk. Also skip
-when the user already demonstrated familiarity with that surface earlier in the conversation —
-re-explaining what they just told you reads as condescending. The failure mode this gate exists to
-prevent: briefing every question until the ceremony becomes noise the user learns to skim.
+See `protocols/prose.md` § The reader test. A pure preference question ("which name do you
+prefer") gets no walk at all.
 
 ## The options
 Each option's description is **one clause naming the downstream consequence** — never a
