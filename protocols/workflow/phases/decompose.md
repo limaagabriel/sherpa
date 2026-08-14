@@ -7,8 +7,11 @@ Input is the frame (in context) — or, standalone, a `<task>` + a light `/scout
 `Outcome` binds here, at step 0, and nowhere earlier. **Frame in context** → bind `Outcome` from
 its problem contract's solved-signal (what `Outcome` must achieve); bind `for`/`because`/`done
 when` as normal. **Pitch in context** → its `solution` field (`phases/shape.md` § Pitch) is a
-proposed `Outcome`; bind from it. **No frame** → run a quick `/scout`, then draft a problem
-contract inline from request + scout evidence (`phases/frame.md` § Problem contract), apply its §
+proposed `Outcome`; bind from it. Also read the appetite from the pitch's `constraints` field
+(`phases/shape.md` § Pitch); absent means none — engine defaults only, the same sentinel shape as
+`SHAPE_KNOWLEDGE` in `agents/shape-reviewer.md:41-42`. **No frame** → run a quick `/scout`, then
+draft a problem contract inline from request + scout evidence (`phases/frame.md` § Problem
+contract), apply its §
 Vocabulary test, then bind `Outcome` from it — the standalone path; don't skip the contract just
 because `/frame` was skipped.
 

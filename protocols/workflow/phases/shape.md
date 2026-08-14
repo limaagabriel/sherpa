@@ -89,6 +89,12 @@ as the emission (`protocols/prose.md` § Compose, don't relay). Consumed by `/de
 nobody approved becomes the premise of everything downstream. Rejecting the whole shortlist is a
 valid outcome, not a failure.
 
+The appetite the human set at dispatch (§ Appetite) — never a candidate skeleton's own restatement
+of it — is written verbatim into `constraints`: `Appetite: balanced — N steps.` This adds no sixth
+field and no new threaded parameter; the five stay five. Each candidate skeleton also states an
+appetite (`agents/shape-builder.md` output contract) — what rides in `constraints` is the
+dispatched value, never a candidate's echo of it.
+
 ## Critique
 One `shape-reviewer` dispatch over the pooled candidates, judging ACROSS them: solved, bounded, and
 collapse (which candidates are secretly one angle). Its ceiling is resolution: it sees only beats,
