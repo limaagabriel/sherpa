@@ -7,8 +7,11 @@ Input is the frame (in context) — or, standalone, a `<task>` + a light `/scout
 `Outcome` binds here, at step 0, and nowhere earlier. **Frame in context** → bind `Outcome` from
 its problem contract's solved-signal (what `Outcome` must achieve); bind `for`/`because`/`done
 when` as normal. **Pitch in context** → its `solution` field (`phases/shape.md` § Pitch) is a
-proposed `Outcome`; bind from it. **No frame** → run a quick `/scout`, then draft a problem
-contract inline from request + scout evidence (`phases/frame.md` § Problem contract), apply its §
+proposed `Outcome`; bind from it. Also read the appetite from the pitch's `constraints` field
+(`phases/shape.md` § Pitch); absent means none — engine defaults only, the same sentinel shape as
+`SHAPE_KNOWLEDGE` in `agents/shape-reviewer.md:41-42`. **No frame** → run a quick `/scout`, then
+draft a problem contract inline from request + scout evidence (`phases/frame.md` § Problem
+contract), apply its §
 Vocabulary test, then bind `Outcome` from it — the standalone path; don't skip the contract just
 because `/frame` was skipped.
 
@@ -75,11 +78,12 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
    fix now than at the consuming step.
 
 ## Adversarial decomposition review (decompose-reviewer)
-After the silent self-review, before presenting, dispatch `decompose-reviewer` via Agent. Forward the
-plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the frame
-path for context, or the problem contract drafted at step 0 when no frame existed. It attacks
-traceability, missing foundation, gaps, overlap, ordering, hidden coupling, interface-mismatch and
-returns `SOLID | HOLES`. Handle:
+After the silent self-review, before presenting, dispatch `decompose-reviewer` via Agent. Forward
+the plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the
+frame path for context, or the problem contract drafted at step 0 when no frame existed. Also
+forward the appetite when the pitch carried one (§ Step 0 reads it from the pitch's `constraints`
+field; absent means none). It attacks traceability, missing foundation, gaps, overlap, ordering,
+hidden coupling, interface-mismatch and returns `SOLID | HOLES`. Handle:
 `SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → name what it
 blocks, in the reader's terms, then surface verbatim (`protocols/prose.md` § Verbatim is a quote,
 not a frame) and wait. This is the independent eyes your own self-review can't be.
@@ -89,6 +93,9 @@ Wait for **explicit** approval before any `/implement` action — "approved", "g
 A question, critique, or your own answer is **not** approval. When in doubt, you are not approved.
 
 ## Don't
+- Treat the appetite as a ceiling on the exact step list — at this layer it is advisory
+  context for judging whether the plan is strong relative to what the human said the work was
+  worth.
 - Skip approval, even for small fixes.
 - Re-refine intent beyond step 0's binding, or surface open questions (that's `/frame`'s job).
 - Reference a file before verifying it exists.

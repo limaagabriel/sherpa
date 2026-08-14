@@ -30,7 +30,10 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
      `Outcome` must achieve); bind `for` / `because` / `done when` as normal.
    - **Pitch in context** → its `solution` field
      (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch) is a proposed `Outcome`;
-     bind from it.
+     bind from it. Also read the appetite from the pitch's `constraints` field
+     (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch); absent means none —
+     engine defaults only, the same sentinel shape as `SHAPE_KNOWLEDGE` in
+     `agents/shape-reviewer.md:41-42`.
    - **No frame** → run a quick `/scout`, then draft a problem contract inline from request +
      scout evidence (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem
      contract), apply its § Vocabulary test, then bind `Outcome` from it. Standalone path — don't
