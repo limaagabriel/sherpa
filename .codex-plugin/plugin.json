@@ -1,6 +1,6 @@
 {
   "name": "sherpa",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "Composable /frame, /shape, /decompose, /implement skills — one per layer (macro, shape, step, build) — with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
   "author": {
     "name": "Gabriel Lima",
