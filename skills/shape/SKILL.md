@@ -42,14 +42,15 @@ the opt-in `/persist` skill.
 2. **Generate.** One `shape-builder` per vantage, all in ONE message, concurrent. THE ISOLATION
    INVARIANT IS YOURS TO ENFORCE, not the builder's
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — Isolation invariant):
-   brief each with only its own premise, `TARGET_DIR`, `COUNT` — never a sibling's output, never
-   the pool so far.
+   brief each with only its own premise, `TARGET_DIR`, `COUNT`, and the appetite — never a
+   sibling's output, never the pool so far.
 3. **Critique.** The driver assigns each pooled candidate a stable ID when it pools the builders'
    output, and briefs `shape-reviewer` to reuse those IDs verbatim in the shortlist, traps, and
    collapse record. One `shape-reviewer` dispatch over the pooled candidates
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `SHAPE_KNOWLEDGE`
-   when a pack announced it. Returns the shortlist with precedent, risk, skeletons, traps, and the
-   collapse record.
+   when a pack announced it, and the appetite — `shape-reviewer` needs it to judge `bounded`
+   (`agents/shape-reviewer.md:43-44`). Returns the shortlist with precedent, risk, skeletons,
+   traps, and the collapse record.
 4. **Compose the emission** — the driver composes the pitch from `shape-reviewer`'s return value;
    forwarding that return value as the message hands the human a machine channel
    (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Compose, don't relay). Then wait for the pick —
