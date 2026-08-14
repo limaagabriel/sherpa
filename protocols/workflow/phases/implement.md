@@ -28,6 +28,8 @@ Pure-codegen step → dispatch at model haiku; else default. Each step:
   remaining step goals, so it can tell whether a failure is covered by a later step).
 
 ## Verdicts (one gradation)
+Every verbatim surface below leads with one line naming, in the reader's terms, what it blocks
+(`protocols/prose.md` § Verbatim is a quote, not a frame); the quote itself stays byte-exact.
 - `UNMET`, or a quality `FIX` → relay to the step-builder to fold into its commit; re-check once.
 - Still `UNMET` or `FIX` after that re-check → stop, same terminal handling as `BLOCK`: surface
   verbatim to the human, do not loop again.

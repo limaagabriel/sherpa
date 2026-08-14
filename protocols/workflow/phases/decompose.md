@@ -80,8 +80,9 @@ plan goal + the full step list (each goal in contract form, each step's `Interfa
 path for context, or the problem contract drafted at step 0 when no frame existed. It attacks
 traceability, missing foundation, gaps, overlap, ordering, hidden coupling, interface-mismatch and
 returns `SOLID | HOLES`. Handle:
-`SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → surface verbatim
-and wait. This is the independent eyes your own self-review can't be.
+`SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → name what it
+blocks, in the reader's terms, then surface verbatim (`protocols/prose.md` § Verbatim is a quote,
+not a frame) and wait. This is the independent eyes your own self-review can't be.
 
 ## Approval
 Wait for **explicit** approval before any `/implement` action — "approved", "go", "ship it", "lgtm".

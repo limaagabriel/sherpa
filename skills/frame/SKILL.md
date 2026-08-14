@@ -38,8 +38,10 @@ skill — never automatic.
    the biggest thing I'm missing about this frame right now? What don't I realize?" Fold the
    answer into discovery or open questions; don't present it as an inline hedge.
 4. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
-5. **Critique.** Dispatch `frame-reviewer` (one shot) over the composed frame. `HOLES` → surface
-   verbatim and fix what you can; a hole only the human can close → wait.
+5. **Critique.** Dispatch `frame-reviewer` (one shot) over the composed frame. `HOLES` → name what
+   it blocks, in the reader's terms, then surface verbatim
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Verbatim is a quote, not a frame) and fix what you
+   can; a hole only the human can close → wait.
 
 ## Done when
 The frame is composed, presented, and critiqued. Hand off to `/shape` (it reads the frame from
