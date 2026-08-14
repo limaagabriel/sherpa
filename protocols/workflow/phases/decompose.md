@@ -78,11 +78,12 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
    fix now than at the consuming step.
 
 ## Adversarial decomposition review (decompose-reviewer)
-After the silent self-review, before presenting, dispatch `decompose-reviewer` via Agent. Forward the
-plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the frame
-path for context, or the problem contract drafted at step 0 when no frame existed. It attacks
-traceability, missing foundation, gaps, overlap, ordering, hidden coupling, interface-mismatch and
-returns `SOLID | HOLES`. Handle:
+After the silent self-review, before presenting, dispatch `decompose-reviewer` via Agent. Forward
+the plan goal + the full step list (each goal in contract form, each step's `Interfaces`) + the
+frame path for context, or the problem contract drafted at step 0 when no frame existed. Also
+forward the appetite when the pitch carried one (§ Step 0 reads it from the pitch's `constraints`
+field; absent means none). It attacks traceability, missing foundation, gaps, overlap, ordering,
+hidden coupling, interface-mismatch and returns `SOLID | HOLES`. Handle:
 `SOLID` → present. `HOLES` → fix what you can; a hole only the human can close → name what it
 blocks, in the reader's terms, then surface verbatim (`protocols/prose.md` § Verbatim is a quote,
 not a frame) and wait. This is the independent eyes your own self-review can't be.
