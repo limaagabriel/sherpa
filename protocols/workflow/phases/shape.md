@@ -114,3 +114,5 @@ that judges it.
 - Let a builder see another builder's output or the pool so far.
 - Hand a skeleton acceptance criteria or interfaces — `/decompose`'s to fill, not `/shape`'s.
 - Auto-select a candidate, or state the critique ceiling as "must not judge ordering."
+- Silently reconcile a candidate's stated appetite with the dispatched value — a deviation is
+  a trap the critic names.

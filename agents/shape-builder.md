@@ -51,8 +51,9 @@ separate critic evaluates what you return.
   - `skeleton` — 3-6 named beats, an appetite in steps, and explicit no-gos, bound to the three
     properties in `protocols/workflow/phases/shape.md` § Skeleton: rough
     (no acceptance criteria, no interfaces — those are `/decompose`'s open spaces to fill),
-    solved (the beats connect end-to-end, no "and then somehow X"), bounded (fits the appetite,
-    states what it will not do).
+    solved (the beats connect end-to-end, no "and then somehow X"), bounded (fits the
+    appetite — restated verbatim from the DISPATCHED value in § Inputs, never a number the
+    candidate chose — states what it will not do).
 - Compact markdown, no preamble, no narration.
 
 ## Rules

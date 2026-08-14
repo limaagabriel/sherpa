@@ -93,6 +93,9 @@ Wait for **explicit** approval before any `/implement` action — "approved", "g
 A question, critique, or your own answer is **not** approval. When in doubt, you are not approved.
 
 ## Don't
+- Treat the appetite as a ceiling on the exact step list — at this layer it is advisory
+  context for judging whether the plan is strong relative to what the human said the work was
+  worth.
 - Skip approval, even for small fixes.
 - Re-refine intent beyond step 0's binding, or surface open questions (that's `/frame`'s job).
 - Reference a file before verifying it exists.

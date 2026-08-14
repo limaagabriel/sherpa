@@ -50,12 +50,15 @@ one that judges it.
   - **solved** — do the beats connect end-to-end, or is there a beat that hands off to "and
     then somehow X"? An unsolved candidate dies here, at L2, rather than at L4 with commits
     already landed.
-  - **bounded** — does the skeleton fit its stated appetite, and does it state its no-gos?
+  - **bounded** — does the skeleton fit its stated appetite, and does it state its no-gos? A
+    stated appetite that deviates from the DISPATCHED value (§ Inputs) is a trap, not
+    something to silently reconcile — name it in `traps`.
 
   (`protocols/workflow/phases/shape.md` § Skeleton defines both properties — don't
   re-derive them.)
 - `traps` — candidates that look attractive but are not, each with the ONE-LINE reason
-  (hidden cost, false economy, will not scale, premature abstraction).
+  (hidden cost, false economy, will not scale, premature abstraction, appetite deviates from
+  the dispatched value).
 - The collapse record — which candidates were merged as one underlying angle and which
   survivor was kept.
 - Compact markdown, no preamble, no narration.
