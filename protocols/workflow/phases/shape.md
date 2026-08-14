@@ -56,8 +56,12 @@ A skeleton detailed enough to build from makes `/decompose` dead weight — the 
 ## Pitch
 Five fields, per Shape Up: **problem**, **constraints**,
 **solution**, **rabbit holes**, **limitations** — carrying the picked skeleton, its precedent
-citations, and the rejected candidates with why they lost. Consumed by `/decompose` at its step 0,
-where `Outcome` binds. The human picks; the driver NEVER auto-selects — a synthesized direction
+citations, and the rejected candidates with why they lost. Every candidate ID the shortlist, the
+traps, or the collapse record uses is resolved by a roster line before the pitch uses it
+(`protocols/prose.md` § The referent rule). The pitch is composed by the driver from
+`shape-reviewer`'s return value, never that return value forwarded
+as the emission (`protocols/prose.md` § Compose, don't relay). Consumed by `/decompose` at its step
+0, where `Outcome` binds. The human picks; the driver NEVER auto-selects — a synthesized direction
 nobody approved becomes the premise of everything downstream. Rejecting the whole shortlist is a
 valid outcome, not a failure.
 

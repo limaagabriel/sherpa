@@ -44,14 +44,25 @@ the opt-in `/persist` skill.
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — Isolation invariant):
    brief each with only its own premise, `TARGET_DIR`, `COUNT` — never a sibling's output, never
    the pool so far.
-3. **Critique.** One `shape-reviewer` dispatch over the pooled candidates
+3. **Critique.** The driver assigns each pooled candidate a stable ID when it pools the builders'
+   output, and briefs `shape-reviewer` to reuse those IDs verbatim in the shortlist, traps, and
+   collapse record. One `shape-reviewer` dispatch over the pooled candidates
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `SHAPE_KNOWLEDGE`
    when a pack announced it. Returns the shortlist with precedent, risk, skeletons, traps, and the
    collapse record.
-4. **Present, then wait for the pick** — never auto-select; rejecting the whole shortlist is a
-   valid outcome, not a failure. **Emit the pitch** — see `## Output`.
+4. **Compose the emission** — the driver composes the pitch from `shape-reviewer`'s return value;
+   forwarding that return value as the message hands the human a machine channel
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Compose, don't relay). Then wait for the pick —
+   never auto-select; rejecting the whole shortlist is a valid outcome, not a failure. **Emit the
+   pitch** — see `## Output`.
 
 ## Output
+**The candidate roster, then the pitch.** Every candidate ID the shortlist, the traps, or the
+collapse record refers to gets one roster line first — its ID bound to a short plain-words name
+plus what it does — because a pool-internal ID carries no meaning outside the dispatch bookkeeping
+that produced it (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § The referent rule). No ID appears in
+the emission before its roster line.
+
 **The pitch** — five fields per `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch
 (problem, constraints, solution, rabbit holes, limitations), carrying the picked skeleton, its
 precedent, and the rejected candidates with why they lost. Nothing on disk.
