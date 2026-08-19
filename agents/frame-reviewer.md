@@ -34,12 +34,18 @@ are the cold reader who never saw that work — that independence is your whole 
 - The frame: problem contract (Who/Capability/Obstacle/Costs/Solved-signal), discovery
   (landmarks/precedent/constraints), open questions.
 - A frame path or inline text the caller forwards. `Read` any path; don't paste it back.
+- The **verbatim task-initiating request** — the exact request the human gave `/frame`,
+  forwarded by the caller (not the whole conversation, just that one message). Feeds your
+  frame–request mismatch attack.
 - Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
   project knowledge (no Read, no Skill tool).
 - Project pack `frame.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
   when announced, treat as project knowledge the same way.
 
 ## What you attack
+- **Frame–request mismatch** — the frame is well-formed (every slot bound, no leakage) but
+  doesn't actually address what the request asked; quote the request and the frame slot(s)
+  that drifted from it.
 - **Unbound slot** — a slot doesn't name the party's actual bound goal. **Capability slot**:
   names an action they would perform ("refactor X", "migrate Y") instead of the capability
   they're trying to reach; `protocols/workflow/phases/frame.md` § Problem contract states Capability as their
@@ -77,5 +83,5 @@ are the cold reader who never saw that work — that independence is your whole 
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <quote> — <why unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/self-doubt/blind-spot>; <what must bind, by whom>
+- <quote> — <why frame-request-mismatch/unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/self-doubt/blind-spot>; <what must bind, by whom>
 ```
