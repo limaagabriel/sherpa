@@ -47,6 +47,8 @@ Each step is its own block. Every step carries:
 - **Blast contract** — `reversibility: one-way-door | revertible; touches: <files/symbols touched
   or silently affected beyond the listed diff>; revert: <exact command or state restore that undoes
   this step>`.
+- **Risk** — the one load-bearing risk that would sink this step (mirrors shape-builder.md's
+  candidate-risk field); a real risk, or none — <why> when genuinely none.
 
 ### Block 3 — Why & how
 - **Why this approach** — the next-best alternative and why it lost (bugs: confirming evidence).
@@ -76,6 +78,8 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 6. **Interface closure** — every step's `Interfaces` consumes entry is produced by an earlier
    step; every produces entry has a consumer or a stated reason. A mismatch here is cheaper to
    fix now than at the consuming step.
+7. **Risk substance** — does every step's Risk name a real, specific risk, or is `none`
+   justified by a stated reason? A boilerplate `none` with no reason is a hole to fix.
 
 ## Adversarial decomposition review (decompose-reviewer)
 After the silent self-review, before presenting, dispatch `decompose-reviewer` via Agent. Forward
