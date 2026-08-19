@@ -2,7 +2,7 @@
 # Full role in plugin file agents/shape-reviewer.md; this TOML binds the model
 # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
 name = "shape-reviewer"
-description = '''Read-only critic. Judges pooled candidates for solved/bounded, flags traps, collapses near-duplicates into a ranked 2-4 shortlist.'''
+description = '''Read-only critic. Judges pooled candidates for solved/bounded/necessity, flags traps, collapses near-duplicates into a ranked 2-4 shortlist.'''
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
