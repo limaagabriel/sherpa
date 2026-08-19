@@ -84,28 +84,35 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 7. **Risk substance** — does every step's Risk name a real, specific risk, or is `none`
    justified by a stated reason? A boilerplate `none` with no reason is a hole to fix.
 
-## Adversarial decomposition review (structure-reviewer + readiness-reviewer)
-After the silent self-review, before presenting, dispatch both `structure-reviewer` and
-`readiness-reviewer` via Agent, in parallel. Forward `structure-reviewer` the same inputs it always
-took: the plan goal + the full step list (each goal in contract form, each step's `Interfaces`) +
-the frame path for context, or the problem contract drafted at step 0 when no frame existed, the
-appetite when the pitch carried one (§ Step 0 reads it from the pitch's `appetite` field; absent
-means none), the pitch's `no-gos`/`rabbit holes` when carried (§ Step 0; absent means none), pack
-`knowledge`/`decompose.knowledge`, and the `decompose.architectureRules` command output when
-announced. Forward `readiness-reviewer`
+## Adversarial decomposition review (structure-reviewer always; readiness-reviewer when scaled)
+After the silent self-review, before presenting, always dispatch `structure-reviewer` via Agent.
+Also dispatch `readiness-reviewer`, in parallel with `structure-reviewer`, when the plan exceeds 3
+steps OR any step's Blast contract declares `one-way-door` reversibility — readiness-reviewer's
+per-step contract-completeness checks earn their cost on plans big enough to hide a bad step
+contract, or steps risky enough that a contract gap is expensive to discover late. A plan of 3
+steps or fewer, all revertible, skips it — structure-reviewer alone is proportionate.
+
+Forward `structure-reviewer` the same inputs it always took: the plan goal + the full step list
+(each goal in contract form, each step's `Interfaces`) + the frame path for context, or the problem
+contract drafted at step 0 when no frame existed, the appetite when the pitch carried one (§ Step 0
+reads it from the pitch's `appetite` field; absent means none), the pitch's `no-gos`/`rabbit holes`
+when carried (§ Step 0; absent means none), pack `knowledge`/`decompose.knowledge`, and the
+`decompose.architectureRules` command output when announced. When dispatched, forward
+`readiness-reviewer`
 the full step list, with each step's Goal, Interfaces, Acceptance criteria, Blast contract, and
 Risk field, plus pack `knowledge`/`decompose.knowledge` — but not `architectureRules`; that's
 cross-step context `structure-reviewer` alone consumes, and `readiness-reviewer`'s own Input
 contract has no `architectureRules` input.
 
 `structure-reviewer` attacks traceability, missing foundation, gaps, overlap, ordering, hidden
-coupling, interface-mismatch; `readiness-reviewer` attacks contract completeness, over-prescription,
-goal-contract honesty, single-responsibility, responsibility leak, risk-field substance, and
-blast-contract accuracy. Each returns `SOLID | HOLES`. Handle:
-Both `SOLID` → present. Either returns `HOLES` → fix what you can; a hole only the human can close
-→ name what it blocks, in the reader's terms, then surface verbatim (`protocols/prose.md` §
-Verbatim is a quote, not a frame) and wait. These are the independent eyes your own self-review
-can't be.
+coupling, interface-mismatch; `readiness-reviewer`, when dispatched, attacks contract completeness,
+over-prescription, goal-contract honesty, single-responsibility, responsibility leak, risk-field
+substance, and blast-contract accuracy. Each returns `SOLID | HOLES`. Handle:
+All dispatched reviewers `SOLID` → present. Any returns `HOLES` → fix what you can; a hole only the
+human can close → name what it blocks, in the reader's terms, then surface verbatim
+(`protocols/prose.md` § Verbatim is a quote, not a frame) and wait. These are the independent eyes
+your own self-review can't be. When readiness-reviewer is not dispatched (plan below the gate), its
+absence is not itself a hole — structure-reviewer `SOLID` alone is sufficient to present.
 
 ## Approval
 Wait for **explicit** approval before any `/implement` action — "approved", "go", "ship it", "lgtm".
@@ -118,4 +125,5 @@ A question, critique, or your own answer is **not** approval. When in doubt, you
 - Skip approval, even for small fixes.
 - Re-refine intent beyond step 0's binding, or surface open questions (that's `/frame`'s job).
 - Reference a file before verifying it exists.
-- Present without the silent self-review and the structure-reviewer and readiness-reviewer passes.
+- Present without the silent self-review and structure-reviewer's pass — plus readiness-reviewer's,
+  when the plan's scale required dispatching it.

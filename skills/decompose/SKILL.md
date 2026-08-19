@@ -41,9 +41,10 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
    already in the conversation. Leave the rest open.
 3. **Decompose + review + present.** Follow
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/decompose.md`: write the steps (Block 1/2/3,
-   goal contracts), run the silent self-review, dispatch `structure-reviewer` and
-   `readiness-reviewer` (one shot each, in parallel) over the step list, then present and wait for
-   **explicit** approval.
+   goal contracts), run the silent self-review, dispatch the adversarial decomposition review per
+   `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/decompose.md` § Adversarial decomposition
+   review (structure-reviewer always; readiness-reviewer when the plan's scale calls for it), then
+   present and wait for **explicit** approval.
 
 ## Done when
 An approved step list exists in context. Hand off to `/implement`, or offer `/persist`.

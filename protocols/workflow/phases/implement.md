@@ -1,12 +1,43 @@
 # Implement
 
-Build the plan one step at a time with a single step-builder + two reviewers (acceptance, quality).
+Build the plan one step at a time with a single step-builder + reviewers — acceptance and quality
+for normal steps, quality alone (covering both) for mechanical steps (§ Mechanical steps).
 No separate Validate phase — adversarial pressure lives per step.
 
 ## One step at a time
 - Track one step `in_progress` at a time (TaskCreate/TaskUpdate when available; else a plain
   in-message checklist). Flip a step done only on its commit landing.
 - **No plan in context?** Treat the `<task>` arg as one implicit step — build it directly.
+
+## Mechanical steps
+A step is **mechanical** when its Change is entirely one of: pure codegen (a mechanical transform,
+no design judgment), docs-only (prose/comments, no behavior change), config-only (a config/manifest
+value, no code-path change), or pure wiring (connecting two already-built pieces, no new logic). A
+step carrying any non-trivial logic, even small, is NOT mechanical — when in doubt, treat it as a
+normal step. This is the single owner classifying steps as mechanical; no other file does.
+
+**Model tier.** A mechanical step dispatches `step-builder` at model haiku; a normal step dispatches
+at the default model. This replaces and subsumes the old "pure-codegen only" haiku rule that used
+to live in § Per-step build.
+
+**Merged review.** For a mechanical step, on `BUILT`, dispatch ONLY `quality-reviewer` — skip
+`acceptance-reviewer` entirely for this step — but extend `quality-reviewer`'s brief for this
+dispatch to also include the step's `Acceptance criteria` and `Interfaces` (the inputs
+`acceptance-reviewer` would normally check). `quality-reviewer` emits its normal `PASS`/`FIX`/`BLOCK`
+verdict AND, appended, one `ACCEPTANCE: MET | UNMET <criterion> — <evidence>` line per acceptance
+criterion. It must ALSO check each declared `produces` entry against the actual built symbol — same
+name, same param/return shape, actually reachable — the same way `acceptance-reviewer` normally
+does, and emit one `PRODUCES: MET | UNMET <produces entry> — <evidence>` line per declared
+`produces` entry (skip `produces: none`), even when a mismatch doesn't correspond to any
+acceptance-criterion text — `Interfaces` and `Acceptance criteria` are separate fields
+(`protocols/workflow/phases/decompose.md` § Block 2) that don't map 1:1, so a renamed/reshaped/
+unreachable `produces` symbol could otherwise pass silently. Verdict handling for mechanical steps:
+`FIX`/`BLOCK` follow § Verdicts exactly as already stated; any `ACCEPTANCE: UNMET` or `PRODUCES:
+UNMET` line feeds into § Verdicts the same way an `acceptance-reviewer` `UNMET` already does
+(relay-once-then-terminal) — don't re-derive the state machine here.
+
+**Non-mechanical steps** are entirely unaffected: dispatch both `acceptance-reviewer` and
+`quality-reviewer` as today, at the default model tier.
 
 ## Per-step build
 - **Ask before dispatch.** Any step-scoped question the driver still needs answered is asked by
@@ -16,16 +47,18 @@ No separate Validate phase — adversarial pressure lives per step.
 Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
 (+ pack `knowledge`/`implement.knowledge` inline prose and
 `implement.codeStyleRules`/`implement.validate` commands, when announced).
-Pure-codegen step → dispatch at model haiku; else default. Each step:
+Model tier and post-build review both follow whether the step is mechanical (§ Mechanical steps).
+Each step:
 - Builds in isolation — module still builds, no half-applied artifacts, unless that build failure
   is covered by a later step's goal.
 - Lands exactly one commit (real subject). The step-builder owns it; never add a manual commit on top.
-- On `BUILT`, two L4 reviewers run in parallel over the step's commit range:
-  `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to judge the
-  declared `produces` against the built symbols) and `quality-reviewer` (clean, correct, secure,
-  no regression; also gets pack `knowledge`/`implement.knowledge` inline prose and
+- On `BUILT`, for a normal (non-mechanical) step, two L4 reviewers run in parallel over the step's
+  commit range: `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to
+  judge the declared `produces` against the built symbols) and `quality-reviewer` (clean, correct,
+  secure, no regression; also gets pack `knowledge`/`implement.knowledge` inline prose and
   `implement.codeStyleRules` command output when announced, plus the current step index +
-  remaining step goals, so it can tell whether a failure is covered by a later step).
+  remaining step goals, so it can tell whether a failure is covered by a later step). A mechanical
+  step runs the merged single-reviewer path instead (§ Mechanical steps).
 
 ## Verdicts (one gradation)
 Every verbatim surface below leads with one line naming, in the reader's terms, what it blocks

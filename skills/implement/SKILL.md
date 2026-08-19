@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build layer (L4). Build an approved plan one step at a time — one step-builder per step + acceptance and quality reviewers, with adversarial pressure per step. Reads the plan from context if present; standalone, treats the <task> as one implicit step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape, /decompose.
+description: Build layer (L4). Build an approved plan one step at a time — one step-builder per step + reviewers (acceptance and quality for normal steps, quality alone for mechanical steps), with adversarial pressure per step. Reads the plan from context if present; standalone, treats the <task> as one implicit step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape, /decompose.
 ---
 
 # /implement — build, with pressure per step
@@ -24,16 +24,11 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    back and consume it exactly as an in-context artifact.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one
    in progress. Per step — the driver asks any step-scoped question first, shaped per
-   `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` (haiku for pure
-   codegen, else default) with
-   `task` + `Goal` + `Interfaces` + `Acceptance criteria` + pack `knowledge` (cross-cutting) and
-   `implement.knowledge` (additive) inline prose, plus `implement.codeStyleRules` and
-   `implement.validate` commands, when announced.
-   On `BUILT`, run `acceptance-reviewer` + `quality-reviewer` in parallel over the step's range —
-   `acceptance-reviewer` also gets the step's `Interfaces`, to judge the declared `produces`
-   against the built symbols; `quality-reviewer` also gets pack `knowledge`/`implement.knowledge`
-   inline prose and `implement.codeStyleRules` command output when announced, plus the current
-   step index + remaining step goals.
+   `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` with
+   `task` + `Goal` + `Interfaces` + `Acceptance criteria` + pack `knowledge`/`implement.knowledge`
+   inline prose, plus `implement.codeStyleRules`/`implement.validate` commands, when announced —
+   model tier and post-build review both follow whether the step is mechanical, per
+   `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Mechanical steps.
 3. **Verdicts.** Handle verdicts per
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Verdicts — UNMET/FIX
    relay-once-then-terminal, BLOCK stops, MET+PASS continues; surface verbatim per
