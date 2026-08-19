@@ -1,6 +1,6 @@
 ---
 name: step-builder
-description: The single sherpa step-builder (L4). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.
+description: Sherpa's step-builder (L4). Implements one plan step, lands one commit. Returns BUILT <sha> or FAILED <why>, inline. Never pushes.
 tools: Read, Grep, Glob, Bash, Edit, Write
 Layer: build
 model: sonnet

@@ -1,6 +1,6 @@
 ---
 name: shape-builder
-description: Read-only candidate builder that holds one assigned premise false, or — for the `mainline` premise — holds every slot true and generates the direct-solve candidate; returns COUNT candidate directions for a problem, each with precedent, risk, and a coarse step skeleton.
+description: Read-only candidate builder. Holds one premise false — or, for `mainline`, holds every slot true. Returns COUNT candidates, each with precedent, risk, and a coarse step skeleton.
 tools: Read, Grep, Glob, Bash
 Layer: shape
 model: sonnet

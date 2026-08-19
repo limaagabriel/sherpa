@@ -1,6 +1,6 @@
 ---
 name: shape
-description: Shape layer (L2). Fan out N candidates from the frame's problem contract along its vantages, skeleton each to Shape Up's three properties, critique the pool, and hand the human a pitch to pick from. Requires a frame in context — offers /frame when none exists. Triggers - "/shape", "/shape <problem>", "brainstorm directions", "what are the options". Counterparts - /frame, /decompose, /implement.
+description: Shape layer (L2). Fans out N candidates from the frame's vantages, critiques the pool, hands a pitch to pick. Requires a frame. Triggers - "/shape", "/shape <problem>", "brainstorm directions", "what are the options". Counterparts - /frame, /decompose, /implement.
 ---
 
 # /shape — fan out candidate directions, let the human pick

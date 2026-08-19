@@ -1,6 +1,6 @@
 ---
 name: persist
-description: Opt-in. Write the current in-context frame, pitch, and/or plan to disk so a later session can resume. Sherpa persists nothing automatically — call this only when you want the artifacts saved. Triggers - "/persist", "save the frame", "save the pitch", "save the plan", "persist this". Takes an optional path; defaults to .sherpa/<slug>.md in the repo.
+description: Opt-in. Writes the in-context frame, pitch, and/or plan to disk for a later session. Sherpa persists nothing automatically. Triggers - "/persist", "save the frame", "save the pitch", "save the plan", "persist this". Optional path; default `.sherpa/<slug>.md`.
 ---
 
 # /persist — save the frame, pitch, or plan to disk

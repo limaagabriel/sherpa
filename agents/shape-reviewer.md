@@ -1,6 +1,6 @@
 ---
 name: shape-reviewer
-description: Read-only critic that judges pooled candidates and their skeletons for solved and bounded, flags traps, and collapses near-duplicates into a ranked 2-4 shortlist.
+description: Read-only critic. Judges pooled candidates for solved/bounded, flags traps, collapses near-duplicates into a ranked 2-4 shortlist.
 tools: Read, Grep, Glob, Bash
 Layer: shape
 model: opus

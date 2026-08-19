@@ -1,6 +1,6 @@
 ---
 name: frame
-description: Macro layer (L1). Turn a fuzzy task into the frame — scout the code, compose a problem contract, surface open questions as they arise — binding no solution. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /decompose, /implement.
+description: Macro layer (L1). Turns a fuzzy task into the frame — scout, problem contract, open questions, no solution bound. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /decompose, /implement.
 ---
 
 # /frame — discover, then bind the problem

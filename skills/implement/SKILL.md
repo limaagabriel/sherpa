@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build layer (L4). Build an approved plan one step at a time — one step-builder per step + reviewers (acceptance and quality for normal steps, quality alone for mechanical steps), with adversarial pressure per step. Reads the plan from context if present; standalone, treats the <task> as one implicit step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape, /decompose.
+description: Build layer (L4). Builds an approved plan one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape, /decompose.
 ---
 
 # /implement — build, with pressure per step

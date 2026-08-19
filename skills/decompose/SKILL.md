@@ -1,6 +1,6 @@
 ---
 name: decompose
-description: Step layer (L3). Binds the goal's `Outcome` at step 0 — from the frame, a pitch, or drafted inline when neither exists — then decomposes into ordered, traceable steps, and gets a cold-eyes critique of the decomposition before any code. Reads the frame from context if present; standalone, takes a <task>, does a light scout, and drafts a problem contract inline. Writes nothing to disk. Triggers - "/decompose", "/decompose <task>", "decompose this", "break it into steps". Counterparts - /frame, /shape, /implement.
+description: Step layer (L3). Binds `Outcome` at step 0, decomposes into ordered steps, gets a cold-eyes critique before any code. Reads the frame if present. Writes nothing to disk. Triggers - "/decompose", "/decompose <task>", "decompose this", "break it into steps". Counterparts - /frame, /shape, /implement.
 ---
 
 # /decompose — order the steps, then pressure-test before code

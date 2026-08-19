@@ -1,6 +1,6 @@
 ---
 name: scout
-description: "Scout the codebase — dispatch subgents to gather a Discover record (landmarks, precedent, constraints, tests, gaps, confidence). Args - <task> [TARGET_DIR] [breadth: quick|medium|very thorough]. Returns the record."
+description: "Scout the codebase for a Discover record (landmarks, precedent, constraints, tests, gaps, confidence). Args - <task> [TARGET_DIR] [breadth: quick|medium|very thorough]. Returns the record."
 ---
 
 Gathers codebase intelligence via a read-only `scout` subagent. Single responsibility: **scout**. Caller consumes the returned record for clarification and planning.

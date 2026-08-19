@@ -1,6 +1,6 @@
 ---
 name: using-sherpa
-description: Sherpa's layer-selection nudge — check whether /frame, /shape, /decompose, or /implement fits before free-form action. Force-loaded every session; also a normal skill so routing survives contexts the hook misses.
+description: Sherpa's layer-selection nudge — check /frame, /shape, /decompose, /implement before free-form action. Force-loaded every session.
 ---
 
 # Using sherpa
