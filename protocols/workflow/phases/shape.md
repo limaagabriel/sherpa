@@ -53,11 +53,22 @@ false:
 | **capability** | `<capability>` is what the party actually needs |
 | **costs** | `<consequence>` is what's actually at stake if unsolved |
 
-`Who` and `solved-signal` are OFF LIMITS — negating either re-opens L1's bound artifact rather than
-exploring within it. This replaces a fixed taxonomy of engineering "concerns" (architecture,
-ergonomics, ops, cost): a concern is an EVALUATION axis, so all N builders would describe the SAME
-candidate scored N ways, and the critic's collapse record would then merge them back. A premise,
-unlike a concern, changes what a candidate CAN BE — not how it's judged.
+Alongside those three sits a fourth, fixed **mainline** dispatch, outside the table above. Where
+each falsifying builder holds one slot of the problem contract false, mainline holds every slot
+TRUE and generates the candidate that solves the frame's stated obstacle directly — the one
+direction the three falsifying builders are barred from returning, precisely because their premise
+requires them not to. Mainline is not optional and not itself falsifiable: it does not get a row in
+the table above, because a row would claim it holds something false, and it holds everything true.
+That is why it is prose here, not a table entry. Total per run: four `shape-builder` dispatches,
+always — 3 falsifying + 1 mainline.
+
+`Who` and `solved-signal` are OFF LIMITS for the three falsifying builders — negating either
+re-opens L1's bound artifact rather than exploring within it. Mainline holds `who` and
+solved-signal true by definition too, so this restriction is moot for it, not violated by it. This
+replaces a fixed taxonomy of engineering "concerns" (architecture, ergonomics, ops, cost): a concern
+is an EVALUATION axis, so all N builders would describe the SAME candidate scored N ways, and the
+critic's collapse record would then merge them back. A premise, unlike a concern, changes what a
+candidate CAN BE — not how it's judged.
 
 ## Skeleton
 Every candidate carries one, bound to Shape Up part 1's three properties:
@@ -106,6 +117,11 @@ ordering, not an axis it's barred from.
 sibling's summary; branches that see each other anchor each other and the fan-out collapses to one
 wider thought. **Builder/critic split** — the agent that produced a candidate is never the one
 that judges it.
+
+Mainline's candidates are one vantage among four in the pool — the falsifying three plus mainline —
+judged exactly like the others: solved, bounded, collapse. Mainline is never a default the human
+falls back to just because it exists — `shape-reviewer` must not rank its candidates above a
+stronger falsifying candidate merely for being the "safe" choice.
 
 ## Don't
 - Re-narrow the problem — `/frame`'s job, already critiqued.

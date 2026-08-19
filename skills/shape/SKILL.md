@@ -30,21 +30,24 @@ the opt-in `/persist` skill.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** forward `knowledge` (cross-cutting) and `shape.knowledge` (additive) — when
   announced — to `shape-reviewer` as its `shape.knowledge` input.
-- **Explicit invocation only, 4 agent calls per run** (3 `shape-builder` + 1 `shape-reviewer`).
+- **Explicit invocation only, 5 agent calls per run** (4 `shape-builder` + 1 `shape-reviewer`).
   Never auto-fire; OFFER `/shape <problem>` in one declinable line instead.
 - **No `/scout` dispatch** — each `shape-builder` reads the codebase itself; a shared evidence
   base would anchor the branches, the failure mode the fan-out exists to avoid.
 
 ## Procedure
-1. **Derive the vantages** from the frame's obstacle / capability / costs slots
+1. **Derive the vantages** from the frame's obstacle / capability / costs slots, PLUS the fixed
+   mainline vantage
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Vantages). Show the human the
    vantages, then ASK the appetite
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Appetite).
-2. **Generate.** One `shape-builder` per vantage, all in ONE message, concurrent. THE ISOLATION
-   INVARIANT IS YOURS TO ENFORCE, not the builder's
+2. **Generate.** Three falsifying `shape-builder` dispatches (one per obstacle/capability/costs
+   vantage) plus the one fixed `mainline` dispatch — four total — all in ONE message, concurrent.
+   THE ISOLATION INVARIANT IS YOURS TO ENFORCE, not the builder's
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — Isolation invariant):
    brief each with only its own premise, `TARGET_DIR`, `COUNT`, and the appetite — never a
-   sibling's output, never the pool so far.
+   sibling's output, never the pool so far. This applies to `mainline` too: it doesn't get to see
+   the falsifying builders' output either.
 3. **Critique.** The driver assigns each pooled candidate a stable ID when it pools the builders'
    output, and briefs `shape-reviewer` to reuse those IDs verbatim in the shortlist, traps, and
    collapse record. One `shape-reviewer` dispatch over the pooled candidates
