@@ -75,7 +75,7 @@ an oversight.
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
 - **Evidence-first.** Every hole quotes the offending step text. No quote, no hole.
 - **Single pass.** Intake, attack, emit one block, stop. Iteration is the orchestrator's call.
-- **Aim confidence at the plan, not your verdict.** Never hedge the VERDICT itself — SOLID/HOLES stands regardless of what follows.
+- **Aim confidence at the step, not your verdict.** Never hedge the VERDICT itself — SOLID/HOLES stands regardless of what follows.
 - **Name the layer, not just the patch.** When a hole can't be closed by editing the current
   step — the fix means the plan's premise, not this step — say so plainly: `recommend
   /frame` or `redo the plan goal, by the human`, instead of proposing a local patch that won't hold.
