@@ -20,9 +20,11 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
 - **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** forward pack `knowledge` (cross-cutting) and `decompose.knowledge`
-  (decompose-layer, additive) inline prose text, and `decompose.architectureRules` (a command
-  dumping architecture constraints; run it and forward its output) — when announced — to
-  `decompose-reviewer` alongside the step list.
+  (decompose-layer, additive) inline prose text — when announced — to BOTH `structure-reviewer`
+  and `readiness-reviewer` alongside the step list. Forward `decompose.architectureRules` (a
+  command dumping architecture constraints; run it and forward its output) — when announced — to
+  `structure-reviewer` ONLY; `readiness-reviewer`'s Input contract (`agents/readiness-reviewer.md`)
+  excludes architectureRules, a cross-step concern outside its job.
 
 ## Steps
 0. **Bind the goal — `/decompose`'s step 0, the sole `Outcome` bind site.**
@@ -50,8 +52,9 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
    already in the conversation. Leave the rest open.
 3. **Decompose + review + present.** Follow
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/decompose.md`: write the steps (Block 1/2/3,
-   goal contracts), run the silent self-review, dispatch `decompose-reviewer` (one shot) over the
-   step list, then present and wait for **explicit** approval.
+   goal contracts), run the silent self-review, dispatch `structure-reviewer` and
+   `readiness-reviewer` (one shot each, in parallel) over the step list, then present and wait for
+   **explicit** approval.
 
 ## Done when
 An approved step list exists in context. Hand off to `/implement`, or offer `/persist`.
