@@ -51,7 +51,8 @@ the opt-in `/persist` skill.
 3. **Critique.** The driver assigns each pooled candidate a stable ID when it pools the builders'
    output, and briefs `shape-reviewer` to reuse those IDs verbatim in the shortlist, traps, and
    collapse record. One `shape-reviewer` dispatch over the pooled candidates
-   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `shape.knowledge`
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `PROBLEM` (the
+   frame's problem contract — `shape-reviewer` judges `necessity` against it), `shape.knowledge`
    when a pack announced it, and the appetite — `shape-reviewer` needs it to judge `bounded`
    (`agents/shape-reviewer.md` § Inputs (from caller)). Returns the shortlist with precedent, risk, skeletons,
    traps, and the collapse record.
