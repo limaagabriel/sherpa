@@ -38,6 +38,10 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Verdicts — UNMET/FIX
    relay-once-then-terminal, BLOCK stops, MET+PASS continues; surface verbatim per
    `${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Verbatim is a quote, not a frame.
+4. **Verify.** After the last step lands `MET`+`PASS`, run the plan's Block 3 verification once
+   per `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Plan-level verification —
+   skip when no plan was in context.
 
 ## Done when
-Every step committed, no open `BLOCK`. Present the per-step results; offer `/persist` if wanted.
+Every step committed, no open `BLOCK`, plan-level verification run when applicable. Present the
+per-step results; offer `/persist` if wanted.

@@ -38,6 +38,24 @@ Every verbatim surface below leads with one line naming, in the reader's terms, 
 - Any reviewer output containing `recommend /decompose revisit` → stop, surface verbatim to the human,
   offer `/decompose` in one declinable line.
 
+## Plan-level verification
+- **Trigger.** Once every step is committed with no open `BLOCK`, run the plan's Block 3
+  "How it's verified" (`protocols/workflow/phases/decompose.md` § Block 3 — Why & how) once,
+  before presenting.
+- **Execution.** Run whatever part of Block 3's test plan is re-runnable as-is; treat anything
+  that isn't (i.e., requires a human to observe the end state) as a manual checklist item —
+  inferred from what the test plan actually says, not a labeling convention Block 3 is required
+  to carry. Don't fabricate a pass for something you didn't actually check.
+- **Failure handling.** A failure here is terminal — same handling as `BLOCK`: surface verbatim,
+  do not loop again.
+- **Scope note.** This is not a resurrected separate Validate phase — it's the plan's own
+  already-authored verification section, executed once, not a new independent review gate
+  re-checking each step's work. Adversarial pressure still lives per-step (acceptance + quality);
+  this just closes the loop on the plan's own stated end-state check.
+- **Standalone note.** Skip entirely when no plan was in context (a standalone `/implement <task>`
+  run built one implicit step and has no Block 3 to run).
+
 ## Done
-Every step committed, no open `BLOCK`. Present the per-step results; offer the persist skill
-if the user wants the run on disk.
+Every step committed, no open `BLOCK`, the Plan-level verification section run (when a plan
+existed). Present the per-step results plus the verification outcome; offer the persist skill if
+the user wants the run on disk.

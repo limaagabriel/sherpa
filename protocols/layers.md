@@ -81,3 +81,7 @@ An optional **project pack** extends each layer's components with project-specif
 Adversarial pressure lives at each boundary — the frame critique (L1), the shape critique (L2), the
 decomposition critique (L3), and per-step acceptance + quality (L4). There is no final goal-gate: if
 the decomposition was sound and each step met its criteria, the goal holds by construction.
+`/implement` also runs the plan's own already-authored Block 3 check once at the end
+(`protocols/workflow/phases/implement.md` § Plan-level verification) — not a new layer or
+reviewer, but the mechanism that makes "holds by construction" actually confirmed rather than
+assumed.
