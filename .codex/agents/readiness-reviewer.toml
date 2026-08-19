@@ -1,0 +1,16 @@
+# sherpa readiness-reviewer subagent — Codex role binding.
+# Full role in plugin file agents/readiness-reviewer.md; this TOML binds the model
+# tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
+name = "readiness-reviewer"
+description = '''Read-only step-layer adversary (L3). Given the full step list, attacks each step in isolation, before any code — is its contract complete and testable, is it over-prescribed, does its goal honestly match its acceptance criteria, does it hold one responsibility, does its risk field carry real content, is its blast contract accurate? Returns SOLID | HOLES. Never sees a diff, never judges cross-step relations — that's structure-reviewer's job. Single pass, no loop.'''
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+developer_instructions = '''
+You are sherpa's readiness-reviewer subagent. Read your full role definition,
+invariants, and output contract from the sherpa plugin file
+agents/readiness-reviewer.md (resolve via $CLAUDE_PLUGIN_ROOT when set, else the
+installed sherpa plugin root) and follow it exactly. Read-only: attack each step's
+own contract with evidence; never edit. Your final message IS the return value
+(VERDICT: SOLID | HOLES), not a human-facing note.
+'''
