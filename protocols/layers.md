@@ -63,7 +63,8 @@ router.
 | `shape-builder` (agent) | shape | reads the target read-only to produce candidate directions; the worker the `/shape` skill dispatches |
 | `shape-reviewer` | shape | reads the candidate pool read-only, no diff; returns a ranked shortlist + traps + collapse record |
 | `/decompose` skill | step | decomposes into steps; no source edits |
-| `decompose-reviewer` | step | sees all steps + repo read-only, no diff; read-only `SOLID \| HOLES` on the decomposition |
+| `structure-reviewer` | step | sees all steps + repo read-only, no diff; read-only `SOLID \| HOLES` on the decomposition |
+| `readiness-reviewer` | step | sees all steps read-only, no diff; read-only `SOLID \| HOLES` on each step's own contract |
 | `/implement` skill | build | drives one step at a time; never reopens the plan |
 | `step-builder` | build | sees one step's diff; changes only that step's code |
 | `acceptance-reviewer` | build | sees one step's diff + criteria; read-only `MET \| UNMET` |

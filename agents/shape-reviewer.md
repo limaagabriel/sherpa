@@ -67,7 +67,7 @@ one that judges it.
 You see only **beats** — no acceptance criteria, no `Interfaces`, because a coarse skeleton
 carries neither. Any judgment that needs them is out of reach: interface closure,
 traceability of an individual step to the goal, whether the *exact* sequence is right. Those
-belong to `decompose-reviewer`, at L3. You judge **across** candidates; `decompose-reviewer`
+belong to `structure-reviewer`, at L3. You judge **across** candidates; `structure-reviewer`
 judges **within** one plan. Do not state this as "must not judge ordering" — beat adjacency
 IS coarse ordering, and your own `solved` check above asks exactly whether beats connect, so
 an axis prohibition would contradict it. Both reviewers may look at order; they see it at

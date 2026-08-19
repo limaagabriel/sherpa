@@ -99,7 +99,7 @@ dispatched value, never a candidate's echo of it.
 One `shape-reviewer` dispatch over the pooled candidates, judging ACROSS them: solved, bounded, and
 collapse (which candidates are secretly one angle). Its ceiling is resolution: it sees only beats,
 so a judgment needing acceptance criteria or interfaces is out of reach — that's
-`decompose-reviewer`'s, at L3. Both reviewers may look at order; they read it at different
+`structure-reviewer`'s, at L3. Both reviewers may look at order; they read it at different
 resolutions, and `shape-reviewer`'s stops where exact steps begin — beat adjacency IS coarse
 ordering, not an axis it's barred from.
 

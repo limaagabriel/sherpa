@@ -20,8 +20,9 @@ makes those first-class — but lets *you* decide how much ceremony a task needs
   directions to weigh starts at `/shape`. One direction that just needs decomposing starts at
   `/decompose`. One obvious change goes straight to `/implement`. You pick the entry point.
 - **Reviewed at every layer.** A frame-reviewer attacks the framing, a shape-reviewer attacks
-  the candidate pool, a decompose-reviewer attacks the decomposition, and per-step acceptance +
-  quality reviewers check "right thing?" and "built right?" independently.
+  the candidate pool, a structure-reviewer attacks how the steps relate and a readiness-reviewer
+  attacks each step's own contract, and per-step acceptance + quality reviewers check "right
+  thing?" and "built right?" independently.
 - **No magic state.** The frame, pitch, and plan live in the conversation. Want them on disk to
   resume later? Call `/persist`. Otherwise sherpa leaves no trace.
 
@@ -83,7 +84,7 @@ task wants:
 /shape      fan out directions, skeleton + critique the pool  →  pitch  (in context)
             shape-reviewer attacks the pool: solved, bounded, collapse (L2)
 /decompose  decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
-            decompose-reviewer attacks the decomposition (L3)
+            structure-reviewer + readiness-reviewer attack the decomposition (L3)
 /implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L4)
 ```
 
@@ -133,7 +134,8 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ### L3 Step
 - **`/decompose`** — binds the goal's `Outcome`, decomposes into ordered steps; waits for your approval.
-- **`decompose-reviewer`** (agent) — attacks the decomposition (traceability, gaps, overlap, order).
+- **`structure-reviewer`** (agent) — attacks how steps relate (traceability, gaps, overlap, order, interface mismatch).
+- **`readiness-reviewer`** (agent) — attacks each step's own contract (completeness, over-prescription, single responsibility, risk substance).
 
 ### L4 Build
 - **`/implement`** — runs approved steps via step-builder + reviewers, pressure per step.
@@ -148,7 +150,7 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ```
 skills/        /frame, /shape, /decompose, /implement, /scout, /persist
-agents/        scout, frame-reviewer, shape-builder, shape-reviewer, decompose-reviewer, step-builder, acceptance-reviewer, quality-reviewer
+agents/        scout, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

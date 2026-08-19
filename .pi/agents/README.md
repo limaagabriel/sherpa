@@ -25,7 +25,8 @@ tier mirroring the Codex `model_reasoning_effort` gradient.
 | frame-reviewer | `agents/frame-reviewer.md` | read, grep, find, ls, bash | high |
 | shape-builder | `agents/shape-builder.md` | read, grep, find, ls, bash | low |
 | shape-reviewer | `agents/shape-reviewer.md` | read, grep, find, ls, bash | high |
-| decompose-reviewer | `agents/decompose-reviewer.md` | read, grep, find, ls, bash | medium |
+| structure-reviewer | `agents/structure-reviewer.md` | read, grep, find, ls, bash | medium |
+| readiness-reviewer | `agents/readiness-reviewer.md` | read, grep, find, ls, bash | low |
 | step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | low |
 | acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | low |
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
