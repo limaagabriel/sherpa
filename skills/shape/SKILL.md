@@ -66,7 +66,7 @@ that produced it (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § The referent rul
 the emission before its roster line.
 
 **The pitch** — five fields per `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch
-(problem, constraints, solution, rabbit holes, limitations), carrying the picked skeleton, its
+(problem, appetite, solution, rabbit holes, no-gos), carrying the picked skeleton, its
 precedent, and the rejected candidates with why they lost. Nothing on disk.
 
 ## Done when

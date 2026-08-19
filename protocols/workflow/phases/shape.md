@@ -78,9 +78,9 @@ Every candidate carries one, bound to Shape Up part 1's three properties:
 A skeleton detailed enough to build from makes `/decompose` dead weight — the failure **rough** prevents.
 
 ## Pitch
-Five fields, per Shape Up: **problem**, **constraints**,
-**solution**, **rabbit holes**, **limitations** — carrying the picked skeleton, its precedent
-citations, and the rejected candidates with why they lost. Every candidate ID the shortlist, the
+Five fields, per Shape Up: **problem**, **appetite**, **solution**, **rabbit holes**, **no-gos**
+— carrying the picked skeleton, its precedent citations, and the rejected candidates with why
+they lost. Every candidate ID the shortlist, the
 traps, or the collapse record uses is resolved by a roster line before the pitch uses it
 (`protocols/prose.md` § The referent rule). The pitch is composed by the driver from
 `shape-reviewer`'s return value, never that return value forwarded
@@ -90,10 +90,9 @@ nobody approved becomes the premise of everything downstream. Rejecting the whol
 valid outcome, not a failure.
 
 The appetite the human set at dispatch (§ Appetite) — never a candidate skeleton's own restatement
-of it — is written verbatim into `constraints`: `Appetite: balanced — N steps.` This adds no sixth
-field and no new threaded parameter; the five stay five. Each candidate skeleton also states an
-appetite (`agents/shape-builder.md` output contract) — what rides in `constraints` is the
-dispatched value, never a candidate's echo of it.
+of it — is written verbatim into the pitch's `appetite` field: `balanced — N steps.` Each candidate
+skeleton also states an appetite (`agents/shape-builder.md` output contract) — what rides in the
+pitch's `appetite` field is the dispatched value, never a candidate's echo of it.
 
 ## Critique
 One `shape-reviewer` dispatch over the pooled candidates, judging ACROSS them: solved, bounded, and
