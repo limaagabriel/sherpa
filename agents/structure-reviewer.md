@@ -41,6 +41,9 @@ the goal. **Default suspicion, not trust.**
   one (`protocols/workflow/phases/decompose.md` § Adversarial decomposition review); absent means
   none. Context for judging whether the plan is strong relative to what the human said the work
   was worth — never a cap on the step list.
+- The pitch's **`no-gos`** and **`rabbit holes`** — forwarded when the pitch carried them
+  (`protocols/workflow/phases/decompose.md` § Adversarial decomposition review); absent means none.
+  Feeds your no-go-violation attack.
 - Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
   project knowledge (no Read, no Skill tool).
 - Project pack `decompose.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
@@ -60,6 +63,8 @@ the goal. **Default suspicion, not trust.**
 - **Ordering** — a step depends on a later step's output.
 - **Hidden coupling** — a step's declared blast radius or revert recipe conflicts with, or is silently relied on by, another step's declared blast radius; a hidden coupling like this surfaces only when radii are compared side by side.
 - **Architecture violation** — a step's Change contradicts the pack's `architectureRules` (when announced); quote the constraint and the step.
+- **No-go violation** — a step's Change does one of the pitch's declared `no-gos`, or walks into
+  a named `rabbit hole`; quote the no-go/rabbit-hole and the offending step's Change.
 - **Vocabulary leak** — when a problem contract is forwarded, apply
   `protocols/workflow/phases/frame.md` § Vocabulary test to its solved-signal: every noun and verb
   must already appear in Who/Capability/Obstacle, or be observable before any change. A noun or
@@ -89,5 +94,5 @@ ATTACKED: <angles tried — non-empty even when SOLID>
 APPETITE: <budget the pitch carried and how the plan's step count sits against it — descriptive
   only, never pass/fail — or `none` when no appetite was forwarded>
 HOLES:
-- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / vocabulary-leak / self-doubt / blind-spot>; <what must change>
+- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / no-go-violation / vocabulary-leak / self-doubt / blind-spot>; <what must change>
 ```
