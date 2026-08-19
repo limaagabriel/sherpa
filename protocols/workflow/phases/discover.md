@@ -1,7 +1,6 @@
 # Discover
 
-Scout the codebase BEFORE asking the user anything. Feeds the frame (and seeds `/implement`'s
-per-step step-builder dispatches when a plan exists).
+Scout the codebase BEFORE asking the user anything. Feeds the frame.
 
 ## Steps
 - `/scout <task> [TARGET_DIR] [breadth]` — breadth follows surface: `quick` (local),

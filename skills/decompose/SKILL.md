@@ -28,18 +28,8 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
 
 ## Steps
 0. **Bind the goal — `/decompose`'s step 0, the sole `Outcome` bind site.**
-   - **Frame in context** → bind `Outcome` from its problem contract's solved-signal (what
-     `Outcome` must achieve); bind `for` / `because` / `done when` as normal.
-   - **Pitch in context** → its `solution` field
-     (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch) is a proposed `Outcome`;
-     bind from it. Also read the appetite from the pitch's `constraints` field
-     (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch); absent means none —
-     engine defaults only, the same sentinel shape as `SHAPE_KNOWLEDGE` in
-     `agents/shape-reviewer.md:41-42`.
-   - **No frame** → run a quick `/scout`, then draft a problem contract inline from request +
-     scout evidence (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem
-     contract), apply its § Vocabulary test, then bind `Outcome` from it. Standalone path — don't
-     skip the contract just because `/frame` was skipped.
+   Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/decompose.md` § Step 0 exactly — it's
+   the sole `Outcome` bind site (frame / pitch / no-frame branches).
 1. **Get context.** Frame in context → use it as the goal + discovery. **No frame** → treat the
    `<task>` arg as the goal (step 0 already scouted it); don't write an open-questions section
    (that's `/frame`'s job). Offer `/frame` or `/shape` when the ceremony gradient calls for one

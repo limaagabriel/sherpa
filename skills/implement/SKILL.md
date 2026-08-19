@@ -34,13 +34,10 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    against the built symbols; `quality-reviewer` also gets pack `knowledge`/`implement.knowledge`
    inline prose and `implement.codeStyleRules` command output when announced, plus the current
    step index + remaining step goals.
-3. **Verdicts.** Every verbatim surface below leads with one line naming, in the reader's terms,
-   what it blocks (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Verbatim is a quote, not a frame).
-   `UNMET` or a quality `FIX` → relay to the step-builder to fold in, re-check once; still
-   `UNMET`/`FIX` after that → stop, same terminal handling as `BLOCK`, surface verbatim, no further
-   looping. `MET` + `PASS` → next step. `BLOCK` → stop, surface verbatim to the human. Any reviewer
-   output containing `recommend /decompose revisit` → stop, surface verbatim to the human, offer
-   `/decompose` in one declinable line.
+3. **Verdicts.** Handle verdicts per
+   `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Verdicts — UNMET/FIX
+   relay-once-then-terminal, BLOCK stops, MET+PASS continues; surface verbatim per
+   `${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Verbatim is a quote, not a frame.
 
 ## Done when
 Every step committed, no open `BLOCK`. Present the per-step results; offer `/persist` if wanted.

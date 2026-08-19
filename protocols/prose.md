@@ -26,14 +26,10 @@ introducing.
 A driver emits its own artifact shape. A subagent's return value is input to that emission,
 never the emission itself. Forwarding it verbatim as the whole message hands the reader a
 machine channel's coordinates instead of a composed one. A real `/shape` run once relayed
-`shape-reviewer`'s raw return straight to the human — that agent's own contract marks the text
-as a machine channel: `agents/shape-reviewer.md:61` "Compact markdown, no preamble, no
-narration"; `agents/shape-reviewer.md:93` "The final message is the return value.";
-`agents/shape-reviewer.md:20-21` "Your final message IS the return value (the ranked shortlist),
-not a human-facing note." The relay named pool bookkeeping IDs (`A1`, `C1`, `C3`) the human had
-never seen a pool for, and domain symbols (`frontendTokensValues`, `cssVariableMapping`) never
-introduced anywhere in the conversation. A correct critique read as noise and was discarded
-unresolved.
+`shape-reviewer`'s raw return straight to the human — shape-reviewer's own contract marks its
+return as a machine channel, not a human-facing note. The relay named pool bookkeeping IDs and
+domain symbols never introduced anywhere in the conversation; a correct critique read as noise
+and was discarded unresolved.
 
 ## The reader test
 This is a TEST, not a suggestion, generalized to any human-facing prose, not only questions:

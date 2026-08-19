@@ -88,11 +88,10 @@ task wants:
 /implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L4)
 ```
 
-`BLOCK` findings surface to you. `MET`/`PASS`/`FIX` continue automatically (a `FIX` is folded
-into the step-builder's commit and re-checked once; still failing after that re-check is terminal,
-surfaced like `BLOCK`). Any reviewer output containing `recommend /decompose revisit` also stops,
-surfacing verbatim and offering `/decompose` in one declinable line. There is no final Validate
-gate — pressure lives at each boundary. See `protocols/layers.md`.
+`BLOCK` and a terminal `UNMET`/`FIX` surface to you verbatim; everything else continues
+automatically — see `protocols/workflow/phases/implement.md` § Verdicts for the full state
+machine, and `protocols/layers.md` for how pressure lives at each boundary instead of a final
+gate.
 
 ## Project packs (optional)
 

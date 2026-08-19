@@ -20,12 +20,8 @@ Read-only. The subagent never edits. Breadth drives dispatch count: `quick` → 
 
 ## Output
 
-Compact markdown — the Discover-record `Scout` payload the caller drops into its brief:
-- `landmarks` — `file:line` entry points and existing patterns.
-- `precedent` — `file:line — what_it_exemplifies` per pattern (`None found` + justification allowed).
-- `constraints` — configs, build files, schemas, validators, conventions.
-- `tests` — existing tests with framework.
-- `gaps` — questions left open.
-- `confidence` — overall line, justified by coverage of the relevant surface.
+Compact markdown — the Discover-record `Scout` payload the caller drops into its brief. The
+Discover-record fields the scout agent owns — see `agents/scout.md` § Output for the contract
+(`landmarks`, `precedent`, `constraints`, `tests`, `gaps`, `confidence`).
 
 Nothing else — no preamble.
