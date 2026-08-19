@@ -24,8 +24,8 @@ The driver ASKS the appetite — it never just shows a number. The question is s
 translation, not the unit they reason in.
 
 The counts offered are anchored on the frame's discovery — the surfaces the frame already names,
-never invented. `/shape` cannot dispatch `/scout` (`skills/shape/SKILL.md:35-36`) and a frame is
-always in context (`protocols/layers.md:41`), so the frame's discovery is the only legitimate
+never invented. `/shape` cannot dispatch `/scout` (`skills/shape/SKILL.md` § Operating rules) and a frame is
+always in context (`protocols/layers.md` § A ceremony gradient), so the frame's discovery is the only legitimate
 source for the numbers. Discovery anchors the RANGE offered; the human's pick is a budget, not a
 prediction — the line that keeps appetite from becoming an estimate.
 

@@ -42,7 +42,7 @@ are the cold reader who never saw that work — that independence is your whole 
 ## What you attack
 - **Unbound slot** — a slot doesn't name the party's actual bound goal. **Capability slot**:
   names an action they would perform ("refactor X", "migrate Y") instead of the capability
-  they're trying to reach; `protocols/workflow/phases/frame.md:17` states Capability as their
+  they're trying to reach; `protocols/workflow/phases/frame.md` § Problem contract states Capability as their
   goal, never the feature that grants it. **Any slot**: names an unbound noun-phrase ("the
   relevant validations") instead of a concrete bound one. Quote the slot either way.
 - **Mechanism leakage** — the frame names HOW rather than WHAT. **Solved-signal**: apply

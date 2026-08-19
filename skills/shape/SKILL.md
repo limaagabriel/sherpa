@@ -50,7 +50,7 @@ the opt-in `/persist` skill.
    collapse record. One `shape-reviewer` dispatch over the pooled candidates
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `SHAPE_KNOWLEDGE`
    when a pack announced it, and the appetite — `shape-reviewer` needs it to judge `bounded`
-   (`agents/shape-reviewer.md:43-44`). Returns the shortlist with precedent, risk, skeletons,
+   (`agents/shape-reviewer.md` § Inputs (from caller)). Returns the shortlist with precedent, risk, skeletons,
    traps, and the collapse record.
 4. **Compose the emission** — the driver composes the pitch from `shape-reviewer`'s return value;
    forwarding that return value as the message hands the human a machine channel

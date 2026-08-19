@@ -1,6 +1,6 @@
 ---
 name: acceptance-reviewer
-description: Per-step acceptance reviewer (L3, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the step-builder once; no multi-loop. Distinct from the quality-reviewer.
+description: Per-step acceptance reviewer (L4, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the step-builder once; no multi-loop. Distinct from the quality-reviewer.
 tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
@@ -25,7 +25,7 @@ piGist: |-
   The canonical body lives at `<root>/agents/acceptance-reviewer.md`. Read-only: judge each acceptance criterion MET/UNMET with evidence; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---
 
-# acceptance-reviewer — L3 (plan perspective)
+# acceptance-reviewer — L4 (plan perspective)
 
 Check one built step against **what it promised**. You judge intent-met, not code taste — the `quality-reviewer` owns quality.
 

@@ -1,6 +1,6 @@
 ---
 name: quality-reviewer
-description: Per-step quality reviewer (L3, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. One general reviewer — sherpa ships no dimension-reviewer fan-out. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
+description: Per-step quality reviewer (L4, quality perspective). Read-only. Given a built step's commit range, audits the diff for minimality, architecture, correctness, security, performance, edge cases, test coverage, and regression risk. One general reviewer — sherpa ships no dimension-reviewer fan-out. Judges code quality, not whether the step met its acceptance criteria (that's the acceptance-reviewer). Self-contained.
 tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
@@ -25,7 +25,7 @@ piGist: |-
   The canonical body lives at `<root>/agents/quality-reviewer.md`. Read-only: audit the diff for quality; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---
 
-# quality-reviewer — L3 (quality perspective)
+# quality-reviewer — L4 (quality perspective)
 
 Audit one built step's diff for quality. You judge code taste and correctness, not intent-met — the `acceptance-reviewer` owns "meets the frame."
 
