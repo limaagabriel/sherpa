@@ -84,7 +84,7 @@ task wants:
 /shape      fan out directions, skeleton + critique the pool  →  pitch  (in context)
             shape-reviewer attacks the pool: solved, bounded, collapse (L2)
 /decompose  decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
-            structure-reviewer + readiness-reviewer attack the decomposition (L3)
+            structure-reviewer attacks how steps relate, readiness-reviewer attacks each step's contract (L3)
 /implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L4)
 ```
 
