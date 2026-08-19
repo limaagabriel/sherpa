@@ -29,7 +29,7 @@ the opt-in `/persist` skill.
   surrounding code; evidence-only (quote file:line).
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** forward `knowledge` (cross-cutting) and `shape.knowledge` (additive) — when
-  announced — to `shape-reviewer` as its `SHAPE_KNOWLEDGE` input.
+  announced — to `shape-reviewer` as its `shape.knowledge` input.
 - **Explicit invocation only, 4 agent calls per run** (3 `shape-builder` + 1 `shape-reviewer`).
   Never auto-fire; OFFER `/shape <problem>` in one declinable line instead.
 - **No `/scout` dispatch** — each `shape-builder` reads the codebase itself; a shared evidence
@@ -48,7 +48,7 @@ the opt-in `/persist` skill.
 3. **Critique.** The driver assigns each pooled candidate a stable ID when it pools the builders'
    output, and briefs `shape-reviewer` to reuse those IDs verbatim in the shortlist, traps, and
    collapse record. One `shape-reviewer` dispatch over the pooled candidates
-   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `SHAPE_KNOWLEDGE`
+   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `shape.knowledge`
    when a pack announced it, and the appetite — `shape-reviewer` needs it to judge `bounded`
    (`agents/shape-reviewer.md` § Inputs (from caller)). Returns the shortlist with precedent, risk, skeletons,
    traps, and the collapse record.

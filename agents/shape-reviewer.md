@@ -38,7 +38,7 @@ one that judges it.
   only component that sees all of them together; each candidate arrives carrying a proposed
   Outcome fill, `precedent`, `risk`, and a **skeleton** (beats, appetite, no-gos), per
   `agents/shape-builder.md`'s output contract.
-- `SHAPE_KNOWLEDGE` — optional project-pack prose to weigh candidates against; absent means
+- `shape.knowledge` — optional project-pack prose to weigh candidates against; absent means
   engine defaults only.
 - The **appetite** — the step budget the human set before dispatch; you need it to judge
   `bounded` (`protocols/workflow/phases/shape.md` § Appetite).
