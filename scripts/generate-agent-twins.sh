@@ -11,7 +11,13 @@ extract_frontmatter() {
 }
 
 fm_get() {
-  printf '%s\n' "$1" | yq eval ".$2" -
+  local role="$1" fm="$2" field="$3" value
+  value="$(printf '%s\n' "$fm" | yq eval ".$field" -)"
+  if [[ "$value" == "null" ]]; then
+    echo "generate-agent-twins: $role is missing required frontmatter field '$field'" >&2
+    exit 1
+  fi
+  printf '%s\n' "$value"
 }
 
 guard_no_triple_quote() {
@@ -43,12 +49,12 @@ write_codex_twin() {
   local name="$1" fm="$2"
   local description model effort sandbox header body
 
-  description="$(fm_get "$fm" description)"
-  model="$(fm_get "$fm" codexModel)"
-  effort="$(fm_get "$fm" codexReasoningEffort)"
-  sandbox="$(fm_get "$fm" codexSandbox)"
-  header="$(fm_get "$fm" codexHeaderComment)"
-  body="$(fm_get "$fm" codexBody)"
+  description="$(fm_get "$name" "$fm" description)"
+  model="$(fm_get "$name" "$fm" codexModel)"
+  effort="$(fm_get "$name" "$fm" codexReasoningEffort)"
+  sandbox="$(fm_get "$name" "$fm" codexSandbox)"
+  header="$(fm_get "$name" "$fm" codexHeaderComment)"
+  body="$(fm_get "$name" "$fm" codexBody)"
 
   guard_no_triple_quote "$name" description "$description"
   guard_no_triple_quote "$name" codexBody "$body"
@@ -68,11 +74,12 @@ write_codex_twin() {
 
 write_pi_twin() {
   local name="$1" fm="$2"
-  local description tools gist
+  local description tools thinking gist
 
-  description="$(fm_get "$fm" description)"
-  tools="$(fm_get "$fm" piTools)"
-  gist="$(fm_get "$fm" piGist)"
+  description="$(fm_get "$name" "$fm" description)"
+  tools="$(fm_get "$name" "$fm" piTools)"
+  thinking="$(fm_get "$name" "$fm" piThinking)"
+  gist="$(fm_get "$name" "$fm" piGist)"
 
   guard_yaml_plain_scalar "$name" description "$description"
   guard_yaml_plain_scalar "$name" piTools "$tools"
@@ -83,6 +90,7 @@ write_pi_twin() {
     printf 'package: sherpa\n'
     printf 'description: %s\n' "$description"
     printf 'tools: %s\n' "$tools"
+    printf 'thinking: %s\n' "$thinking"
     printf 'systemPromptMode: replace\n'
     printf 'inheritProjectContext: true\n'
     printf 'inheritSkills: false\n'
@@ -103,7 +111,6 @@ generate_twin() {
   local file="$1" name fm
 
   name="$(basename "$file" .md)"
-  [ "$name" = "README" ] && return 0
 
   fm="$(extract_frontmatter "$file")"
   write_codex_twin "$name" "$fm"

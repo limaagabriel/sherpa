@@ -18,19 +18,20 @@ subagent ran when none did.
 ## Roles and tiers
 
 Each shim points at its canonical `agents/<name>.md` and carries a `thinking`
-tier mirroring the Codex `model_reasoning_effort` gradient.
+tier mirroring the Codex `model_reasoning_effort` gradient — read from each
+role's own `piThinking` frontmatter field, so this table always mirrors it.
 
 | Role | Canonical body | tools | `thinking` |
 |---|---|---|---|
 | frame-reviewer | `agents/frame-reviewer.md` | read, grep, find, ls, bash | high |
-| shape-builder | `agents/shape-builder.md` | read, grep, find, ls, bash | low |
+| shape-builder | `agents/shape-builder.md` | read, grep, find, ls, bash | medium |
 | shape-reviewer | `agents/shape-reviewer.md` | read, grep, find, ls, bash | high |
-| structure-reviewer | `agents/structure-reviewer.md` | read, grep, find, ls, bash | medium |
-| readiness-reviewer | `agents/readiness-reviewer.md` | read, grep, find, ls, bash | low |
-| step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | low |
-| acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | low |
-| quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | low |
-| scout | `agents/scout.md` | read, grep, find, ls, bash | low |
+| structure-reviewer | `agents/structure-reviewer.md` | read, grep, find, ls, bash | high |
+| readiness-reviewer | `agents/readiness-reviewer.md` | read, grep, find, ls, bash | high |
+| step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | high |
+| acceptance-reviewer | `agents/acceptance-reviewer.md` | read, grep, find, ls, bash | high |
+| quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | high |
+| scout | `agents/scout.md` | read, grep, find, ls, bash | medium |
 
 The `tools` column carries the write distinction: `step-builder` holds `edit, write`; no other
 role does. Among the read-only roles, `scout` and `shape-builder` are workers; the rest are

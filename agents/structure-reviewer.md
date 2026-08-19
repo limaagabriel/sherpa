@@ -19,6 +19,7 @@ codexBody: |-
   decomposition with evidence; never edit. Your final message IS the return value
   (VERDICT: SOLID | HOLES), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/structure-reviewer.md`. Read-only: attack the step decomposition before any step is built; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
 ---

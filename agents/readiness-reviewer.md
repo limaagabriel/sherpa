@@ -19,6 +19,7 @@ codexBody: |-
   own contract with evidence; never edit. Your final message IS the return value
   (VERDICT: SOLID | HOLES), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/readiness-reviewer.md`. Read-only: attack each step's own contract before any step is built; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
 ---

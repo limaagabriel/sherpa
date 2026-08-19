@@ -23,6 +23,7 @@ codexBody: |-
   note. Do not write separate handoff or state files — your inline final
   message is the only output.
 piTools: read, grep, find, ls, bash, edit, write
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/step-builder.md`. Implement the approved step, run acceptance checks before committing, land one real-subject commit, never push. Your final message IS the return value — inline text: BUILT <sha> <subject> with the check you ran, or FAILED <why> — not a human-facing note.
 ---

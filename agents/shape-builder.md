@@ -19,6 +19,7 @@ codexBody: |-
   exploration: never edit. Your final message IS the return value (the
   compact candidate list, each carrying a skeleton), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: medium
 piGist: |-
   The canonical body lives at `<root>/agents/shape-builder.md`. Read-only exploration, never edit or write. Your final message IS the return value (the compact candidate list, each carrying a skeleton), not a human-facing note.
 ---

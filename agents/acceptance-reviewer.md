@@ -21,6 +21,7 @@ codexBody: |-
   counts as not met. Your final message IS the return value (MET, or UNMET with
   the gaps), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/acceptance-reviewer.md`. Read-only: judge each acceptance criterion MET/UNMET with evidence; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---

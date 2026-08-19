@@ -21,6 +21,7 @@ codexBody: |-
   emit the overall quality verdict. Your final message IS the return value
   (per-finding tiered results + overall verdict), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/quality-reviewer.md`. Read-only: audit the diff for quality; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---

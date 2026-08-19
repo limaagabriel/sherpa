@@ -19,6 +19,7 @@ codexBody: |-
   problem contract, discovery, and open questions with evidence; never edit. Your final
   message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/frame-reviewer.md`. Read-only: attack the frame's problem contract, discovery, and open questions; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
 ---

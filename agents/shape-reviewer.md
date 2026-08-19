@@ -20,6 +20,7 @@ codexBody: |-
   into a ranked shortlist; never edit. Your final message IS the return value
   (the ranked shortlist), not a human-facing note.
 piTools: read, grep, find, ls, bash
+piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/shape-reviewer.md`. Read-only: judge the pooled candidates and their skeletons, flag traps, and collapse near-duplicates into a ranked shortlist; never edit or write. Your final message IS the return value (the ranked shortlist), not a human-facing note.
 ---
