@@ -1,6 +1,6 @@
 # pi subagent roles
 
-These eight `*.md` files are sherpa's roles as **pi-subagents agents**. The
+These nine `*.md` files are sherpa's roles as **pi-subagents agents**. The
 package manifest declares `pi.subagents.agents: ["./.pi/agents"]`, so
 pi-subagents **auto-registers** them on load — no manual copy or symlink. Each
 shim is a thin pointer: its body resolves the sherpa package root and reads the
