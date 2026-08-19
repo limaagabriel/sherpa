@@ -58,7 +58,7 @@ Each step is its own block. Every step carries:
 - **How it's verified** — observable end state + test plan.
 
 ## Goal contract
-Every goal — the one **plan goal** and each **step goal** — is one sentence, four bound slots:
+Every goal — the one **plan goal** and each **step goal** — is one sentence, four bound slots (Doran 1981):
 
 > **`<Outcome>` for `<consumers>` because `<motivation>`; done when `<verification>`.**
 
@@ -88,8 +88,9 @@ After the silent self-review, before presenting, always dispatch `structure-revi
 Also dispatch `readiness-reviewer`, in parallel with `structure-reviewer`, when the plan exceeds 3
 steps OR any step's Blast contract declares `one-way-door` reversibility — readiness-reviewer's
 per-step contract-completeness checks earn their cost on plans big enough to hide a bad step
-contract, or steps risky enough that a contract gap is expensive to discover late. A plan of 3
-steps or fewer, all revertible, skips it — structure-reviewer alone is proportionate.
+contract, or steps risky enough that a contract gap is expensive to discover late (Boehm & Turner 2003;
+Hannay 2009). A plan of 3 steps or fewer, all revertible, skips it — structure-reviewer alone is
+proportionate.
 
 Forward `structure-reviewer` the same inputs it always took: the plan goal + the full step list
 (each goal in contract form, each step's `Interfaces`) + the frame path for context, or the problem
@@ -103,7 +104,8 @@ Risk field, plus pack `knowledge`/`decompose.knowledge` — but not `architectur
 cross-step context `structure-reviewer` alone consumes, and `readiness-reviewer`'s own Input
 contract has no `architectureRules` input.
 
-`structure-reviewer` attacks traceability, missing foundation, gaps, overlap, ordering, hidden
+`structure-reviewer` attacks traceability, missing foundation, gaps, overlap, ordering (Wake 2003;
+Reinertsen 2009), hidden
 coupling, interface-mismatch; `readiness-reviewer`, when dispatched, attacks contract completeness,
 over-prescription, goal-contract honesty, single-responsibility, responsibility leak, risk-field
 substance, and blast-contract accuracy. Each returns `SOLID | HOLES`. Handle:

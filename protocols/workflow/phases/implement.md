@@ -2,7 +2,7 @@
 
 Build the plan one step at a time with a single step-builder + reviewers — acceptance and quality
 for normal steps, quality alone (covering both) for mechanical steps (§ Mechanical steps).
-No separate Validate phase — adversarial pressure lives per step.
+No separate Validate phase — adversarial pressure lives per step (Cohen 2006).
 
 ## One step at a time
 - Track one step `in_progress` at a time (TaskCreate/TaskUpdate when available; else a plain
@@ -74,7 +74,7 @@ Every verbatim surface below leads with one line naming, in the reader's terms, 
 ## Plan-level verification
 - **Trigger.** Once every step is committed with no open `BLOCK`, run the plan's Block 3
   "How it's verified" (`protocols/workflow/phases/decompose.md` § Block 3 — Why & how) once,
-  before presenting.
+  before presenting (MAST 2025).
 - **Execution.** Run whatever part of Block 3's test plan is re-runnable as-is; treat anything
   that isn't (i.e., requires a human to observe the end state) as a manual checklist item —
   inferred from what the test plan actually says, not a labeling convention Block 3 is required

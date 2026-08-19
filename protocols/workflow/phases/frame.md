@@ -1,6 +1,6 @@
 # Frame (macro layer)
 
-Bind the problem before any solution — restate it as a contract, discover, surface open
+Bind the problem before any solution (Pólya 1945) — restate it as a contract, discover, surface open
 questions. Driven by `/frame`. Its artifact is **the frame** — problem contract + discovery +
 open questions. It binds no `Outcome` — that happens at `/decompose` step 0. Binding an end-state
 before discovery completes anchors scouting to one direction.

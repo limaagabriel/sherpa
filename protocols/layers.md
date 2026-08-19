@@ -78,7 +78,7 @@ An optional **project pack** extends each layer's components with project-specif
 (and, for decompose/implement, extra rules/validation) — see `packs/README.md`.
 
 ## No separate Validate
-Adversarial pressure lives at each boundary — the frame critique (L1), the shape critique (L2), the
+Adversarial pressure lives at each boundary (Cooper 1990 — phase gates) — the frame critique (L1), the shape critique (L2), the
 decomposition critique (L3), and per-step acceptance + quality (L4). There is no final goal-gate: if
 the decomposition was sound and each step met its criteria, the goal holds by construction.
 `/implement` also runs the plan's own already-authored Block 3 check once at the end

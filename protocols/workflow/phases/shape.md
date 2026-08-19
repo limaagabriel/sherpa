@@ -12,7 +12,7 @@ Vantages), so the driver offers `/frame` in one declinable line rather than gues
 `protocols/layers.md` records `/shape` as the one layer that requires its upstream artifact.
 
 ## Appetite
-A STEP BUDGET, not a time budget. Shape Up: *"a time budget for a standard team size."* Translated
+A STEP BUDGET, not a time budget. Shape Up (Singer 2019): *"a time budget for a standard team size."* Translated
 into sherpa's terms: *fixed time, variable scope* becomes **fixed step count, variable scope**. The
 human sets it; `shape-reviewer` checks each skeleton against it. Sherpa has no cycles or resource
 contention, so time isn't the scarce thing — what's scarce is how much work the human accepts built
@@ -43,7 +43,7 @@ appetite: the human always chooses.
 > than on a large one, or the words carry nothing.
 
 ## Vantages
-Derived per-run from the frame's problem contract — NO SHIPPED LIST. One `shape-builder` per
+Derived per-run from the frame's problem contract — NO SHIPPED LIST (Sobek 1999). One `shape-builder` per
 falsifiable slot, N=3, each holding one premise and returning candidates that hold ONLY IF it's
 false:
 
@@ -113,7 +113,7 @@ so a judgment needing acceptance criteria or interfaces is out of reach — that
 resolutions, and `shape-reviewer`'s stops where exact steps begin — beat adjacency IS coarse
 ordering, not an axis it's barred from.
 
-**Isolation invariant** — builders run concurrently, never seeing each other's output or a
+**Isolation invariant** (Nemeth 2001) — builders run concurrently, never seeing each other's output or a
 sibling's summary; branches that see each other anchor each other and the fan-out collapses to one
 wider thought. **Builder/critic split** — the agent that produced a candidate is never the one
 that judges it.
