@@ -335,6 +335,21 @@ out=$(ctx "$repo_t")
 assert_contains "t/decompose-knowledge-quoted" "$out" 'decompose.knowledge="Keep steps traceable to the Outcome."'
 assert_not_contains "t/decompose-knowledge-not-wrapped" "$out" "&& Keep steps traceable"
 
+# (ac) frame.knowledge — additive prose for the frame layer, quoted
+# verbatim like implement.knowledge, never cd-wrapped
+repo_ac="$tmp/repoac"
+mkdir -p "$repo_ac/.claude"
+cat >"$repo_ac/.claude/sherpa.yaml" <<'YAML'
+name: proj-ac
+detect: "exit 0"
+pack:
+  frame:
+    knowledge: "Scout auth flows before framing."
+YAML
+out=$(ctx "$repo_ac")
+assert_contains "ac/frame-knowledge-quoted" "$out" 'frame.knowledge="Scout auth flows before framing."'
+assert_not_contains "ac/frame-knowledge-not-wrapped" "$out" "&& Scout auth flows"
+
 # (u) per-pack colocated asset executes — a workspace pack's `detect` runs from
 # the pack's own dir, so a relative ./detect.sh resolves and executes from there
 packs_u="$tmp/packs-u"

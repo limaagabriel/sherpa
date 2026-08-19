@@ -24,6 +24,32 @@ jobs:
           bash scripts/generate-agent-twins.sh
           git diff --exit-code .codex/agents .pi/agents
 
+      - name: Doc hygiene gates
+        run: |
+          set -e
+          if grep -n 'L3' agents/step-builder.md agents/acceptance-reviewer.md agents/quality-reviewer.md skills/implement/SKILL.md protocols/workflow/phases/implement.md; then
+            echo "stale L3 label found in a build-layer (L4) file" >&2
+            exit 1
+          fi
+          if grep -rEn '\.md:[0-9]+' agents/ skills/ protocols/; then
+            echo "brittle line-number citation found (use a § section cite instead)" >&2
+            exit 1
+          fi
+          if grep -rn 'SHAPE_KNOWLEDGE' agents/ hooks/ packs/ protocols/ scripts/ skills/; then
+            echo "retired SHAPE_KNOWLEDGE symbol still referenced" >&2
+            exit 1
+          fi
+          total=0
+          for f in agents/*.md skills/*/SKILL.md; do
+            n=$(sed -n '/^---$/,/^---$/p' "$f" | sed -n '/^description:/,/^[a-z]*:/p' | sed '$d' | sed '1s/^description: *//' | tr -d '"' | wc -w)
+            total=$((total + n))
+          done
+          echo "combined description word total: $total"
+          if [ "$total" -gt 460 ]; then
+            echo "combined agent/skill description word count ($total) exceeds 460" >&2
+            exit 1
+          fi
+
       - name: Version lockstep
         run: |
           root=$(jq -r .version package.json)
