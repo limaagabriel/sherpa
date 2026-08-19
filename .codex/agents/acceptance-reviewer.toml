@@ -3,7 +3,7 @@
 # file agents/acceptance-reviewer.md; this TOML only binds the model tier + sandbox.
 # Tier: review (GPT-5.6 Terra, high). Read-only acceptance-criteria review.
 name = "acceptance-reviewer"
-description = '''Per-step acceptance reviewer (L3, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the step-builder once; no multi-loop. Distinct from the quality-reviewer.'''
+description = '''Per-step acceptance reviewer (L4). Read-only. Judges a built step's diff against its acceptance criteria, MET/UNMET with evidence. Relays gaps once; no multi-loop.'''
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

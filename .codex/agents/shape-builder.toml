@@ -2,7 +2,7 @@
 # Full role in plugin file agents/shape-builder.md; this TOML binds the
 # model tier + sandbox. Tier: ideation/generation (cheap; Claude: sonnet). Read-only.
 name = "shape-builder"
-description = '''Read-only candidate builder that holds one assigned premise false; returns COUNT candidate directions for a problem, each with precedent, risk, and a coarse step skeleton.'''
+description = '''Read-only candidate builder. Holds one premise false — or, for `mainline`, holds every slot true. Returns COUNT candidates, each with precedent, risk, and a coarse step skeleton.'''
 model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"

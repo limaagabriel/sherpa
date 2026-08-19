@@ -3,6 +3,7 @@ name: scout
 package: sherpa
 description: Read-only codebase scout that explores per the caller's task/target/focus and returns a Discover record (landmarks, precedent, constraints, tests, gaps, confidence).
 tools: read, grep, find, ls, bash
+thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

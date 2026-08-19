@@ -2,7 +2,7 @@
 # Full role in plugin file agents/structure-reviewer.md; this TOML binds the model
 # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
 name = "structure-reviewer"
-description = '''Read-only step-layer adversary (L3). Given the plan goal + the full step list, attacks the decomposition BEFORE any code — does each step trace to the goal, is a foundation later steps need missing, do steps overlap, is the order sound? Returns SOLID | HOLES. Never sees a diff. Single pass, no loop. Its sibling, `readiness-reviewer`, attacks each step in isolation instead — this one never does.'''
+description = '''Read-only step-layer adversary (L3). Attacks the whole decomposition — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns SOLID | HOLES.'''
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

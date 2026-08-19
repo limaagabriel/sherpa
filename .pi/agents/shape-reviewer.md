@@ -1,8 +1,9 @@
 ---
 name: shape-reviewer
 package: sherpa
-description: Read-only critic that judges pooled candidates and their skeletons for solved and bounded, flags traps, and collapses near-duplicates into a ranked 2-4 shortlist.
+description: Read-only critic. Judges pooled candidates for solved/bounded, flags traps, collapses near-duplicates into a ranked 2-4 shortlist.
 tools: read, grep, find, ls, bash
+thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

@@ -3,7 +3,7 @@
 # file agents/step-builder.md; this TOML only binds the model tier + sandbox.
 # Tier: implementation (GPT-5.6 Luna, high reasoning).
 name = "step-builder"
-description = '''The single sherpa step-builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.'''
+description = '''Sherpa's step-builder (L4). Implements one plan step, lands one commit. Returns BUILT <sha> or FAILED <why>, inline. Never pushes.'''
 model = "gpt-5.6-luna"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"

@@ -1,8 +1,9 @@
 ---
 name: step-builder
 package: sherpa
-description: The single sherpa step-builder (L3). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.
+description: Sherpa's step-builder (L4). Implements one plan step, lands one commit. Returns BUILT <sha> or FAILED <why>, inline. Never pushes.
 tools: read, grep, find, ls, bash, edit, write
+thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

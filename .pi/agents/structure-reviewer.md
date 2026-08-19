@@ -1,8 +1,9 @@
 ---
 name: structure-reviewer
 package: sherpa
-description: Read-only step-layer adversary (L3). Given the plan goal + the full step list, attacks the decomposition BEFORE any code — does each step trace to the goal, is a foundation later steps need missing, do steps overlap, is the order sound? Returns SOLID | HOLES. Never sees a diff. Single pass, no loop. Its sibling, `readiness-reviewer`, attacks each step in isolation instead — this one never does.
+description: Read-only step-layer adversary (L3). Attacks the whole decomposition — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns SOLID | HOLES.
 tools: read, grep, find, ls, bash
+thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

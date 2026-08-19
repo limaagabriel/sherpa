@@ -1,8 +1,9 @@
 ---
 name: frame-reviewer
 package: sherpa
-description: Read-only macro-layer adversary (L1). Cold eyes on the frame — attacks the problem contract, the discovery claims, and the open-questions section. Did /frame frame the right problem without committing to a solution, is its discovery founded, did it surface the real unknowns? Returns SOLID | HOLES. Never sees a diff. Single pass, no loop.
+description: Read-only macro-layer adversary (L1). Attacks the frame's problem contract, discovery, and open questions. Returns SOLID | HOLES. Never sees a diff. Single pass, no loop.
 tools: read, grep, find, ls, bash
+thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

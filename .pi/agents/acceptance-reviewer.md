@@ -1,8 +1,9 @@
 ---
 name: acceptance-reviewer
 package: sherpa
-description: Per-step acceptance reviewer (L3, plan perspective). Read-only. Given a built step's commit range + its acceptance criteria, judges each criterion MET/UNMET with evidence — does the code do what the step promised, regardless of code quality. Relays gaps to the step-builder once; no multi-loop. Distinct from the quality-reviewer.
+description: Per-step acceptance reviewer (L4). Read-only. Judges a built step's diff against its acceptance criteria, MET/UNMET with evidence. Relays gaps once; no multi-loop.
 tools: read, grep, find, ls, bash
+thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
