@@ -105,9 +105,14 @@ of it — is written verbatim into the pitch's `appetite` field: `balanced — N
 skeleton also states an appetite (`agents/shape-builder.md` output contract) — what rides in the
 pitch's `appetite` field is the dispatched value, never a candidate's echo of it.
 
+The necessity verdict (§ Critique) rides into the pitch by way of the shortlist rationale, exactly
+like solved and bounded already do.
+
 ## Critique
-One `shape-reviewer` dispatch over the pooled candidates, judging ACROSS them: solved, bounded, and
-collapse (which candidates are secretly one angle). Its ceiling is resolution: it sees only beats,
+One `shape-reviewer` dispatch over the pooled candidates, judging ACROSS them: solved, bounded, necessity,
+and collapse (which candidates are secretly one angle). Necessity: each candidate's beats, as
+written, serve a named slot of the forwarded `PROBLEM`, judged at beat resolution — an untraced
+beat is a `traps` entry (Gotel & Finkelstein 1994). Its ceiling is resolution: it sees only beats,
 so a judgment needing acceptance criteria or interfaces is out of reach — that's
 `structure-reviewer`'s, at L3. Both reviewers may look at order; they read it at different
 resolutions, and `shape-reviewer`'s stops where exact steps begin — beat adjacency IS coarse
@@ -119,7 +124,7 @@ wider thought. **Builder/critic split** — the agent that produced a candidate 
 that judges it.
 
 Mainline's candidates are one vantage among four in the pool — the falsifying three plus mainline —
-judged exactly like the others: solved, bounded, collapse. Mainline is never a default the human
+judged exactly like the others: solved, bounded, necessity, collapse. Mainline is never a default the human
 falls back to just because it exists — `shape-reviewer` must not rank its candidates above a
 stronger falsifying candidate merely for being the "safe" choice.
 

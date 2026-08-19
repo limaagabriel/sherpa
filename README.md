@@ -82,7 +82,7 @@ task wants:
 /frame      scout + bind a problem contract + ask questions as they arise  →  frame  (in context)
             frame-reviewer attacks the framing (L1)
 /shape      fan out directions, skeleton + critique the pool  →  pitch  (in context)
-            shape-reviewer attacks the pool: solved, bounded, collapse (L2)
+            shape-reviewer attacks the pool: solved, bounded, necessity, collapse (L2)
 /decompose  decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
             structure-reviewer attacks how steps relate, readiness-reviewer attacks each step's contract (L3)
 /implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L4)
