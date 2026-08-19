@@ -21,8 +21,7 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
 1. **Get context.** Plan in context → build its steps. **No plan** → treat the `<task>` arg as one
    implicit step. If the task is large enough to want decomposition, offer `/decompose` first in
    one declinable line. **A persisted frame, pitch, or plan file path given as the arg** — read it
-   back and consume it exactly as an in-context artifact; a legacy file may carry `## Spec` instead
-   of `## Frame` — read it the same way.
+   back and consume it exactly as an in-context artifact.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one
    in progress. Per step — the driver asks any step-scoped question first, shaped per
    `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` (haiku for pure

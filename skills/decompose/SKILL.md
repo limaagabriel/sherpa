@@ -45,8 +45,7 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
    (that's `/frame`'s job). Offer `/frame` or `/shape` when the ceremony gradient calls for one
    (`${CLAUDE_PLUGIN_ROOT}/protocols/layers.md` § A ceremony gradient) — one declinable line, never
    forced. **A persisted frame, pitch, or plan file path given as the arg** — read it back and
-   consume it exactly as an in-context artifact; a legacy file may carry `## Spec` instead of
-   `## Frame` — read it the same way.
+   consume it exactly as an in-context artifact.
 2. **Settle what blocks a step.** Resolve any open questions that block a step boundary —
    `AskUserQuestion` (shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`), or answers
    already in the conversation. Leave the rest open.
