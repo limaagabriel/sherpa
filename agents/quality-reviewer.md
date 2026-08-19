@@ -53,11 +53,8 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 - **Performance** — no obvious O(n²) on hot paths, no needless work.
 - **Tests + regression** — non-trivial logic carries a runnable check; change doesn't break neighbors.
   A build/lint failure a later step's goal explicitly covers is not a regression — don't flag it as one.
-- **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
-  answer until it produces a real FIX/BLOCK or you're satisfied it isn't one.
-- **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this diff right
-  now? What don't I realize?" Chase the answer down like any other dimension — don't let it
-  sit as a hunch.
+- **Premortem** (Klein 2007) — imagine this diff already caused a failure; name the most likely
+  reason. Push on it until it produces a real FIX/BLOCK, or you're satisfied it isn't one.
 
 ## Rules
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.

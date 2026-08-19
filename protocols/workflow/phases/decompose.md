@@ -75,9 +75,8 @@ Every goal — the one **plan goal** and each **step goal** — is one sentence,
 3. **Scope** — one plan's worth?
 4. **Earns-its-keep** — every abstraction's `For` names ≥2 consumers/a value; every `Because`
    says what breaks if absent. Fails either → cut or justify.
-5. **Self-critique** — ask: "What am I least confident about right now?" and "What's the
-   biggest thing I'm missing about this decomposition right now? What don't I realize?" Fold
-   the answer in, or carry it forward as an open question — don't just note it and move on.
+5. **Premortem** (Klein 2007) — imagine this decomposition already failed; name the most likely
+   reason. Fold the answer in, or carry it forward as an open question — don't just note it and move on.
 6. **Interface closure** — every step's `Interfaces` consumes entry is produced by an earlier
    step; every produces entry has a consumer or a stated reason. A mismatch here is cheaper to
    fix now than at the consuming step.

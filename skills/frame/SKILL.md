@@ -34,9 +34,9 @@ skill — never automatic.
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract). Apply
    § Vocabulary test to the solved-signal before presenting. Open questions hold only what the
    user left open or a tradeoff not yet resolvable — most were settled live in step 1.
-3. **Self-critique (silent).** Ask: "What am I least confident about right now?" and "What's
-   the biggest thing I'm missing about this frame right now? What don't I realize?" Fold the
-   answer into discovery or open questions; don't present it as an inline hedge.
+3. **Premortem (silent)** (Klein 2007). Imagine this frame already caused a failure; name the
+   most likely reason. Fold the answer into discovery or open questions; don't present it as an
+   inline hedge.
 4. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
 5. **Critique.** Dispatch `frame-reviewer` (one shot) over the composed frame, forwarding the
    verbatim task-initiating request alongside it — the request the reviewer needs to judge

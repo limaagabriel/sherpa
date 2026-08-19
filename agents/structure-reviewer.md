@@ -69,11 +69,8 @@ the goal. **Default suspicion, not trust.**
   `protocols/workflow/phases/frame.md` § Vocabulary test to its solved-signal: every noun and verb
   must already appear in Who/Capability/Obstacle, or be observable before any change. A noun or
   verb naming one particular mechanism is leakage; quote the offending word and the contract.
-- **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
-  answer until it produces a real hole or you're satisfied it isn't one.
-- **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this plan right
-  now? What don't I realize?" Chase the answer down like any other angle — don't let it sit
-  as a hunch.
+- **Premortem** (Klein 2007) — imagine this plan already caused a failure; name the most likely
+  reason. Push on it until it produces a real hole, or you're satisfied it isn't one.
 
 ## Rules
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
@@ -94,5 +91,5 @@ ATTACKED: <angles tried — non-empty even when SOLID>
 APPETITE: <budget the pitch carried and how the plan's step count sits against it — descriptive
   only, never pass/fail — or `none` when no appetite was forwarded>
 HOLES:
-- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / no-go-violation / vocabulary-leak / self-doubt / blind-spot>; <what must change>
+- <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / no-go-violation / vocabulary-leak / premortem>; <what must change>
 ```

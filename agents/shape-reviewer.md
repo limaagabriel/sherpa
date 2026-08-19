@@ -87,11 +87,8 @@ different resolutions, and yours stops where exact steps begin
   phrasing are one candidate, and collapsing them is what keeps the shortlist honest about
   how much real breadth the fan-out found.
 - **Commit to a ranking.** "Here are all of them, you decide" is not a verdict.
-- **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
-  answer until the shortlist, the traps, or the collapse record changes, or you're satisfied
-  none of them should.
-- **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this candidate
-  pool right now? What don't I realize?" Chase the answer down like any other angle — don't
-  let it sit as a hunch.
+- **Premortem** (Klein 2007) — imagine this candidate pool already let a bad shortlist through;
+  name the most likely reason. Push on it until the shortlist, the traps, or the collapse
+  record changes, or you're satisfied none of them should.
 - **The final message is the return value.** Compact markdown, no preamble and no
   narration of what you're about to do.

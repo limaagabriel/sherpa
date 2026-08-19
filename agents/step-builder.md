@@ -50,11 +50,10 @@ Implement one approved step and commit it. You are dispatched once per step by `
 - **Build/test before committing.** Run the acceptance check; if it can't pass, return `BUILD FAILED` with the evidence rather than committing broken work.
 - **Run the pack's `implement.validate` command, if announced, before committing** — a failure is `BUILD FAILED`, same as a failing acceptance check.
 - **Mutating Bash only for your own build/test/commit** — never history rewrites.
-- **Self-check before returning.** Ask yourself: "What am I least confident about right now?"
-  and "What's the biggest thing I'm missing about this step right now? What don't I realize?"
-  Fold either answer into the output — the reviewers can't see a blind spot you don't name.
+- **Premortem before returning** (Klein 2007). Imagine this step already failed after you
+  returned BUILT — name the most likely reason. Fold it into your output — the reviewers can't
+  see a cause you don't name.
 
 ## Output (final text = the return value)
-- `BUILT <sha> <subject>` — plus the one check you ran and its result. Or
+- `BUILT <sha> <subject>` — plus the one check you ran and its result, and the premortem finding. Or
 - `FAILED <why>` — what blocked it, with the failing evidence.
-- `SELF-CHECK: <least confident about> — <what I might be missing about the situation>`

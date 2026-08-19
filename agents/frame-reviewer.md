@@ -62,11 +62,8 @@ are the cold reader who never saw that work — that independence is your whole 
   (a framing choice, a tradeoff). Name the assumption.
 - **Wrong-bucket question** — an "open question" that is a discoverable fact `/scout`
   should have closed, not a user preference. Quote it.
-- **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
-  answer until it produces a real hole or you're satisfied it isn't one.
-- **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this frame right
-  now? What don't I realize?" Chase the answer down like any other angle — don't let it sit
-  as a hunch.
+- **Premortem** (Klein 2007) — imagine this frame already caused a failure; name the most likely
+  reason. Push on it until it produces a real hole, or you're satisfied it isn't one.
 
 ## Rules
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
@@ -83,5 +80,5 @@ are the cold reader who never saw that work — that independence is your whole 
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <quote> — <why frame-request-mismatch/unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/self-doubt/blind-spot>; <what must bind, by whom>
+- <quote> — <why frame-request-mismatch/unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/premortem>; <what must bind, by whom>
 ```

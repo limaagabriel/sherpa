@@ -59,11 +59,8 @@ not a hole you can raise.
   contract; quote the field and the risk it missed.
 - **Blast-contract accuracy** — the step's stated blast radius or revert recipe is narrower than
   what its own `produces`/Change actually touches.
-- **Self-doubt** — ask yourself: "What am I least confident about right now?" Push on the
-  answer until it produces a real hole or you're satisfied it isn't one.
-- **Blind spot** — ask yourself: "What's the biggest thing I'm missing about this step right
-  now? What don't I realize?" Chase the answer down like any other angle — don't let it sit
-  as a hunch.
+- **Premortem** (Klein 2007) — imagine this step already caused a failure; name the most likely
+  reason. Push on it until it produces a real hole, or you're satisfied it isn't one.
 
 ## Ceiling
 You judge each step alone. Traceability to the plan goal, missing foundations, interface
@@ -85,5 +82,5 @@ an oversight.
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <step quote> — <completeness / over-prescription / goal-contract-honesty / single-responsibility / responsibility-leak / risk-substance / blast-contract-accuracy / self-doubt / blind-spot>; <what must change>
+- <step quote> — <completeness / over-prescription / goal-contract-honesty / single-responsibility / responsibility-leak / risk-substance / blast-contract-accuracy / premortem>; <what must change>
 ```
