@@ -30,5 +30,6 @@ identical; only the mechanism differs.
   fabricate dispatch** — do not claim a subagent ran when none did.
 - **Plugin root resolution.** Each role shim and skill path resolves the package
   root via `$SHERPA_PLUGIN_ROOT` first, else the concrete pi install roots
-  (`~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`). The
-  step-builder is the only writer; the four reviewers are read-only.
+  (`~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`).
+  step-builder is the only writer; the other eight roles (six reviewers plus
+  scout and shape-builder) are read-only.

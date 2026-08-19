@@ -1,6 +1,7 @@
 ---
 name: step-builder
 description: The single sherpa step-builder (L4). Implements ONE plan step — search, edit, build/test — and lands exactly one plain commit. Returns BUILT <sha> or FAILED <why> as inline final text. Never pushes.
+tools: Read, Grep, Glob, Bash, Edit, Write
 Layer: build
 model: sonnet
 codexModel: gpt-5.6-luna

@@ -2,6 +2,7 @@
 name: shape-builder
 description: Read-only candidate builder that holds one assigned premise false; returns COUNT candidate directions for a problem, each with precedent, risk, and a coarse step skeleton.
 tools: Read, Grep, Glob, Bash
+Layer: shape
 model: sonnet
 codexModel: gpt-5.6-luna
 codexReasoningEffort: medium

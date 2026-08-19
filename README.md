@@ -123,7 +123,6 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 
 ### L1 Macro
 - **`/frame`** — scout + bind a problem contract; presents a frame, nothing on disk.
-- **`/scout`** — standalone codebase scout; also called by `/frame` and `/decompose`.
 - **`frame-reviewer`** (agent) — cold eyes on the frame's problem contract, discovery, and open questions.
 
 ### L2 Shape
@@ -143,12 +142,13 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 - **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
 
 ### Cross-cutting
+- **`/scout`** — standalone codebase scout; also called by `/frame` and `/decompose`.
 - **`/persist`** — writes the in-context frame, pitch, or plan to disk on request.
 
 ## Layout
 
 ```
-skills/        /frame, /shape, /decompose, /implement, /scout, /persist
+skills/        /frame, /shape, /decompose, /implement, /scout, /persist, using-sherpa
 agents/        scout, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs
