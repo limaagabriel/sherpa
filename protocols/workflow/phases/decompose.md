@@ -8,7 +8,9 @@ Input is the frame (in context) — or, standalone, a `<task>` + a light `/scout
 its problem contract's solved-signal (what `Outcome` must achieve); bind `for`/`because`/`done
 when` as normal. **Pitch in context** → its `solution` field (`phases/shape.md` § Pitch) is a
 proposed `Outcome`; bind from it. Also read the appetite from the pitch's `appetite` field
-(`phases/shape.md` § Pitch); absent means none — engine defaults only. Also bind the pitch's
+(`phases/shape.md` § Pitch); absent means none. Kept only to compare against the plan's
+final step count when presenting (§ Plan proposal format) — never forwarded to a reviewer at
+this layer as judgment material. Also bind the pitch's
 `no-gos` and `rabbit holes` fields (`phases/shape.md` § Pitch) as decomposition constraints — a
 plan step that does one of the no-gos, or walks into a named rabbit hole, is a defect
 structure-reviewer attacks (§ Adversarial decomposition review); absent (no pitch, or pitch
@@ -32,6 +34,9 @@ Always carries the three blocks — even a one-line fix gets the full shape.
 ### Block 1 — Plan at a glance
 - The **plan goal** as a goal contract (§ Goal contract) — the north star every step traces to.
 - A **before / after table** — current → target, one row per affected area.
+- An **appetite note** — when the pitch carried an appetite, one plain sentence comparing it to
+  the plan's final step count (e.g. `you picked balanced — 5 steps; this plan has 7`) —
+  descriptive only, no judgment; `none` when no appetite was carried.
 
 ### Block 2 — Steps
 Each step is its own block. Every step carries:
@@ -92,15 +97,17 @@ contract, or steps risky enough that a contract gap is expensive to discover lat
 Hannay 2009). A plan of 3 steps or fewer, all revertible, skips it — structure-reviewer alone is
 proportionate.
 
-Forward `structure-reviewer` the same inputs it always took: the plan goal + the full step list
+Forward `structure-reviewer` the inputs it takes: the plan goal + the full step list
 (each goal in contract form, each step's `Interfaces`) + the frame path for context, or the problem
-contract drafted at step 0 when no frame existed, the appetite when the pitch carried one (§ Step 0
-reads it from the pitch's `appetite` field; absent means none), the pitch's `no-gos`/`rabbit holes`
-when carried (§ Step 0; absent means none), pack `knowledge`/`decompose.knowledge` (when a
-`configPath` is announced, resolve both via `yq '.pack.knowledge // ""' "$configPath"` and
-`yq '.pack.decompose.knowledge // ""' "$configPath"` immediately before dispatch, then forward as
-inline prose exactly as before), and the `decompose.architectureRules` command output when
-announced. When dispatched, forward `readiness-reviewer`
+contract drafted at step 0 when no frame existed, the pitch's `no-gos`/`rabbit holes` when carried
+(§ Step 0; absent means none), pack `knowledge`/`decompose.knowledge` (when a `configPath` is
+announced, resolve both via `yq '.pack.knowledge // ""' "$configPath"` and `yq
+'.pack.decompose.knowledge // ""' "$configPath"` immediately before dispatch, then forward as inline
+prose exactly as before), and the `decompose.architectureRules` command output when announced.
+Appetite is never forwarded to `structure-reviewer` — it never gated anything there. No
+*additional* necessity or scope check is added at this layer beyond what already runs here —
+the silent self-review's scope/earns-its-keep items and `structure-reviewer`'s own traceability
+attack — plus the human's own read of the plan before approving it. When dispatched, forward `readiness-reviewer`
 the full step list, with each step's Goal, Interfaces, Acceptance criteria, Blast contract, and
 Risk field, plus pack `knowledge`/`decompose.knowledge` (resolve both via `yq '.pack.knowledge // ""' "$configPath"`
 and `yq '.pack.decompose.knowledge // ""' "$configPath"` — same lazy `configPath` resolution as
@@ -123,9 +130,9 @@ Wait for **explicit** approval before any `/implement` action — "approved", "g
 A question, critique, or your own answer is **not** approval. When in doubt, you are not approved.
 
 ## Don't
-- Treat the appetite as a ceiling on the exact step list — at this layer it is advisory
-  context for judging whether the plan is strong relative to what the human said the work was
-  worth.
+- Forward the appetite to `structure-reviewer`, or treat it as a ceiling on the step list anywhere
+  in this phase — at this layer it is a plain step-count comparison for the human at presentation
+  time (§ Plan proposal format), nothing more.
 - Skip approval, even for small fixes.
 - Re-refine intent beyond step 0's binding, or surface open questions (that's `/frame`'s job).
 - Reference a file before verifying it exists.
