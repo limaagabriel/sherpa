@@ -19,12 +19,16 @@ sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked this session.
 
 # Extension points the engine consumes, sectioned by skill. `knowledge` values
-# are inline prose, forwarded verbatim to every layer and subagent in the
-# WORKFLOW_PACK announcement — the prose may itself say "invoke Skill X" if you
-# want a skill loaded. architectureRules, codeStyleRules, and validate are
-# COMMANDs (the hook auto-quotes values with spaces). Pack values are
-# single-line scalars (the WORKFLOW_PACK announcement is one line; newlines
-# are collapsed to spaces).
+# are always literal inline prose — write them at any length; they are never
+# inlined eagerly into the WORKFLOW_PACK announcement, each layer skill resolves
+# them lazily via `yq` against the announced `configPath` immediately before
+# dispatch, then forwards the result unchanged. Subagents cannot Read files or
+# invoke a Skill for this input (see agents/*.md) — a knowledge value can never
+# point a subagent at something else to load. architectureRules, codeStyleRules,
+# and validate are COMMANDs (the hook auto-quotes values with spaces) — these ARE
+# inlined directly into the one-line WORKFLOW_PACK announcement, so keep them
+# single-line scalars (newlines collapse to spaces); `knowledge` fields have no
+# such restriction.
 #
 # A command may be absolute OR relative. For a committed project-local config it
 # resolves against this file's proximate .claude/.codex dir (e.g. a committed
@@ -34,7 +38,7 @@ sessionInstructions: |
 # packs can each keep their own same-named detect.sh without colliding.
 # See README.md § Relative paths.
 pack:
-  knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
+  knowledge: Prefer named exports over default exports; keep functions under 40 lines.   # cross-cutting: every layer, every subagent
 
   frame:
     knowledge: Additive frame-layer notes for the reviewer.   # optional, additive

@@ -110,7 +110,7 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked.
 pack:
-  knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
+  knowledge: Prefer named exports over default exports; keep functions under 40 lines.   # cross-cutting: every layer, every subagent
   implement:
     codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
 ```

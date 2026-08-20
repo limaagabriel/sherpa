@@ -59,11 +59,15 @@ sessionInstructions: |
   Invoke Skill my-project-init before other work; skip if already invoked.
 
 # The WORKFLOW_PACK — extension points the engine consumes, sectioned by skill.
-# `knowledge` values are inline prose, forwarded verbatim to every layer and
-# subagent in the WORKFLOW_PACK announcement — the prose may itself say
-# "invoke Skill X" if you want a skill loaded.
+# `knowledge` values are always literal inline prose — write them at any length.
+# They are never inlined eagerly into the WORKFLOW_PACK announcement; each layer
+# skill resolves them lazily via `yq` against the announced `configPath`,
+# immediately before dispatch, then forwards the result unchanged to its
+# subagent(s). Subagents cannot Read files or invoke a Skill for this input
+# (see agents/*.md) — a `knowledge` value is never itself an instruction to
+# load something else; write the prose directly.
 pack:
-  knowledge: Invoke Skill my-project-init — loads project rules.   # cross-cutting: every layer, every subagent
+  knowledge: Prefer named exports over default exports; keep functions under 40 lines.   # cross-cutting: every layer, every subagent
 
   frame:
     knowledge: Additive frame-layer notes for the reviewer.   # optional, additive
@@ -83,9 +87,10 @@ pack:
       npm test
 ```
 
-On the first config whose `detect` exits 0, the hook emits a `WORKFLOW_PACK:` line
-(built from `name` + `pack`, values with spaces auto-quoted) followed by
-`sessionInstructions`, as SessionStart `additionalContext`.
+On the first config whose `detect` exits 0, the hook emits `sessionInstructions`
+first, followed by a `WORKFLOW_PACK:` line (built from `name`, `configPath`, and
+any command-type `pack` keys — `knowledge` values are never inlined here, see
+below), as SessionStart `additionalContext`.
 
 ### Relative paths
 
@@ -133,14 +138,16 @@ naming coordination between packs needed.
 
 | Key | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|
-| `knowledge` (top-level) | inline prose, forwarded verbatim in the WORKFLOW_PACK announcement to every layer and subagent — the prose may itself say "invoke Skill X" | every layer, every subagent | engine defaults only |
-| `frame.knowledge` | additive inline prose for the frame layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/frame` skill, `frame-reviewer` | cross-cutting `knowledge` only |
-| `shape.knowledge` | additive inline prose for the shape layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/shape` skill, `shape-reviewer` | cross-cutting `knowledge` only |
-| `decompose.knowledge` | additive inline prose for the decompose layer, forwarded verbatim alongside the cross-cutting `knowledge` | `/decompose` skill, `structure-reviewer`, `readiness-reviewer` | cross-cutting `knowledge` only |
-| `decompose.architectureRules` | shell **command** that dumps architecture constraints to stdout | `/decompose` drafts steps mindful of it; `structure-reviewer` checks the decomposition against it | no architecture check |
-| `implement.knowledge` | additive inline prose for the implement layer, forwarded verbatim alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
-| `implement.codeStyleRules` | shell **command** that dumps the full rule set to stdout — sherpa runs it, makes no assumption about storage | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
+| `knowledge` (top-level) | inline prose, resolved lazily via `configPath` immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged — never inlined into the WORKFLOW_PACK announcement, and never itself a pointer telling a subagent to load something else | every layer, every subagent | engine defaults only |
+| `frame.knowledge` | additive inline prose for the frame layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/frame` skill, `frame-reviewer` | cross-cutting `knowledge` only |
+| `shape.knowledge` | additive inline prose for the shape layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/shape` skill, `shape-reviewer` | cross-cutting `knowledge` only |
+| `decompose.knowledge` | additive inline prose for the decompose layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/decompose` skill, `structure-reviewer`, `readiness-reviewer` | cross-cutting `knowledge` only |
+| `decompose.architectureRules` | shell **command** that dumps architecture constraints to stdout — inlined directly in the WORKFLOW_PACK announcement, unlike `knowledge` | `/decompose` drafts steps mindful of it; `structure-reviewer` checks the decomposition against it | no architecture check |
+| `implement.knowledge` | additive inline prose for the implement layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
+| `implement.codeStyleRules` | shell **command** that dumps the full rule set to stdout — inlined directly in the WORKFLOW_PACK announcement, sherpa runs it, makes no assumption about storage | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `implement.validate` | shell command(s) `step-builder` runs before committing | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
+
+`configPath` — the resolved path to this pack's yaml/config file — is announced automatically by the engine alongside `name`; it isn't an authored `pack` key, it's what the lazy `knowledge` resolution above reads from.
 
 `architectureRules`, `codeStyleRules`, and `validate` are **commands**, not paths — the engine
 runs them and never assumes how the rules are stored.
@@ -159,7 +166,7 @@ mkdir -p "$packs_dir/my-project"
 cp TEMPLATE.yaml "$packs_dir/my-project/project.yaml"
 # edit detect / sessionInstructions / pack
 
-cp -r TEMPLATE my-project-init-skill     # optional init skill; only needed if your knowledge prose invokes one
+cp -r TEMPLATE my-project-init-skill     # optional init skill; only needed if your sessionInstructions invokes one
 ```
 
 No hook to write or register — sherpa's `SessionStart` hook reads your YAML.
