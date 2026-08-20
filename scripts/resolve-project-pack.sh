@@ -52,6 +52,15 @@
 # emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
 # still emits the using-sherpa primer plus a systemMessage warning that packs are disabled.
 #
+# On a match, the matched-branch's systemMessage also warns when the pack-controlled
+# bytes — sessionInstructions plus the WORKFLOW_PACK: line, measured with `wc -c` (actual
+# bytes, not shell character count, since the text can hold multi-byte characters) —
+# exceed 2000 bytes. This deliberately excludes the fixed ~1070-byte $PRIMER, since the
+# pack author has no control over that. The 2000-byte figure is a judgment call, not a
+# confirmed harness limit: the real truncation cutoff is unconfirmed, only bracketed
+# between an observed-truncated 10.2KB case and an observed 2KB preview size. Treat it as
+# an early-warning threshold pending someone confirming the actual number.
+#
 # Never errors out: a failing SessionStart hook must not block the session.
 #
 # Assumption (not independently verified in this session): Codex's hook runtime
@@ -181,7 +190,12 @@ for config in "${candidates[@]}"; do
   [ -n "$instructions" ] && ctx="$ctx"$'\n\n'"$instructions"
   ctx="$ctx"$'\n\n'"$line"
 
-  emit_result "Project \"$name\" loaded into Sherpa from $config 🏔️" "$ctx"
+  pack_size=$(printf '%s%s' "$instructions" "$line" | wc -c)
+  msg="Project \"$name\" loaded into Sherpa from $config 🏔️"
+  if [ "$pack_size" -gt 2000 ]; then
+    msg="$msg ⚠️ this pack's announcement is ${pack_size} bytes (excludes the fixed primer) — trim sessionInstructions or command-type fields to stay well clear of hook-context truncation."
+  fi
+  emit_result "$msg" "$ctx"
 done
 
 # No pack matched — tell the user no project-specific knowledge was loaded,
