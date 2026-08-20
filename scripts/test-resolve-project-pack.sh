@@ -44,6 +44,8 @@ out=$(ctx "$repo")
 assert_contains "a/command" "$out" "cd '$repo/.codex' && cat ./rules.md"
 assert_contains "a/message" "$(msg "$repo")" "Project \"proj-a\" loaded into Sherpa from $repo/.codex/sherpa.yaml 🏔️"
 assert_contains "a/primer" "$out" "check whether one of these fits"
+# configPath, bare path (no spaces) — unquoted
+assert_contains "a/configPath-bare" "$out" "configPath=$repo/.codex/sherpa.yaml"
 
 # (b) workspace pack under a .claude ancestor — base is the pack's own dir, NOT
 # a walk-up to the .claude ancestor (that walk-up applies only to project-local configs)
@@ -63,26 +65,8 @@ out=$(WORKFLOW_PACKS_DIR="$packs" ctx "$cleancwd")
 assert_contains "b/base-is-pack-dir" "$out" "cd '$packs/proj-b' && cat ./arch.md"
 assert_not_contains "b/base-is-not-.claude" "$out" "cd '$ws_home/.claude'"
 
-# (c) knowledge prose + absolute command passthrough — knowledge is emitted verbatim,
-# never cd-wrapped; a command embedding an absolute path is still wrapped (harmless —
-# cwd does not affect an absolute path).
-repo_c="$tmp/repoc"
-mkdir -p "$repo_c/.claude"
-cat >"$repo_c/.claude/sherpa.yaml" <<'YAML'
-name: proj-c
-detect: "exit 0"
-pack:
-  knowledge: "Consult the my-skill guide before editing."
-  implement:
-    codeStyleRules: cat /abs/rules.md
-YAML
-out=$(ctx "$repo_c")
-assert_contains "c/knowledge-verbatim" "$out" 'knowledge="Consult the my-skill guide before editing."'
-assert_not_contains "c/knowledge-no-wrap" "$out" "&& Consult"
-assert_contains "c/abs-command" "$out" "cat /abs/rules.md"
-
 # (d) base path with a space — emitted cd must single-quote it so the consumer's
-# `bash -c` does not split it into too many args.
+# `bash -c` does not split it into too many args; configPath must be double-quoted too.
 repo_d="$tmp/repo d"
 mkdir -p "$repo_d/.codex"
 cat >"$repo_d/.codex/sherpa.yaml" <<'YAML'
@@ -94,6 +78,9 @@ pack:
 YAML
 out=$(ctx "$repo_d")
 assert_contains "d/quoted-base" "$out" "cd '$repo_d/.codex' && cat ./rules.md"
+# configPath, path WITH a space — must be double-quoted, matching resolve_pack_value's
+# own quoting convention for other space-containing values
+assert_contains "d/configPath-quoted" "$out" "configPath=\"$repo_d/.codex/sherpa.yaml\""
 # the emitted command must actually run (cd succeeds, no "too many arguments")
 ( cd "$repo_d/.codex" && echo hi >rules.md )
 emitted=$(printf '%s' "$out" | sed -n "s/.*implement.codeStyleRules=\"\\(cd '[^\"]*\\)\".*/\\1/p")
@@ -114,7 +101,10 @@ assert_contains "f/command" "$out" "cd '$repo_f/.pi' && cat ./rules.md"
 assert_contains "f/message" "$(msg "$repo_f")" "Project \"proj-f\" loaded into Sherpa from $repo_f/.pi/sherpa.yaml 🏔️"
 
 # (g) two-level flatten — a bare top-level `knowledge` and a nested `implement.knowledge`
-# coexist in the same pack and both appear, correctly named, in the emitted line.
+# coexist in the same pack; since knowledge-suffixed keys are never inlined into the
+# WORKFLOW_PACK: line anymore, neither appears in the emitted line in any form (as a
+# key=value pair or as bare prose), while a sibling command key (implement.validate) at
+# the same nesting level still appears.
 repo_g="$tmp/repog"
 mkdir -p "$repo_g/.claude"
 cat >"$repo_g/.claude/sherpa.yaml" <<'YAML'
@@ -127,10 +117,13 @@ pack:
     validate: /my-validate-skill
 YAML
 out=$(ctx "$repo_g")
-assert_contains "g/top-level-knowledge" "$out" 'knowledge="Top-level project prose."'
-assert_contains "g/nested-knowledge" "$out" 'implement.knowledge="Implement-section prose."'
+assert_not_contains "g/top-level-knowledge" "$out" 'knowledge="Top-level project prose."'
+assert_not_contains "g/nested-knowledge" "$out" 'implement.knowledge="Implement-section prose."'
 assert_contains "g/nested-validate" "$out" "implement.validate=/my-validate-skill"
-assert_not_contains "g/no-cross-leak" "$out" 'implement.knowledge="Top-level project prose."'
+# no cross-leak — neither knowledge value's raw prose appears anywhere at all,
+# not merely absent under the wrong key
+assert_not_contains "g/no-cross-leak-top-prose" "$out" "Top-level project prose."
+assert_not_contains "g/no-cross-leak-nested-prose" "$out" "Implement-section prose."
 
 # (h) project-local config with NO `detect` key still matches — file presence
 # at the fixed path is the detection.
@@ -155,48 +148,6 @@ YAML
 cleancwd_i="$tmp/elsewhere-i"
 mkdir -p "$cleancwd_i"
 assert_not_contains "i/workspace-no-detect-skipped" "$(WORKFLOW_PACKS_DIR="$packs_i" msg "$cleancwd_i")" "proj-i"
-
-# (j) knowledge value with spaces — quoted verbatim, never cd-wrapped
-repo_j="$tmp/repoj"
-mkdir -p "$repo_j/.claude"
-cat >"$repo_j/.claude/sherpa.yaml" <<'YAML'
-name: proj-j
-detect: "exit 0"
-pack:
-  knowledge: "Every plan ends with a version bump."
-YAML
-out=$(ctx "$repo_j")
-assert_contains "j/knowledge-quoted" "$out" 'knowledge="Every plan ends with a version bump."'
-assert_not_contains "j/knowledge-not-wrapped" "$out" "cd '"
-
-# (k) multi-line knowledge block scalar — collapses to one line, trailing
-# whitespace trimmed, still quoted, still not cd-wrapped
-repo_k="$tmp/repok"
-mkdir -p "$repo_k/.claude"
-cat >"$repo_k/.claude/sherpa.yaml" <<'YAML'
-name: proj-k
-detect: "exit 0"
-pack:
-  knowledge: |
-    Line one of prose.
-    Line two of prose.
-YAML
-out=$(ctx "$repo_k")
-assert_contains "k/knowledge-collapsed" "$out" 'knowledge="Line one of prose. Line two of prose."'
-assert_not_contains "k/knowledge-not-wrapped" "$out" "cd '"
-
-# (l) knowledge value with an embedded double quote — escaped, not left bare
-repo_l="$tmp/repol"
-mkdir -p "$repo_l/.claude"
-cat >"$repo_l/.claude/sherpa.yaml" <<'YAML'
-name: proj-l
-detect: "exit 0"
-pack:
-  knowledge: 'Follow the "boy scout rule".'
-YAML
-out=$(ctx "$repo_l")
-assert_contains "l/knowledge-escaped-quote" "$out" 'knowledge="Follow the \"boy scout rule\"."'
-assert_not_contains "l/knowledge-not-wrapped" "$out" "cd '"
 
 # (m) yq missing, jq present — resolver must still emit the primer plus a
 # distinct warning systemMessage, and must exit 0 without touching pack/YAML work.
@@ -304,51 +255,6 @@ mkdir -p "$cleancwd_r"
 msg_r=$(printf '{"cwd":"%s"}' "$cleancwd_r" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_r" HOME="$fakehome_r" bash "$resolver" | jq -r '.systemMessage // ""')
 assert_contains "r/xdg-wins" "$msg_r" "proj-xdg-win"
 assert_not_contains "r/legacy-loses" "$msg_r" "proj-legacy-lose"
-
-# (s) shape.knowledge — additive prose for the shape layer, quoted
-# verbatim like implement.knowledge, never cd-wrapped
-repo_s="$tmp/repos"
-mkdir -p "$repo_s/.claude"
-cat >"$repo_s/.claude/sherpa.yaml" <<'YAML'
-name: proj-s
-detect: "exit 0"
-pack:
-  shape:
-    knowledge: "Prefer OSGi-friendly directions."
-YAML
-out=$(ctx "$repo_s")
-assert_contains "s/shape-knowledge-quoted" "$out" 'shape.knowledge="Prefer OSGi-friendly directions."'
-assert_not_contains "s/shape-knowledge-not-wrapped" "$out" "&& Prefer OSGi-friendly"
-
-# (t) decompose.knowledge — additive prose for the decompose layer, quoted
-# verbatim like implement.knowledge, never cd-wrapped
-repo_t="$tmp/repot"
-mkdir -p "$repo_t/.claude"
-cat >"$repo_t/.claude/sherpa.yaml" <<'YAML'
-name: proj-t
-detect: "exit 0"
-pack:
-  decompose:
-    knowledge: "Keep steps traceable to the Outcome."
-YAML
-out=$(ctx "$repo_t")
-assert_contains "t/decompose-knowledge-quoted" "$out" 'decompose.knowledge="Keep steps traceable to the Outcome."'
-assert_not_contains "t/decompose-knowledge-not-wrapped" "$out" "&& Keep steps traceable"
-
-# (ac) frame.knowledge — additive prose for the frame layer, quoted
-# verbatim like implement.knowledge, never cd-wrapped
-repo_ac="$tmp/repoac"
-mkdir -p "$repo_ac/.claude"
-cat >"$repo_ac/.claude/sherpa.yaml" <<'YAML'
-name: proj-ac
-detect: "exit 0"
-pack:
-  frame:
-    knowledge: "Scout auth flows before framing."
-YAML
-out=$(ctx "$repo_ac")
-assert_contains "ac/frame-knowledge-quoted" "$out" 'frame.knowledge="Scout auth flows before framing."'
-assert_not_contains "ac/frame-knowledge-not-wrapped" "$out" "&& Scout auth flows"
 
 # (u) per-pack colocated asset executes — a workspace pack's `detect` runs from
 # the pack's own dir, so a relative ./detect.sh resolves and executes from there
@@ -501,6 +407,145 @@ mkdir -p "$cleancwd_ab"
 msg_ab=$(printf '{"cwd":"%s"}' "$cleancwd_ab" | env SHERPA_CONFIG_DIR="$config_ab" WORKFLOW_PACKS_DIR="$packs_ab_workflow" bash "$resolver" | jq -r '.systemMessage // ""')
 assert_contains "ab/sherpa-config-dir-wins" "$msg_ab" "proj-ab-sherpa-win"
 assert_not_contains "ab/workflow-packs-dir-loses" "$msg_ab" "proj-ab-workflow-lose"
+
+# (ad) knowledge stays fully absent regardless of nesting depth, while a sibling
+# command key at the same nesting level still appears — proves the skip in
+# resolve-project-pack.sh is selective (only `knowledge`-suffixed keys), not an
+# accidental drop of the whole section it lives in.
+repo_ad="$tmp/repoad"
+mkdir -p "$repo_ad/.claude"
+cat >"$repo_ad/.claude/sherpa.yaml" <<'YAML'
+name: proj-ad
+detect: "exit 0"
+pack:
+  knowledge: "Top-level prose."
+  frame:
+    knowledge: "Frame prose."
+  shape:
+    knowledge: "Shape prose."
+  decompose:
+    knowledge: "Decompose prose."
+  implement:
+    knowledge: "Implement prose."
+    codeStyleRules: cat ./rules.md
+YAML
+out=$(ctx "$repo_ad")
+assert_not_contains "ad/knowledge-absent" "$out" "knowledge="
+assert_not_contains "ad/frame-knowledge-absent" "$out" "frame.knowledge="
+assert_not_contains "ad/shape-knowledge-absent" "$out" "shape.knowledge="
+assert_not_contains "ad/decompose-knowledge-absent" "$out" "decompose.knowledge="
+assert_not_contains "ad/implement-knowledge-absent" "$out" "implement.knowledge="
+assert_contains "ad/implement-codeStyleRules-present" "$out" "implement.codeStyleRules="
+
+# (ae) ctx ordering — sessionInstructions must sit at a lower byte offset than the
+# WORKFLOW_PACK: line, so it survives first if the consuming harness truncates
+# additionalContext.
+repo_ae="$tmp/repoae"
+mkdir -p "$repo_ae/.claude"
+cat >"$repo_ae/.claude/sherpa.yaml" <<'YAML'
+name: proj-ae
+detect: "exit 0"
+sessionInstructions: "Always run the project's lint step first."
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+out=$(ctx "$repo_ae")
+pos_instr=$(printf '%s' "$out" | grep -bo "Always run the project's lint step first." | head -1 | cut -d: -f1)
+pos_wp=$(printf '%s' "$out" | grep -bo "WORKFLOW_PACK:" | head -1 | cut -d: -f1)
+if [ -z "$pos_instr" ] || [ -z "$pos_wp" ] || [ "$pos_instr" -ge "$pos_wp" ]; then
+  echo "FAIL [ae/session-instructions-before-workflow-pack]: sessionInstructions at byte ${pos_instr:-<missing>}, WORKFLOW_PACK: at byte ${pos_wp:-<missing>}"
+  fail=1
+fi
+
+# (af) size-warning guard, small pack — short sessionInstructions plus one ordinary
+# command key stays well under the 2000-byte threshold, so systemMessage must NOT warn.
+repo_af="$tmp/repoaf"
+mkdir -p "$repo_af/.claude"
+cat >"$repo_af/.claude/sherpa.yaml" <<'YAML'
+name: proj-af
+detect: "exit 0"
+sessionInstructions: "Keep commits small."
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+assert_not_contains "af/small-pack-no-warning" "$(msg "$repo_af")" "⚠️"
+
+# (ag) size-warning guard, large pack — sessionInstructions padded past the 2000-byte
+# pack-controlled threshold must warn, with a byte count this test independently
+# recomputes from the very inputs the resolver used (sessionInstructions plus the
+# emitted WORKFLOW_PACK: line, same as resolve-project-pack.sh:193's own
+# `printf '%s%s' "$instructions" "$line" | wc -c` — no separator joins those two
+# pieces, so the recomputed and reported byte counts must match exactly).
+instr_ag=$(printf 'x%.0s' $(seq 1 2200))
+repo_ag="$tmp/repoag"
+mkdir -p "$repo_ag/.claude"
+cat >"$repo_ag/.claude/sherpa.yaml" <<YAML
+name: proj-ag
+detect: "exit 0"
+sessionInstructions: "$instr_ag"
+pack:
+  implement:
+    codeStyleRules: cat ./rules.md
+YAML
+out_ag=$(ctx "$repo_ag")
+msg_ag=$(msg "$repo_ag")
+line_ag="WORKFLOW_PACK:${out_ag#*WORKFLOW_PACK:}"
+recomputed_ag=$(( $(printf '%s' "$instr_ag" | wc -c) + $(printf '%s' "$line_ag" | wc -c) ))
+reported_ag=$(printf '%s' "$msg_ag" | sed -n 's/.*is \([0-9]*\) bytes.*/\1/p')
+assert_contains "ag/large-pack-warns" "$msg_ag" "⚠️"
+if [ -z "$reported_ag" ]; then
+  echo "FAIL [ag/byte-count-present]: no byte count parsed from: $msg_ag"
+  fail=1
+else
+  diff_ag=$(( recomputed_ag - reported_ag ))
+  if [ "$diff_ag" -ne 0 ]; then
+    echo "FAIL [ag/byte-count-exact]: recomputed $recomputed_ag vs reported $reported_ag (diff $diff_ag)"
+    fail=1
+  fi
+fi
+
+# (ah) size-warning guard, realistic pack — self-contained temp fixture shaped like a
+# typical real-world pack (several knowledge fields plus a couple of command keys,
+# moderate sessionInstructions) must NOT warn. Confirms the common case still doesn't
+# trip the guard now that knowledge no longer counts toward the pack's emitted size.
+repo_ah="$tmp/repoah"
+mkdir -p "$repo_ah/.claude"
+cat >"$repo_ah/.claude/sherpa.yaml" <<'YAML'
+name: proj-ah
+detect: "exit 0"
+sessionInstructions: "This project follows Liferay's module layout. Prefer OSGi services over static utilities, and keep REST Builder YAML hand-edits separate from generated Java."
+pack:
+  knowledge: "General project background prose that would normally live in a much longer paragraph describing conventions, history, and gotchas for this codebase."
+  frame:
+    knowledge: "Scout the relevant module before framing any change."
+  decompose:
+    knowledge: "Keep steps traceable to service boundaries."
+    architectureRules: cat ./architecture-rules.md
+  implement:
+    knowledge: "Match the surrounding module's style."
+    codeStyleRules: cat ./code-style.md
+    validate: cat ./validate.sh
+YAML
+assert_not_contains "ah/realistic-pack-no-warning" "$(msg "$repo_ah")" "⚠️"
+
+# (ai) command-type value with an embedded double quote — the same escaping logic
+# retiring (l) dropped coverage for still applies to every non-knowledge value
+# (resolve-project-pack.sh:176-182, and the duplicate configPath-escaping block at
+# :161-167): embedded `"` must be backslash-escaped, not left bare, inside the
+# outer quotes the space-containing cd-wrapped value gets.
+repo_ai="$tmp/repoai"
+mkdir -p "$repo_ai/.claude"
+cat >"$repo_ai/.claude/sherpa.yaml" <<'YAML'
+name: proj-ai
+detect: "exit 0"
+pack:
+  implement:
+    codeStyleRules: echo "hi"
+YAML
+out=$(ctx "$repo_ai")
+assert_contains "ai/embedded-quote-escaped" "$out" "implement.codeStyleRules=\"cd '$repo_ai/.claude' && echo \\\"hi\\\"\""
 
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
