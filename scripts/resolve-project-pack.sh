@@ -3,10 +3,13 @@
 #
 # Reads the hook payload (JSON) on stdin, scans for per-project YAML configs, and
 # runs each config's `detect` command. On the first match it emits a SessionStart
-# additionalContext carrying the `WORKFLOW_PACK:` announcement (built from the
-# config's `pack` map) plus the config's `sessionInstructions`, and a user-facing
-# `systemMessage` naming the loaded pack. On no match it emits a `systemMessage`
-# saying the engine runs generic (so the user knows no project knowledge loaded).
+# additionalContext ordered as: the layer-selection primer, then the config's
+# `sessionInstructions` (so it survives truncation first), then the `WORKFLOW_PACK:`
+# announcement (built from the config's `pack` map, plus a `configPath=$config` key
+# so consuming layer skills can locate the pack yaml and fetch its `knowledge` values
+# themselves), and a user-facing `systemMessage` naming the loaded pack. On no match
+# it emits a `systemMessage` saying the engine runs generic (so the user knows no
+# project knowledge loaded).
 #
 # Config candidates, highest precedence first:
 #   <cwd>/.sherpa/sherpa.yaml|.yml       project-local, engine-neutral, shareable in-repo (single file)
@@ -35,10 +38,10 @@
 #   decompose:{knowledge,architectureRules}, implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #
-# `knowledge` (bare or section-prefixed, e.g. decompose.knowledge) is inline prose, emitted
-# verbatim (embedded `"` and `\` escaped when the value needs quoting): single-line
-# values pass through as-is; multi-line YAML block scalars collapse to one line via
-# `sub("\n";" ")` with trailing whitespace trimmed.
+# `knowledge` (bare or section-prefixed, e.g. decompose.knowledge) is inline prose, but
+# this script never inlines it into the `WORKFLOW_PACK:` line — every `knowledge`-suffixed
+# key is skipped here and left for the consuming layer skill to fetch lazily, from the
+# YAML at `configPath`, at the point it's actually needed.
 # Command keys (architectureRules, codeStyleRules, validate) are shell commands: relative
 # values resolve against a base dir (detect also runs from it; command values are
 # pre-wrapped `cd <base> && ...`). Project-local configs base on the proximate
@@ -146,12 +149,19 @@ for config in "${candidates[@]}"; do
   # Matched. Build the WORKFLOW_PACK line from name + the pack map.
   name=$(yq '.name // ""' "$config" 2>/dev/null)
   line="WORKFLOW_PACK: name=$name"
+  case "$config" in
+    *" "*)
+      esc="${config//\\/\\\\}"
+      esc="${esc//\"/\\\"}"
+      line="$line configPath=\"$esc\"" ;;
+    *) line="$line configPath=$config" ;;
+  esac
   while IFS= read -r entry; do
     [ -n "$entry" ] || continue
     key="${entry%%=*}"
     raw="${entry#*=}"
     case "${key##*.}" in
-      knowledge) val="$raw" ;;
+      knowledge) continue ;;   # resolved lazily by the consuming layer skill via configPath, not eagerly inlined here
       *)         val=$(resolve_pack_value "$raw" "$base") ;;
     esac
     case "$val" in
@@ -167,8 +177,9 @@ for config in "${candidates[@]}"; do
     )' "$config" 2>/dev/null)
 
   instructions=$(yq '.sessionInstructions // ""' "$config" 2>/dev/null)
-  ctx="$PRIMER"$'\n\n'"$line"
-  [ -n "$instructions" ] && ctx="$ctx"$'\n'"$instructions"
+  ctx="$PRIMER"
+  [ -n "$instructions" ] && ctx="$ctx"$'\n\n'"$instructions"
+  ctx="$ctx"$'\n\n'"$line"
 
   emit_result "Project \"$name\" loaded into Sherpa from $config 🏔️" "$ctx"
 done
