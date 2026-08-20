@@ -96,13 +96,16 @@ Forward `structure-reviewer` the same inputs it always took: the plan goal + the
 (each goal in contract form, each step's `Interfaces`) + the frame path for context, or the problem
 contract drafted at step 0 when no frame existed, the appetite when the pitch carried one (§ Step 0
 reads it from the pitch's `appetite` field; absent means none), the pitch's `no-gos`/`rabbit holes`
-when carried (§ Step 0; absent means none), pack `knowledge`/`decompose.knowledge`, and the
-`decompose.architectureRules` command output when announced. When dispatched, forward
-`readiness-reviewer`
+when carried (§ Step 0; absent means none), pack `knowledge`/`decompose.knowledge` (when a
+`configPath` is announced, resolve both via `yq '.pack.knowledge // ""' "$configPath"` and
+`yq '.pack.decompose.knowledge // ""' "$configPath"` immediately before dispatch, then forward as
+inline prose exactly as before), and the `decompose.architectureRules` command output when
+announced. When dispatched, forward `readiness-reviewer`
 the full step list, with each step's Goal, Interfaces, Acceptance criteria, Blast contract, and
-Risk field, plus pack `knowledge`/`decompose.knowledge` — but not `architectureRules`; that's
-cross-step context `structure-reviewer` alone consumes, and `readiness-reviewer`'s own Input
-contract has no `architectureRules` input.
+Risk field, plus pack `knowledge`/`decompose.knowledge` (resolve both via `yq '.pack.knowledge // ""' "$configPath"`
+and `yq '.pack.decompose.knowledge // ""' "$configPath"` — same lazy `configPath` resolution as
+above) — but not `architectureRules`; that's cross-step context `structure-reviewer` alone
+consumes, and `readiness-reviewer`'s own Input contract has no `architectureRules` input.
 
 `structure-reviewer` attacks traceability, missing foundation, gaps, overlap, ordering (Wake 2003;
 Reinertsen 2009), hidden

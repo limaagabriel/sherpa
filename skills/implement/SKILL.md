@@ -26,7 +26,10 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    in progress. Per step — the driver asks any step-scoped question first, shaped per
    `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` with
    `task` + `Goal` + `Interfaces` + `Acceptance criteria` + pack `knowledge`/`implement.knowledge`
-   inline prose, plus `implement.codeStyleRules`/`implement.validate` commands, when announced —
+   (when a `configPath` is announced, resolve both via `yq '.pack.knowledge // ""' "$configPath"` /
+   `yq '.pack.implement.knowledge // ""' "$configPath"` immediately before dispatch, then forward as
+   inline prose exactly as before) + `implement.codeStyleRules`/`implement.validate` commands
+   (already inlined directly in the announcement — unaffected), when announced —
    model tier and post-build review both follow whether the step is mechanical, per
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Mechanical steps.
 3. **Verdicts.** Handle verdicts per

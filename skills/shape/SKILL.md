@@ -28,8 +28,10 @@ the opt-in `/persist` skill.
 - **Conventions:** the project's own style — pack `codeStyleRules` when announced, else the
   surrounding code; evidence-only (quote file:line).
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack forwarding:** forward `knowledge` (cross-cutting) and `shape.knowledge` (additive) — when
-  announced — to `shape-reviewer` as its `shape.knowledge` input.
+- **Pack forwarding:** when a `configPath` is announced, resolve `knowledge` (cross-cutting) and
+  `shape.knowledge` (additive) via `yq '.pack.knowledge // ""' "$configPath"` /
+  `yq '.pack.shape.knowledge // ""' "$configPath"` immediately before dispatch; forward the
+  resulting text to `shape-reviewer` as its `shape.knowledge` input, exactly as before.
 - **Explicit invocation only, 5 agent calls per run** (4 `shape-builder` + 1 `shape-reviewer`).
   Never auto-fire; OFFER `/shape <problem>` in one declinable line instead.
 - **No `/scout` dispatch** — each `shape-builder` reads the codebase itself; a shared evidence

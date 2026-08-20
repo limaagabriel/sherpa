@@ -19,10 +19,13 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
 - **No narration between tools.** One short sentence only when the *task* changes.
 - **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack forwarding:** forward pack `knowledge` (cross-cutting) and `decompose.knowledge`
-  (decompose-layer, additive) inline prose text — when announced — to BOTH `structure-reviewer`
-  and `readiness-reviewer` alongside the step list. Forward `decompose.architectureRules` (a
-  command dumping architecture constraints; run it and forward its output) — when announced — to
+- **Pack forwarding:** when a `configPath` is announced, resolve pack `knowledge` (cross-cutting)
+  and `decompose.knowledge` (decompose-layer, additive) via `yq '.pack.knowledge // ""' "$configPath"` /
+  `yq '.pack.decompose.knowledge // ""' "$configPath"` immediately before dispatch; forward the
+  resulting inline prose text to BOTH `structure-reviewer` and `readiness-reviewer` alongside the
+  step list, exactly as before. Forward `decompose.architectureRules` (a command dumping
+  architecture constraints, already inlined directly in the WORKFLOW_PACK announcement —
+  unaffected by this change; run it and forward its output) — when announced — to
   `structure-reviewer` ONLY; `readiness-reviewer`'s Input contract (`agents/readiness-reviewer.md`)
   excludes architectureRules, a cross-step concern outside its job.
 
