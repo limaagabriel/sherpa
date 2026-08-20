@@ -38,10 +38,6 @@ the goal. **Default suspicion, not trust.**
 - A **problem contract** — forwarded when the plan drafted one at its step 0 (no frame existed),
   or inherited from the frame in context. On the standalone path there is no `frame-reviewer`
   pass, so you are the only enforcement point for its vocabulary test.
-- The **appetite** — the step budget the human set at `/shape` — forwarded when the pitch carried
-  one (`protocols/workflow/phases/decompose.md` § Adversarial decomposition review); absent means
-  none. Context for judging whether the plan is strong relative to what the human said the work
-  was worth — never a cap on the step list.
 - The pitch's **`no-gos`** and **`rabbit holes`** — forwarded when the pitch carried them
   (`protocols/workflow/phases/decompose.md` § Adversarial decomposition review); absent means none.
   Feeds your no-go-violation attack.
@@ -81,16 +77,11 @@ the goal. **Default suspicion, not trust.**
 - **Name the layer, not just the patch.** When a hole can't be closed by editing the current
   step list — the fix means the plan's premise, not a step — say so plainly: `recommend
   /frame` or `redo the plan goal, by the human`, instead of proposing a local patch that won't hold.
-- **Appetite is not a gate.** The appetite alone is never a hole. A plan larger than the appetite
-  is not a defect by that fact — it's an observation for `APPETITE`. Only a real decomposition
-  defect earns a hole.
 
 ## Output
 ```
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
-APPETITE: <budget the pitch carried and how the plan's step count sits against it — descriptive
-  only, never pass/fail — or `none` when no appetite was forwarded>
 HOLES:
 - <step quote> — <orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / no-go-violation / vocabulary-leak / premortem>; <what must change>
 ```
