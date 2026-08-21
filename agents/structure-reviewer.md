@@ -41,12 +41,13 @@ the goal. **Default suspicion, not trust.**
 - The pitch's **`no-gos`** and **`rabbit holes`** — forwarded when the pitch carried them
   (`protocols/workflow/phases/decompose.md` § Adversarial decomposition review); absent means none.
   Feeds your no-go-violation attack.
-- Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
-  project knowledge (no Read, no Skill tool).
-- Project pack `decompose.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
-  when announced, treat as project knowledge the same way.
-- Project pack `decompose.architectureRules` command output — when announced; the caller runs the
-  command and forwards its stdout (or the path). Feeds your architecture-violation attack.
+- You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
+  before your review/build work:
+  - `knowledge` — cross-cutting project knowledge.
+  - `decompose.knowledge` — additive to the cross-cutting `knowledge`.
+  - `decompose.architectureRules` — architecture constraints; feeds your architecture-violation
+    attack.
 
 ## What you attack
 - **Traceability** — a step whose Outcome doesn't advance the plan goal is an orphan.

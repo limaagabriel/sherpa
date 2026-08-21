@@ -40,9 +40,14 @@ Implement one approved step and commit it. You are dispatched once per step by `
   either side means that side doesn't apply.
 - `Acceptance criteria` — observable end states (`done = <X>, confirmed by <check>`).
 - `PRE-EXISTING DIRT` — `git status --short` from before your run; never stage or claim it.
-- Project pack cross-cutting `knowledge` and additive `implement.knowledge` — inline prose
-  supplied in your brief when announced; treat as project knowledge (no Read, no Skill tool).
-- Project pack `implement.codeStyleRules` command — when announced; conform your output to it.
+- You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
+  before your review/build work:
+  - `knowledge` — cross-cutting project knowledge.
+  - `implement.knowledge` — additive to the cross-cutting `knowledge`.
+  - `implement.codeStyleRules` — conform your output to it.
+  - `implement.validate` — resolve with `--raw` to get the command string, then run it before
+    committing (see § Rules).
 
 ## Rules
 - **One commit, real subject.** Stage only files you changed (explicit paths, never `git add -A`). Never amend/reset/reword another commit. Never push.

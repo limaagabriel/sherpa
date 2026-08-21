@@ -35,11 +35,13 @@ not a hole you can raise.
 ## Input
 - Each step's Goal, Interfaces (`consumes`/`produces`), Acceptance criteria, Blast contract, and
   Risk field.
-- Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
-  project knowledge (no Read, no Skill tool).
-- Project pack `decompose.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
-  when announced, treat as project knowledge the same way.
-- No `architectureRules` — that's a cross-step concern; not yours.
+- You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
+  before your review/build work:
+  - `knowledge` — cross-cutting project knowledge.
+  - `decompose.knowledge` — additive to the cross-cutting `knowledge`.
+- No `decompose.architectureRules` — that's a cross-step concern, `structure-reviewer`'s job,
+  outside your per-step scope; never resolve it.
 
 ## What you attack
 - **Contract completeness & testability** (Design by Contract; INVEST's Testable) — a step whose

@@ -33,11 +33,12 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 ## Input
 - The step's commit range (`<base>..HEAD`).
 - `PRE-EXISTING DIRT` — never attribute it to this step.
-- Project pack cross-cutting `knowledge` — inline prose supplied in your brief when announced;
-  treat as project knowledge (no Read, no Skill tool).
-- Project pack additive `implement.knowledge` — inline prose, additive to the cross-cutting
-  `knowledge`; when announced, treat as project knowledge the same way.
-- Project pack `implement.codeStyleRules` command output — when announced; cite it in your Architecture judgment.
+- You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
+  before your review/build work:
+  - `knowledge` — cross-cutting project knowledge.
+  - `implement.knowledge` — additive to the cross-cutting `knowledge`.
+  - `implement.codeStyleRules` — cite it in your Architecture judgment.
 - The current step index + the goals of the remaining (later) steps — when a multi-step plan
   is in context. Lets you tell whether a failure this step leaves is covered by a later step.
 - The step's **Acceptance criteria** and **Interfaces** — forwarded ONLY when this is a mechanical

@@ -38,10 +38,11 @@ are the cold reader who never saw that work — that independence is your whole 
 - The **verbatim task-initiating request** — the exact request the human gave `/frame`,
   forwarded by the caller (not the whole conversation, just that one message). Feeds your
   frame–request mismatch attack.
-- Project pack `knowledge` — inline prose supplied in your brief when announced; treat as
-  project knowledge (no Read, no Skill tool).
-- Project pack `frame.knowledge` — inline prose, additive to the cross-cutting `knowledge`;
-  when announced, treat as project knowledge the same way.
+- You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
+  before your review/build work:
+  - `knowledge` — cross-cutting project knowledge.
+  - `frame.knowledge` — additive to the cross-cutting `knowledge`.
 
 ## What you attack
 - **Frame–request mismatch** — the frame is well-formed (every slot bound, no leakage) but
