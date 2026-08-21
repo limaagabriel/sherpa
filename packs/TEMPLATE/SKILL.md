@@ -1,6 +1,6 @@
 ---
 name: my-project-init
-description: <Project> rules and conventions for the workflow engine. Optional — invoke it from the pack's `sessionInstructions` when the project is detected. Extends the engine's profile/stance/conventions; lists topic docs to load on demand.
+description: <Project> rules and conventions for the workflow engine. Optional — invoke it from the pack's `context` when the project is detected. Extends the engine's profile/stance/conventions; lists topic docs to load on demand.
 ---
 
 # <Project> rules

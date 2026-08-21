@@ -84,8 +84,9 @@ pack:
 ```
 
 On the first config whose `detect` exits 0, the hook emits `context` first,
-followed by a `WORKFLOW_PACK:` line (built from `name`, `configPath`, and
-the `validate` command), as SessionStart `additionalContext`.
+followed by a `WORKFLOW_PACK:` line (built from `name` and `configPath` only),
+as SessionStart `additionalContext`. All other keys, including `validate`, are
+resolved lazily on demand via `scripts/resolve-pack-value.sh --raw`.
 
 ### Relative paths and resolution
 
@@ -150,8 +151,8 @@ naming coordination between packs needed.
 | `context` | file path or array of paths | free-form prose for session-start context | `SessionStart` hook as first `additionalContext`, before the `WORKFLOW_PACK:` line | no additional context |
 
 `configPath` — the resolved path to this pack's yaml/config file — is announced automatically
-by the engine alongside `name` and any command-type keys (`validate` only); it isn't an
-authored `pack` key.
+by the engine alongside `name` in the `WORKFLOW_PACK:` line. All other keys,
+including `validate`, are resolved lazily on demand and never inlined into the announcement.
 
 ## Make a pack
 
