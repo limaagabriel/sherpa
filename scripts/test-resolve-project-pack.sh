@@ -425,26 +425,26 @@ assert_not_contains "ad/implement-knowledge-absent" "$out" "implement.knowledge=
 assert_not_contains "ad/implement-codeStyleRules-absent" "$out" "implement.codeStyleRules"
 assert_contains "ad/name-and-configPath-present" "$out" "WORKFLOW_PACK: name=proj-ad configPath=$repo_ad/.claude/sherpa.yaml"
 
-# (ae) ctx ordering — sessionInstructions must sit at a lower byte offset than the
-# WORKFLOW_PACK: line, so it survives first if the consuming harness truncates
-# additionalContext.
+# (ae) context is never emitted — a config's top-level `context` (formerly
+# `sessionInstructions`) must not appear anywhere in additionalContext; only the
+# primer and the WORKFLOW_PACK: line survive. using-sherpa's HARD GATE fetches
+# `context` lazily via resolve-pack-value.sh, off the WORKFLOW_PACK: configPath.
 repo_ae="$tmp/repoae"
 mkdir -p "$repo_ae/.claude"
 cat >"$repo_ae/.claude/sherpa.yaml" <<'YAML'
 name: proj-ae
 detect: "exit 0"
+context: ./context.md
 sessionInstructions: "Always run the project's lint step first."
 YAML
 out=$(ctx "$repo_ae")
-pos_instr=$(printf '%s' "$out" | grep -bo "Always run the project's lint step first." | head -1 | cut -d: -f1)
-pos_wp=$(printf '%s' "$out" | grep -bo "WORKFLOW_PACK:" | head -1 | cut -d: -f1)
-if [ -z "$pos_instr" ] || [ -z "$pos_wp" ] || [ "$pos_instr" -ge "$pos_wp" ]; then
-  echo "FAIL [ae/session-instructions-before-workflow-pack]: sessionInstructions at byte ${pos_instr:-<missing>}, WORKFLOW_PACK: at byte ${pos_wp:-<missing>}"
-  fail=1
-fi
+assert_not_contains "ae/context-key-not-inlined" "$out" "./context.md"
+assert_not_contains "ae/legacy-sessionInstructions-not-inlined" "$out" "Always run the project's lint step first."
+assert_contains "ae/workflow-pack-still-present" "$out" "WORKFLOW_PACK: name=proj-ae"
 
-# (af) size-warning guard, small pack — short sessionInstructions stays well
-# under the 2000-byte threshold, so systemMessage must NOT warn.
+# (af) legacy sessionInstructions key, still present in an unmigrated config —
+# must NOT be read or emitted either; the resolver no longer knows this key at
+# all, migrated or not.
 repo_af="$tmp/repoaf"
 mkdir -p "$repo_af/.claude"
 cat >"$repo_af/.claude/sherpa.yaml" <<'YAML'
@@ -452,62 +452,9 @@ name: proj-af
 detect: "exit 0"
 sessionInstructions: "Keep commits small."
 YAML
-assert_not_contains "af/small-pack-no-warning" "$(msg "$repo_af")" "⚠️"
-
-# (ag) size-warning guard, large pack — sessionInstructions padded past the 2000-byte
-# pack-controlled threshold must warn, with a byte count this test independently
-# recomputes from the very inputs the resolver used (sessionInstructions plus the
-# emitted WORKFLOW_PACK: line, same as resolve-project-pack.sh's own
-# `printf '%s%s' "$instructions" "$line" | wc -c` — no separator joins those two
-# pieces, so the recomputed and reported byte counts must match exactly).
-instr_ag=$(printf 'x%.0s' $(seq 1 2200))
-repo_ag="$tmp/repoag"
-mkdir -p "$repo_ag/.claude"
-cat >"$repo_ag/.claude/sherpa.yaml" <<YAML
-name: proj-ag
-detect: "exit 0"
-sessionInstructions: "$instr_ag"
-YAML
-out_ag=$(ctx "$repo_ag")
-msg_ag=$(msg "$repo_ag")
-line_ag="WORKFLOW_PACK:${out_ag#*WORKFLOW_PACK:}"
-recomputed_ag=$(( $(printf '%s' "$instr_ag" | wc -c) + $(printf '%s' "$line_ag" | wc -c) ))
-reported_ag=$(printf '%s' "$msg_ag" | sed -n 's/.*is \([0-9]*\) bytes.*/\1/p')
-assert_contains "ag/large-pack-warns" "$msg_ag" "⚠️"
-if [ -z "$reported_ag" ]; then
-  echo "FAIL [ag/byte-count-present]: no byte count parsed from: $msg_ag"
-  fail=1
-else
-  diff_ag=$(( recomputed_ag - reported_ag ))
-  if [ "$diff_ag" -ne 0 ]; then
-    echo "FAIL [ag/byte-count-exact]: recomputed $recomputed_ag vs reported $reported_ag (diff $diff_ag)"
-    fail=1
-  fi
-fi
-
-# (ah) size-warning guard, realistic pack — self-contained temp fixture shaped like a
-# typical real-world pack (several knowledge fields plus a couple of command keys,
-# moderate sessionInstructions) must NOT warn — now that nothing under `pack` is
-# eagerly inlined at all, the common case is nowhere near the threshold.
-repo_ah="$tmp/repoah"
-mkdir -p "$repo_ah/.claude"
-cat >"$repo_ah/.claude/sherpa.yaml" <<'YAML'
-name: proj-ah
-detect: "exit 0"
-sessionInstructions: "This project follows Liferay's module layout. Prefer OSGi services over static utilities, and keep REST Builder YAML hand-edits separate from generated Java."
-pack:
-  knowledge: "General project background prose that would normally live in a much longer paragraph describing conventions, history, and gotchas for this codebase."
-  frame:
-    knowledge: "Scout the relevant module before framing any change."
-  decompose:
-    knowledge: "Keep steps traceable to service boundaries."
-    architectureRules: cat ./architecture-rules.md
-  implement:
-    knowledge: "Match the surrounding module's style."
-    codeStyleRules: cat ./code-style.md
-    validate: cat ./validate.sh
-YAML
-assert_not_contains "ah/realistic-pack-no-warning" "$(msg "$repo_ah")" "⚠️"
+out_af=$(ctx "$repo_af")
+assert_not_contains "af/legacy-key-absent" "$out_af" "Keep commits small."
+assert_contains "af/primer-still-present" "$out_af" "check whether one of these fits"
 
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
@@ -566,6 +513,24 @@ YAML
 echo -n "project notes" >"$repo_an/notes.md"
 out_an=$("$value_script" "$repo_an/sherpa.yaml" knowledge)
 assert_eq "an/single-path-content" "$out_an" "project notes"
+
+# (at) bare `context` key reads the config's TOP-LEVEL `.context`, not
+# `.pack.context` — `context` is a sibling of `pack`, not nested under it
+# (packs/README.md, packs/TEMPLATE.yaml), and using-sherpa's HARD GATE calls
+# this script with the bare key `context`. A decoy `.pack.context` must be
+# ignored in favor of the real top-level value.
+repo_at="$tmp/value-at/.claude"
+mkdir -p "$repo_at"
+cat >"$repo_at/sherpa.yaml" <<'YAML'
+name: proj-at
+context: ./context.md
+pack:
+  context: ./decoy.md
+YAML
+echo -n "top-level context prose" >"$repo_at/context.md"
+echo -n "DECOY, must not be read" >"$repo_at/decoy.md"
+out_at=$("$value_script" "$repo_at/sherpa.yaml" context)
+assert_eq "at/context-reads-top-level" "$out_at" "top-level context prose"
 
 # (ao) array of paths, existing files — concatenation happens in listed order
 repo_ao="$tmp/value-ao/.claude"

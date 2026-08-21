@@ -3,14 +3,20 @@
 #
 # Reads the hook payload (JSON) on stdin, scans for per-project YAML configs, and
 # runs each config's `detect` command. On the first match it emits a SessionStart
-# additionalContext ordered as: the layer-selection primer, then the config's
-# `sessionInstructions` (so it survives truncation first), then a bare `WORKFLOW_PACK:`
+# additionalContext ordered as: the layer-selection primer, then a bare `WORKFLOW_PACK:`
 # announcement carrying only `name=<name> configPath=<path>` (nothing from the config's
 # `pack` map is eagerly inlined — every value there, `knowledge` and command keys
 # alike, is resolved lazily by the consuming layer skill via scripts/resolve-pack-value.sh
 # and scripts/resolve-pack-basedir.sh, given `configPath`), and a user-facing
 # `systemMessage` naming the loaded pack. On no match it emits a `systemMessage` saying
 # the engine runs generic (so the user knows no project knowledge loaded).
+#
+# `context` (the config's top-level prose, formerly `sessionInstructions`) is never
+# read or emitted by this script — using-sherpa's SKILL.md HARD GATE fully owns its
+# delivery via lazy resolution (scripts/resolve-pack-value.sh <configPath> context),
+# triggered off the `WORKFLOW_PACK:` line's configPath. This keeps `context` off the
+# hook-truncation-sensitive path entirely, at the cost of a required lazy fetch by
+# the consuming skill.
 #
 # Config candidates, highest precedence first:
 #   <cwd>/.sherpa/sherpa.yaml|.yml       project-local, engine-neutral, shareable in-repo (single file)
@@ -35,16 +41,18 @@
 # `detect` is optional for project-local configs (file presence at that fixed path is
 # the detection); it's required for workspace configs (one dir shared by many projects).
 # Config schema (camelCase): name, detect (a command; exit 0 = match; optional for project-local),
-#   sessionInstructions, pack:{knowledge, frame:{knowledge}, shape:{knowledge},
+#   context, pack:{knowledge, frame:{knowledge}, shape:{knowledge},
 #   decompose:{knowledge,architectureRules}, implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #
 # Nothing under `pack` (neither `knowledge`, bare or section-prefixed e.g.
 # decompose.knowledge, nor the command keys architectureRules/codeStyleRules/validate)
 # is read or inlined by this script anymore — the `WORKFLOW_PACK:` line carries only
-# `name=` and `configPath=`. A consuming layer skill fetches `knowledge` prose or a
-# command key's resolved value lazily, at the point it's actually needed, by calling
-# scripts/resolve-pack-value.sh <configPath> <dotted.key> [--raw] (which resolves
+# `name=` and `configPath=`. Nor is top-level `context` (formerly `sessionInstructions`)
+# read or inlined — using-sherpa's SKILL.md HARD GATE fetches it lazily off the
+# `WORKFLOW_PACK:` line's configPath. A consuming layer skill fetches `knowledge` prose or
+# a command key's resolved value the same way, at the point it's actually needed, by
+# calling scripts/resolve-pack-value.sh <configPath> <dotted.key> [--raw] (which resolves
 # relative values against scripts/resolve-pack-basedir.sh <configPath>'s output:
 # project-local configs base on the proximate .sherpa/.claude/.codex/.pi dir; workspace
 # configs base on the pack's own directory).
@@ -52,15 +60,6 @@
 # jq builds every JSON payload this script emits, so a missing jq means nothing can be
 # emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
 # still emits the using-sherpa primer plus a systemMessage warning that packs are disabled.
-#
-# On a match, the matched-branch's systemMessage also warns when the pack-controlled
-# bytes — sessionInstructions plus the WORKFLOW_PACK: line, measured with `wc -c` (actual
-# bytes, not shell character count, since the text can hold multi-byte characters) —
-# exceed 2000 bytes. This deliberately excludes the fixed ~1070-byte $PRIMER, since the
-# pack author has no control over that. The 2000-byte figure is a judgment call, not a
-# confirmed harness limit: the real truncation cutoff is unconfirmed, only bracketed
-# between an observed-truncated 10.2KB case and an observed 2KB preview size. Treat it as
-# an early-warning threshold pending someone confirming the actual number.
 #
 # Never errors out: a failing SessionStart hook must not block the session.
 #
@@ -161,16 +160,8 @@ for config in "${candidates[@]}"; do
     *) line="$line configPath=$config" ;;
   esac
 
-  instructions=$(yq '.sessionInstructions // ""' "$config" 2>/dev/null)
-  ctx="$PRIMER"
-  [ -n "$instructions" ] && ctx="$ctx"$'\n\n'"$instructions"
-  ctx="$ctx"$'\n\n'"$line"
-
-  pack_size=$(printf '%s%s' "$instructions" "$line" | wc -c)
+  ctx="$PRIMER"$'\n\n'"$line"
   msg="Project \"$name\" loaded into Sherpa from $config 🏔️"
-  if [ "$pack_size" -gt 2000 ]; then
-    msg="$msg ⚠️ this pack's announcement is ${pack_size} bytes (excludes the fixed primer) — trim sessionInstructions to stay well clear of hook-context truncation."
-  fi
   emit_result "$msg" "$ctx"
 done
 
