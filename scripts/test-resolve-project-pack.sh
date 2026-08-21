@@ -589,6 +589,11 @@ if [ -z "$pos_first" ] || [ -z "$pos_second" ] || [ "$pos_first" -ge "$pos_secon
   echo "FAIL [ao/array-order]: expected FIRST before SECOND in: $out_ao"
   fail=1
 fi
+# first.md has no trailing newline of its own — without a separator its last
+# line would glue directly onto second.md's first line (e.g. "FIRSTSECOND").
+# A literal newline must sit between them in the output.
+assert_contains "ao/array-separator-newline" "$out_ao" "$(printf 'FIRST\nSECOND')"
+assert_not_contains "ao/array-not-glued" "$out_ao" "FIRSTSECOND"
 
 # (ap) array with one missing entry — the missing entry is skipped with a
 # stderr warning naming it, but the rest still resolves (not all-or-nothing).

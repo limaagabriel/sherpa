@@ -15,9 +15,10 @@
 # this configPath. No shell/environment expansion is ever performed on the
 # value ($HOME, ~, ${VAR} are all literal, never expanded) — it's a path
 # string, nothing more. Each resolved path that exists has its full contents
-# printed; a path that doesn't exist gets a stderr warning naming it and is
-# skipped, not a hard failure. Files are printed in the order listed,
-# concatenated into one blob on stdout.
+# printed, followed by a newline (so a file missing its own trailing newline
+# never glues onto the next entry); a path that doesn't exist gets a stderr
+# warning naming it and is skipped, not a hard failure. Files are printed in
+# the order listed, concatenated into one blob on stdout.
 #
 # --raw mode is for `validate` (a command string, not file content): entries
 # are NOT read as files. The literal authored value(s) — space-joined if an
@@ -67,7 +68,12 @@ for entry in "${entries[@]}"; do
     *) resolved="$basedir/$entry" ;;
   esac
   if [ -f "$resolved" ]; then
+    # A trailing newline after every successfully-read entry guarantees two
+    # concatenated entries are always separated by at least one newline, even
+    # when a file's own content doesn't end in one — otherwise its last line
+    # would glue directly onto the next entry's first line.
     cat "$resolved"
+    printf '\n'
   else
     echo "resolve-pack-value.sh: missing pack value file: $resolved" >&2
   fi
