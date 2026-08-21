@@ -24,8 +24,8 @@ These rules apply when the cwd / target / branch lives in a <Project> codebase.
   as a per-step step-builder action>
 
 ## Style (consumed by the engine via the announcement)
-- **codeStyleRules:** a shell command that prints the complete rule set to stdout; the `step-builder` conforms its output to it and the `quality-reviewer` cites rules from its output when announced. Sherpa makes no assumption about how rules are stored.
-- **knowledge:** always literal inline prose, at any length — resolved lazily via `yq` against the announced `configPath` immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged. Subagents cannot Read files or invoke a Skill to obtain this input, so a knowledge value can never point a subagent at something else to load — write the prose directly (to invoke this skill itself, use the pack's `sessionInstructions` instead, see the frontmatter `description` above).
+- **codeStyleRules:** a file path or array of file paths; resolved lazily via `scripts/resolve-pack-value.sh` against the config's base directory, missing files warned and skipped per-entry. The `step-builder` conforms its output to the resolved prose, and the `quality-reviewer` cites rules from it when announced.
+- **knowledge:** a file path or array of file paths; resolved lazily via `scripts/resolve-pack-value.sh` against the config's base directory, missing files warned and skipped per-entry. Resolved immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged. Subagents cannot Read files or invoke a Skill to obtain this input — the prose is delivered directly.
 - Absent → reviewers fall back to the file's language conventions + in-file/module precedent (`style — language-convention fallback`) — never skipped outright.
 
 ## Topic breadcrumbs (load on demand, don't pre-read)

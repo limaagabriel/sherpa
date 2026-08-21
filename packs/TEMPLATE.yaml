@@ -14,45 +14,38 @@ name: my-project
 # active. Only the shared workspace dir (many projects, one dir) needs a real one.
 detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 
-# What the main agent must do at session start when detected (free-form prose).
-sessionInstructions: |
-  Invoke Skill my-project-init before other work; skip if already invoked this session.
+# What the main agent must do at session start when detected.
+# A file path or array of file paths — resolved via scripts/resolve-pack-value.sh.
+# Paths are literal (no $HOME or ~ expansion); relative paths resolve against the
+# config's base directory. Missing files are warned and skipped per-entry.
+context: ./context.txt
 
-# Extension points the engine consumes, sectioned by skill. `knowledge` values
-# are always literal inline prose — write them at any length; they are never
-# inlined eagerly into the WORKFLOW_PACK announcement, each layer skill resolves
-# them lazily via `yq` against the announced `configPath` immediately before
-# dispatch, then forwards the result unchanged. Subagents cannot Read files or
-# invoke a Skill for this input (see agents/*.md) — a knowledge value can never
-# point a subagent at something else to load. architectureRules, codeStyleRules,
-# and validate are COMMANDs (the hook auto-quotes values with spaces) — these ARE
-# inlined directly into the one-line WORKFLOW_PACK announcement, so keep them
-# single-line scalars (newlines collapse to spaces); `knowledge` fields have no
-# such restriction.
+# Extension points the engine consumes, sectioned by skill. All content-bearing
+# keys (knowledge, architectureRules, codeStyleRules, context) are file paths or
+# arrays of file paths — resolved via scripts/resolve-pack-value.sh. Paths are
+# literal (no $HOME or ~ expansion); relative paths resolve against the config's
+# base directory. Missing files are warned and skipped per-entry.
+# Only validate is a shell command, never a path.
 #
-# A command may be absolute OR relative. For a committed project-local config it
-# resolves against this file's proximate .claude/.codex dir (e.g. a committed
-# .codex/sherpa.yaml: `codeStyleRules: cat ./rules.md`). For a workspace pack it
-# resolves against this pack's own directory instead (<packs dir>/<project>/), so
-# `detect: ./detect.sh` runs the copy that lives next to THIS project.yaml — two
-# packs can each keep their own same-named detect.sh without colliding.
-# See README.md § Relative paths.
+# For a committed project-local config, relative paths resolve against this file's
+# proximate .sherpa/.claude/.codex/.pi directory. For a workspace pack, relative
+# paths resolve against this pack's own directory (<packs dir>/<project>/), so two
+# packs can each keep their own same-named file (e.g. rules.md) without colliding.
+# See README.md § Relative paths and resolution.
 pack:
-  knowledge: Prefer named exports over default exports; keep functions under 40 lines.   # cross-cutting: every layer, every subagent
+  knowledge: ./knowledge.md   # or: [./knowledge.md, ./extra-knowledge.md]
 
   frame:
-    knowledge: Additive frame-layer notes for the reviewer.   # optional, additive
+    knowledge: ./frame-knowledge.md   # optional, additive
 
   shape:
-    knowledge: Additive shape-layer notes for the shape-reviewer.   # optional, additive
+    knowledge: ./shape-knowledge.md   # optional, additive
 
   decompose:
-    knowledge: Additive decompose-layer notes for the reviewer.   # optional, additive
-    architectureRules: cat /abs/path/to/architecture.md
+    knowledge: ./decompose-knowledge.md   # optional, additive
+    architectureRules: ./architecture.md
 
   implement:
-    knowledge: Additive implement-layer notes for the step-builder.   # optional, additive
-    codeStyleRules: cat /abs/path/to/rules.md
-    validate: |
-      npm run lint
-      npm test
+    knowledge: ./implement-knowledge.md   # optional, additive
+    codeStyleRules: ./rules.md
+    validate: npm run lint && npm test   # shell command only; never a path

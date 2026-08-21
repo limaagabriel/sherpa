@@ -107,12 +107,12 @@ The engine ships generic. To layer in your project's conventions, drop one direc
 ```yaml
 name: my-project
 detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
-sessionInstructions: |
-  Invoke Skill my-project-init before other work; skip if already invoked.
+context: ./context.txt                           # file path or array; resolved via scripts/resolve-pack-value.sh
 pack:
-  knowledge: Prefer named exports over default exports; keep functions under 40 lines.   # cross-cutting: every layer, every subagent
+  knowledge: ./knowledge.md                      # file path or array; resolved lazily
   implement:
-    codeStyleRules: cat /abs/path/to/rules.md   # command that dumps your style rules
+    codeStyleRules: ./rules.md                   # file path or array; resolved lazily
+    validate: npm run lint && npm test           # shell command only
 ```
 
 Sherpa's single `SessionStart` hook scans the packs dir, detects the active project, and announces
