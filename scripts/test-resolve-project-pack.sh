@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# Self-check for resolve-project-pack.sh path resolution. Runs the real resolver
-# against temp fixtures and asserts the emitted SessionStart payload. No framework.
+# Self-check for resolve-project-pack.sh, resolve-pack-basedir.sh, and
+# resolve-pack-value.sh. Runs the real scripts against temp fixtures and
+# asserts their output. No framework.
 set -u
 unset SHERPA_CONFIG_DIR
 
 here=$(cd "$(dirname "$0")" && pwd)
 resolver="$here/resolve-project-pack.sh"
+basedir_script="$here/resolve-pack-basedir.sh"
+value_script="$here/resolve-pack-value.sh"
 
 command -v yq >/dev/null 2>&1 || { echo "SKIP: yq not installed"; exit 0; }
 command -v jq >/dev/null 2>&1 || { echo "SKIP: jq not installed"; exit 0; }
@@ -29,8 +32,17 @@ assert_not_contains() {
     *"$3"*) echo "FAIL [$1]: expected NOT to contain:"; echo "  $3"; echo "got:"; echo "  $2"; fail=1 ;;
   esac
 }
+assert_eq() {
+  [ "$2" = "$3" ] || { echo "FAIL [$1]: expected:"; echo "  $3"; echo "got:"; echo "  $2"; fail=1; }
+}
 
-# (a) project-local .codex/sherpa.yaml — relative command resolves against the proximate base
+# ---------------------------------------------------------------------------
+# resolve-project-pack.sh
+# ---------------------------------------------------------------------------
+
+# (a) project-local .codex/sherpa.yaml — matches, and the WORKFLOW_PACK: line
+# carries only name=/configPath= — the pack's command key is NOT eagerly
+# inlined (that's resolve-pack-value.sh's job now, given configPath).
 repo="$tmp/repo"
 mkdir -p "$repo/.codex"
 cat >"$repo/.codex/sherpa.yaml" <<'YAML'
@@ -41,14 +53,17 @@ pack:
     codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo")
-assert_contains "a/command" "$out" "cd '$repo/.codex' && cat ./rules.md"
+assert_not_contains "a/command-not-inlined" "$out" "cat ./rules.md"
+assert_not_contains "a/key-not-inlined" "$out" "implement.codeStyleRules"
 assert_contains "a/message" "$(msg "$repo")" "Project \"proj-a\" loaded into Sherpa from $repo/.codex/sherpa.yaml 🏔️"
 assert_contains "a/primer" "$out" "check whether one of these fits"
 # configPath, bare path (no spaces) — unquoted
 assert_contains "a/configPath-bare" "$out" "configPath=$repo/.codex/sherpa.yaml"
+assert_contains "a/name" "$out" "WORKFLOW_PACK: name=proj-a"
 
-# (b) workspace pack under a .claude ancestor — base is the pack's own dir, NOT
-# a walk-up to the .claude ancestor (that walk-up applies only to project-local configs)
+# (b) workspace pack under a .claude ancestor — still matches and announces by
+# name; the base-dir question (own dir vs walk-up to .claude) now belongs to
+# resolve-pack-basedir.sh, covered separately below in (am).
 ws_home="$tmp/home"
 packs="$ws_home/.claude/sherpa/projects"
 mkdir -p "$packs/proj-b"
@@ -62,11 +77,13 @@ YAML
 cleancwd="$tmp/elsewhere"
 mkdir -p "$cleancwd"
 out=$(WORKFLOW_PACKS_DIR="$packs" ctx "$cleancwd")
-assert_contains "b/base-is-pack-dir" "$out" "cd '$packs/proj-b' && cat ./arch.md"
-assert_not_contains "b/base-is-not-.claude" "$out" "cd '$ws_home/.claude'"
+assert_contains "b/message" "$out" "WORKFLOW_PACK: name=proj-b"
+assert_not_contains "b/command-not-inlined" "$out" "cat ./arch.md"
 
-# (d) base path with a space — emitted cd must single-quote it so the consumer's
-# `bash -c` does not split it into too many args; configPath must be double-quoted too.
+# (d) configPath with a space — must be double-quoted in the emitted line
+# (matching the pre-existing escaping convention for other space-containing
+# values); the base-dir-quoting/runnable-command concern for space-containing
+# paths now belongs to resolve-pack-value.sh, covered separately below in (ar).
 repo_d="$tmp/repo d"
 mkdir -p "$repo_d/.codex"
 cat >"$repo_d/.codex/sherpa.yaml" <<'YAML'
@@ -77,16 +94,10 @@ pack:
     codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo_d")
-assert_contains "d/quoted-base" "$out" "cd '$repo_d/.codex' && cat ./rules.md"
-# configPath, path WITH a space — must be double-quoted, matching resolve_pack_value's
-# own quoting convention for other space-containing values
 assert_contains "d/configPath-quoted" "$out" "configPath=\"$repo_d/.codex/sherpa.yaml\""
-# the emitted command must actually run (cd succeeds, no "too many arguments")
-( cd "$repo_d/.codex" && echo hi >rules.md )
-emitted=$(printf '%s' "$out" | sed -n "s/.*implement.codeStyleRules=\"\\(cd '[^\"]*\\)\".*/\\1/p")
-bash -c "$emitted" >/dev/null 2>&1 || { echo "FAIL [d/runnable]: emitted cmd failed: $emitted"; fail=1; }
+assert_not_contains "d/command-not-inlined" "$out" "cat ./rules.md"
 
-# (f) project-local .pi/sherpa.yaml — relative command resolves against the proximate base
+# (f) project-local .pi/sherpa.yaml — same shape as (a)
 repo_f="$tmp/repof"
 mkdir -p "$repo_f/.pi"
 cat >"$repo_f/.pi/sherpa.yaml" <<'YAML'
@@ -97,14 +108,14 @@ pack:
     codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo_f")
-assert_contains "f/command" "$out" "cd '$repo_f/.pi' && cat ./rules.md"
+assert_not_contains "f/command-not-inlined" "$out" "cat ./rules.md"
 assert_contains "f/message" "$(msg "$repo_f")" "Project \"proj-f\" loaded into Sherpa from $repo_f/.pi/sherpa.yaml 🏔️"
 
-# (g) two-level flatten — a bare top-level `knowledge` and a nested `implement.knowledge`
-# coexist in the same pack; since knowledge-suffixed keys are never inlined into the
-# WORKFLOW_PACK: line anymore, neither appears in the emitted line in any form (as a
-# key=value pair or as bare prose), while a sibling command key (implement.validate) at
-# the same nesting level still appears.
+# (g) a bare top-level `knowledge`, a nested `implement.knowledge`, and a
+# sibling command key (`implement.validate`) coexist in the same pack — none
+# of them, knowledge or command key alike, appear in the emitted line in any
+# form (as a key=value pair or as bare raw prose/value); only name=/configPath=
+# survive.
 repo_g="$tmp/repog"
 mkdir -p "$repo_g/.claude"
 cat >"$repo_g/.claude/sherpa.yaml" <<'YAML'
@@ -117,13 +128,12 @@ pack:
     validate: /my-validate-skill
 YAML
 out=$(ctx "$repo_g")
-assert_not_contains "g/top-level-knowledge" "$out" 'knowledge="Top-level project prose."'
-assert_not_contains "g/nested-knowledge" "$out" 'implement.knowledge="Implement-section prose."'
-assert_contains "g/nested-validate" "$out" "implement.validate=/my-validate-skill"
-# no cross-leak — neither knowledge value's raw prose appears anywhere at all,
-# not merely absent under the wrong key
+assert_not_contains "g/top-level-knowledge" "$out" 'knowledge='
+assert_not_contains "g/nested-knowledge" "$out" 'implement.knowledge='
+assert_not_contains "g/nested-validate-key" "$out" "implement.validate"
 assert_not_contains "g/no-cross-leak-top-prose" "$out" "Top-level project prose."
 assert_not_contains "g/no-cross-leak-nested-prose" "$out" "Implement-section prose."
+assert_not_contains "g/no-cross-leak-validate-value" "$out" "/my-validate-skill"
 
 # (h) project-local config with NO `detect` key still matches — file presence
 # at the fixed path is the detection.
@@ -168,7 +178,7 @@ msg_m=$(printf '%s' "$out_m" | jq -r '.systemMessage // ""')
 assert_contains "m/yq-warning-message" "$msg_m" "yq not found"
 [ "$rc_m" -eq 0 ] || { echo "FAIL [m/exit-0]: resolver exited $rc_m with yq masked"; fail=1; }
 
-# (n) project-local .sherpa/sherpa.yaml — relative command resolves against the proximate base
+# (n) project-local .sherpa/sherpa.yaml — same shape as (a)/(f)
 repo_n="$tmp/repo-sherpa"
 mkdir -p "$repo_n/.sherpa"
 cat >"$repo_n/.sherpa/sherpa.yaml" <<'YAML'
@@ -179,7 +189,7 @@ pack:
     codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo_n")
-assert_contains "n/command" "$out" "cd '$repo_n/.sherpa' && cat ./rules.md"
+assert_not_contains "n/command-not-inlined" "$out" "cat ./rules.md"
 assert_contains "n/message" "$(msg "$repo_n")" "Project \"proj-n\" loaded into Sherpa from $repo_n/.sherpa/sherpa.yaml 🏔️"
 
 # (o) .sherpa wins over a co-present .claude — .sherpa is first in local_candidates
@@ -201,7 +211,7 @@ msg_o=$(msg "$repo_o")
 assert_contains "o/sherpa-wins" "$msg_o" "proj-sherpa-win"
 assert_not_contains "o/claude-loses" "$msg_o" "proj-claude-lose"
 
-# (p) XDG workspace pack resolves without WORKFLOW_PACKS_DIR — base is the pack's own dir
+# (p) XDG workspace pack resolves without WORKFLOW_PACKS_DIR
 xdg_p="$tmp/xdg-p"
 fakehome_p="$tmp/home-p"
 packs_p="$xdg_p/sherpa/projects"
@@ -215,8 +225,8 @@ pack:
 YAML
 cleancwd_p="$tmp/elsewhere-p"
 mkdir -p "$cleancwd_p"
-out_p=$(printf '{"cwd":"%s"}' "$cleancwd_p" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_p" HOME="$fakehome_p" bash "$resolver" | jq -r '.hookSpecificOutput.additionalContext // ""')
-assert_contains "p/xdg-base" "$out_p" "cd '$packs_p/proj-p' && cat ./arch.md"
+msg_p=$(printf '{"cwd":"%s"}' "$cleancwd_p" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_p" HOME="$fakehome_p" bash "$resolver" | jq -r '.systemMessage // ""')
+assert_contains "p/xdg-workspace-matches" "$msg_p" "Project \"proj-p\" loaded into Sherpa"
 
 # (q) legacy .claude/sherpa/projects still resolves as a fallback when WORKFLOW_PACKS_DIR
 # is unset and XDG_CONFIG_HOME points at a dir with no sherpa/projects
@@ -234,8 +244,7 @@ mkdir -p "$cleancwd_q"
 msg_q=$(printf '{"cwd":"%s"}' "$cleancwd_q" | env -u WORKFLOW_PACKS_DIR XDG_CONFIG_HOME="$xdg_q" HOME="$fakehome_q" bash "$resolver" | jq -r '.systemMessage // ""')
 assert_contains "q/legacy-fallback" "$msg_q" "Project \"proj-q\" loaded into Sherpa from $legacy_q/proj-q/project.yaml 🏔️"
 
-# (r) XDG workspace wins over legacy .claude workspace when both have a matching pack —
-# packs_dirs lists the XDG dir before the legacy dir, so XDG's match is found first
+# (r) XDG workspace wins over legacy .claude workspace when both have a matching pack
 fakehome_r="$tmp/home-r"
 legacy_r="$fakehome_r/.claude/sherpa/projects"
 mkdir -p "$legacy_r/proj-legacy-lose"
@@ -273,39 +282,29 @@ cleancwd_u="$tmp/elsewhere-u"
 mkdir -p "$cleancwd_u"
 assert_contains "u/colocated-detect-runs" "$(WORKFLOW_PACKS_DIR="$packs_u" msg "$cleancwd_u")" "Project \"proj-u\" loaded into Sherpa"
 
-# (v) two workspace packs with a same-named helper — no collision, since each
-# pack resolves relative commands against its own dir. The resolver emit_results
-# and exits on the first match, so this invokes it twice (one cwd per pack) and
-# asserts each invocation resolves to its own pack's base dir.
+# (v) two workspace packs, each with its own detect keyed to a distinct cwd —
+# matching doesn't cross-contaminate across for-loop iterations
 packs_v="$tmp/packs-v"
 mkdir -p "$packs_v/proj-v1" "$packs_v/proj-v2"
 cwd_v1="$tmp/proj-v1-repo"
 cwd_v2="$tmp/proj-v2-repo"
 mkdir -p "$cwd_v1" "$cwd_v2"
-echo "v1 rules" >"$packs_v/proj-v1/rules.md"
-echo "v2 rules" >"$packs_v/proj-v2/rules.md"
 cat >"$packs_v/proj-v1/project.yaml" <<'YAML'
 name: proj-v1
 detect: 'test "$CWD" = "__CWD_V1__"'
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 sed -i "s#__CWD_V1__#$cwd_v1#" "$packs_v/proj-v1/project.yaml"
 cat >"$packs_v/proj-v2/project.yaml" <<'YAML'
 name: proj-v2
 detect: 'test "$CWD" = "__CWD_V2__"'
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 sed -i "s#__CWD_V2__#$cwd_v2#" "$packs_v/proj-v2/project.yaml"
-out_v1=$(WORKFLOW_PACKS_DIR="$packs_v" ctx "$cwd_v1")
-out_v2=$(WORKFLOW_PACKS_DIR="$packs_v" ctx "$cwd_v2")
-assert_contains "v/pack1-own-base" "$out_v1" "cd '$packs_v/proj-v1' && cat ./rules.md"
-assert_not_contains "v/pack1-not-pack2-base" "$out_v1" "cd '$packs_v/proj-v2'"
-assert_contains "v/pack2-own-base" "$out_v2" "cd '$packs_v/proj-v2' && cat ./rules.md"
-assert_not_contains "v/pack2-not-pack1-base" "$out_v2" "cd '$packs_v/proj-v1'"
+msg_v1=$(WORKFLOW_PACKS_DIR="$packs_v" msg "$cwd_v1")
+msg_v2=$(WORKFLOW_PACKS_DIR="$packs_v" msg "$cwd_v2")
+assert_contains "v/pack1-matches-own-cwd" "$msg_v1" "proj-v1"
+assert_not_contains "v/pack1-not-pack2" "$msg_v1" "proj-v2"
+assert_contains "v/pack2-matches-own-cwd" "$msg_v2" "proj-v2"
+assert_not_contains "v/pack2-not-pack1" "$msg_v2" "proj-v1"
 
 # (w) hard cut — the old flat <name>.yaml layout under a workspace packs dir no
 # longer loads; only the per-pack project.yaml layout is scanned
@@ -321,10 +320,7 @@ msg_w=$(WORKFLOW_PACKS_DIR="$packs_w" msg "$cleancwd_w")
 assert_not_contains "w/flat-layout-ignored" "$msg_w" "proj-flat"
 assert_contains "w/no-pack-matched" "$msg_w" "no project pack matched"
 
-# (x) workspace pack with NO `detect` key, per-pack layout — must NOT match;
-# the workspace branch requires a real detect since one packs dir is shared
-# by many projects (case (i) covers the same rule at the flat pre-pack layout;
-# this exercises the branch through the current "$_pd"/*/project.yaml glob)
+# (x) workspace pack with NO `detect` key, per-pack layout — must NOT match
 packs_x="$tmp/packs-x"
 mkdir -p "$packs_x/proj-x"
 cat >"$packs_x/proj-x/project.yaml" <<'YAML'
@@ -338,33 +334,26 @@ msg_x=$(WORKFLOW_PACKS_DIR="$packs_x" msg "$cleancwd_x")
 assert_not_contains "x/workspace-no-detect-skipped" "$msg_x" "proj-x"
 assert_contains "x/no-pack-matched" "$msg_x" "no project pack matched"
 
-# (y) workspace packs dir with a space in its path — the "$_pd"/*/project.yaml
-# glob at :106 must still find it and the emitted cd must quote it correctly
+# (y) workspace packs dir with a space in its path — the glob must still find
+# it and configPath must be double-quoted correctly in the emitted line
 packs_y="$tmp/my packs"
 mkdir -p "$packs_y/proj-y"
 cat >"$packs_y/proj-y/project.yaml" <<'YAML'
 name: proj-y
 detect: "exit 0"
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 cleancwd_y="$tmp/elsewhere-y"
 mkdir -p "$cleancwd_y"
 out_y=$(WORKFLOW_PACKS_DIR="$packs_y" ctx "$cleancwd_y")
-assert_contains "y/space-in-packs-dir" "$out_y" "cd '$packs_y/proj-y' && cat ./rules.md"
+assert_contains "y/space-in-packs-dir-configPath" "$out_y" "configPath=\"$packs_y/proj-y/project.yaml\""
 
-# (z) SHERPA_CONFIG_DIR alone — packs dir is $SHERPA_CONFIG_DIR/projects (the
-# `/projects` suffix), unset WORKFLOW_PACKS_DIR so it can't also satisfy this
+# (z) SHERPA_CONFIG_DIR alone — packs dir is $SHERPA_CONFIG_DIR/projects
 config_z="$tmp/config-z"
 packs_z="$config_z/projects"
 mkdir -p "$packs_z/proj-z"
 cat >"$packs_z/proj-z/project.yaml" <<'YAML'
 name: proj-z
 detect: "exit 0"
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 cleancwd_z="$tmp/elsewhere-z"
 mkdir -p "$cleancwd_z"
@@ -372,7 +361,7 @@ run_z() { printf '{"cwd":"%s"}' "$1" | env -u WORKFLOW_PACKS_DIR SHERPA_CONFIG_D
 out_z=$(run_z "$cleancwd_z" | jq -r '.hookSpecificOutput.additionalContext // ""')
 msg_z=$(run_z "$cleancwd_z" | jq -r '.systemMessage // ""')
 assert_contains "z/sherpa-config-dir-loads" "$msg_z" "Project \"proj-z\" loaded into Sherpa"
-assert_contains "z/sherpa-config-dir-projects-suffix" "$out_z" "cd '$packs_z/proj-z' && cat ./rules.md"
+assert_contains "z/sherpa-config-dir-projects-suffix" "$out_z" "configPath=$packs_z/proj-z/project.yaml"
 
 # (aa) WORKFLOW_PACKS_DIR alone — packs dir is $WORKFLOW_PACKS_DIR itself, NO
 # `/projects` suffix applied; unset SHERPA_CONFIG_DIR so it can't also satisfy this
@@ -387,8 +376,7 @@ mkdir -p "$cleancwd_aa"
 msg_aa=$(printf '{"cwd":"%s"}' "$cleancwd_aa" | env -u SHERPA_CONFIG_DIR WORKFLOW_PACKS_DIR="$packs_aa" bash "$resolver" | jq -r '.systemMessage // ""')
 assert_contains "aa/workflow-packs-dir-no-suffix-loads" "$msg_aa" "Project \"proj-aa\" loaded into Sherpa"
 
-# (ab) both set — SHERPA_CONFIG_DIR wins over WORKFLOW_PACKS_DIR; two different,
-# both-matching packs prove precedence, not mere pack existence
+# (ab) both set — SHERPA_CONFIG_DIR wins over WORKFLOW_PACKS_DIR
 config_ab="$tmp/config-ab"
 packs_ab_sherpa="$config_ab/projects"
 mkdir -p "$packs_ab_sherpa/proj-ab-sherpa-win"
@@ -408,10 +396,9 @@ msg_ab=$(printf '{"cwd":"%s"}' "$cleancwd_ab" | env SHERPA_CONFIG_DIR="$config_a
 assert_contains "ab/sherpa-config-dir-wins" "$msg_ab" "proj-ab-sherpa-win"
 assert_not_contains "ab/workflow-packs-dir-loses" "$msg_ab" "proj-ab-workflow-lose"
 
-# (ad) knowledge stays fully absent regardless of nesting depth, while a sibling
-# command key at the same nesting level still appears — proves the skip in
-# resolve-project-pack.sh is selective (only `knowledge`-suffixed keys), not an
-# accidental drop of the whole section it lives in.
+# (ad) nothing under `pack` appears in the emitted line, at any nesting depth —
+# proves the resolver drops the WHOLE pack map (not just `knowledge`), while
+# still emitting name=/configPath=.
 repo_ad="$tmp/repoad"
 mkdir -p "$repo_ad/.claude"
 cat >"$repo_ad/.claude/sherpa.yaml" <<'YAML'
@@ -435,7 +422,8 @@ assert_not_contains "ad/frame-knowledge-absent" "$out" "frame.knowledge="
 assert_not_contains "ad/shape-knowledge-absent" "$out" "shape.knowledge="
 assert_not_contains "ad/decompose-knowledge-absent" "$out" "decompose.knowledge="
 assert_not_contains "ad/implement-knowledge-absent" "$out" "implement.knowledge="
-assert_contains "ad/implement-codeStyleRules-present" "$out" "implement.codeStyleRules="
+assert_not_contains "ad/implement-codeStyleRules-absent" "$out" "implement.codeStyleRules"
+assert_contains "ad/name-and-configPath-present" "$out" "WORKFLOW_PACK: name=proj-ad configPath=$repo_ad/.claude/sherpa.yaml"
 
 # (ae) ctx ordering — sessionInstructions must sit at a lower byte offset than the
 # WORKFLOW_PACK: line, so it survives first if the consuming harness truncates
@@ -446,9 +434,6 @@ cat >"$repo_ae/.claude/sherpa.yaml" <<'YAML'
 name: proj-ae
 detect: "exit 0"
 sessionInstructions: "Always run the project's lint step first."
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 out=$(ctx "$repo_ae")
 pos_instr=$(printf '%s' "$out" | grep -bo "Always run the project's lint step first." | head -1 | cut -d: -f1)
@@ -458,24 +443,21 @@ if [ -z "$pos_instr" ] || [ -z "$pos_wp" ] || [ "$pos_instr" -ge "$pos_wp" ]; th
   fail=1
 fi
 
-# (af) size-warning guard, small pack — short sessionInstructions plus one ordinary
-# command key stays well under the 2000-byte threshold, so systemMessage must NOT warn.
+# (af) size-warning guard, small pack — short sessionInstructions stays well
+# under the 2000-byte threshold, so systemMessage must NOT warn.
 repo_af="$tmp/repoaf"
 mkdir -p "$repo_af/.claude"
 cat >"$repo_af/.claude/sherpa.yaml" <<'YAML'
 name: proj-af
 detect: "exit 0"
 sessionInstructions: "Keep commits small."
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 assert_not_contains "af/small-pack-no-warning" "$(msg "$repo_af")" "⚠️"
 
 # (ag) size-warning guard, large pack — sessionInstructions padded past the 2000-byte
 # pack-controlled threshold must warn, with a byte count this test independently
 # recomputes from the very inputs the resolver used (sessionInstructions plus the
-# emitted WORKFLOW_PACK: line, same as resolve-project-pack.sh:193's own
+# emitted WORKFLOW_PACK: line, same as resolve-project-pack.sh's own
 # `printf '%s%s' "$instructions" "$line" | wc -c` — no separator joins those two
 # pieces, so the recomputed and reported byte counts must match exactly).
 instr_ag=$(printf 'x%.0s' $(seq 1 2200))
@@ -485,9 +467,6 @@ cat >"$repo_ag/.claude/sherpa.yaml" <<YAML
 name: proj-ag
 detect: "exit 0"
 sessionInstructions: "$instr_ag"
-pack:
-  implement:
-    codeStyleRules: cat ./rules.md
 YAML
 out_ag=$(ctx "$repo_ag")
 msg_ag=$(msg "$repo_ag")
@@ -508,8 +487,8 @@ fi
 
 # (ah) size-warning guard, realistic pack — self-contained temp fixture shaped like a
 # typical real-world pack (several knowledge fields plus a couple of command keys,
-# moderate sessionInstructions) must NOT warn. Confirms the common case still doesn't
-# trip the guard now that knowledge no longer counts toward the pack's emitted size.
+# moderate sessionInstructions) must NOT warn — now that nothing under `pack` is
+# eagerly inlined at all, the common case is nowhere near the threshold.
 repo_ah="$tmp/repoah"
 mkdir -p "$repo_ah/.claude"
 cat >"$repo_ah/.claude/sherpa.yaml" <<'YAML'
@@ -530,28 +509,153 @@ pack:
 YAML
 assert_not_contains "ah/realistic-pack-no-warning" "$(msg "$repo_ah")" "⚠️"
 
-# (ai) command-type value with an embedded double quote — the same escaping logic
-# retiring (l) dropped coverage for still applies to every non-knowledge value
-# (resolve-project-pack.sh:176-182, and the duplicate configPath-escaping block at
-# :161-167): embedded `"` must be backslash-escaped, not left bare, inside the
-# outer quotes the space-containing cd-wrapped value gets.
-repo_ai="$tmp/repoai"
-mkdir -p "$repo_ai/.claude"
-cat >"$repo_ai/.claude/sherpa.yaml" <<'YAML'
-name: proj-ai
-detect: "exit 0"
-pack:
-  implement:
-    codeStyleRules: echo "hi"
-YAML
-out=$(ctx "$repo_ai")
-assert_contains "ai/embedded-quote-escaped" "$out" "implement.codeStyleRules=\"cd '$repo_ai/.claude' && echo \\\"hi\\\"\""
-
 # (e) no pack matches — primer must still be force-loaded via additionalContext
 nomatch="$tmp/nomatch"
 mkdir -p "$nomatch"
 out=$(ctx "$nomatch")
 assert_contains "e/primer" "$out" "check whether one of these fits"
+
+# ---------------------------------------------------------------------------
+# resolve-pack-basedir.sh
+# ---------------------------------------------------------------------------
+
+# (aj) project-local .claude/sherpa.yaml, immediate (0-hop) — the marker dir
+# IS the config's own dir, so the walk-up returns it trivially.
+repo_aj="$tmp/basedir-aj/repo/.claude"
+mkdir -p "$repo_aj"
+assert_eq "aj/project-local-immediate" "$("$basedir_script" "$repo_aj/sherpa.yaml")" "$repo_aj"
+
+# (ak) project-local .codex/sherpa.yaml, nested several levels deeper than the
+# marker dir — proves the walk-up actually climbs multiple levels, not just
+# checks the immediate parent.
+marker_ak="$tmp/basedir-ak/repo/.codex"
+nested_ak="$marker_ak/some/nested/place"
+mkdir -p "$nested_ak"
+: >"$nested_ak/sherpa.yaml"
+assert_eq "ak/project-local-multi-hop-walkup" "$("$basedir_script" "$nested_ak/sherpa.yaml")" "$marker_ak"
+
+# (al) workspace project.yaml, no ancestor named .sherpa/.claude/.codex/.pi
+# anywhere — base is simply the config's own dir.
+packs_al="$tmp/basedir-al/packs/proj-al"
+mkdir -p "$packs_al"
+assert_eq "al/workspace-own-dir" "$("$basedir_script" "$packs_al/project.yaml")" "$packs_al"
+
+# (am) workspace project.yaml nested under a directory literally named .claude
+# — must NOT walk up to it; the workspace rule is filename-driven off
+# project.yaml/.yml and never walks up, regardless of ancestor names. This is
+# the same edge case the pre-redesign suite covered for the old
+# proximate_base()/is_local() cwd-based logic, adapted to the bare-configPath
+# script.
+packs_am="$tmp/basedir-am/home/.claude/sherpa/projects/proj-am"
+mkdir -p "$packs_am"
+assert_eq "am/workspace-under-.claude-no-walkup" "$("$basedir_script" "$packs_am/project.yaml")" "$packs_am"
+
+# ---------------------------------------------------------------------------
+# resolve-pack-value.sh
+# ---------------------------------------------------------------------------
+
+# (an) single path, existing file — reads .pack.knowledge (bare top-level key)
+# and prints its contents.
+repo_an="$tmp/value-an/.claude"
+mkdir -p "$repo_an"
+cat >"$repo_an/sherpa.yaml" <<'YAML'
+name: proj-an
+pack:
+  knowledge: ./notes.md
+YAML
+echo -n "project notes" >"$repo_an/notes.md"
+out_an=$("$value_script" "$repo_an/sherpa.yaml" knowledge)
+assert_eq "an/single-path-content" "$out_an" "project notes"
+
+# (ao) array of paths, existing files — concatenation happens in listed order
+repo_ao="$tmp/value-ao/.claude"
+mkdir -p "$repo_ao"
+cat >"$repo_ao/sherpa.yaml" <<'YAML'
+name: proj-ao
+pack:
+  implement:
+    codeStyleRules:
+      - ./first.md
+      - ./second.md
+YAML
+echo -n "FIRST" >"$repo_ao/first.md"
+echo -n "SECOND" >"$repo_ao/second.md"
+out_ao=$("$value_script" "$repo_ao/sherpa.yaml" implement.codeStyleRules)
+pos_first=$(printf '%s' "$out_ao" | grep -bo "FIRST" | head -1 | cut -d: -f1)
+pos_second=$(printf '%s' "$out_ao" | grep -bo "SECOND" | head -1 | cut -d: -f1)
+assert_contains "ao/array-has-first" "$out_ao" "FIRST"
+assert_contains "ao/array-has-second" "$out_ao" "SECOND"
+if [ -z "$pos_first" ] || [ -z "$pos_second" ] || [ "$pos_first" -ge "$pos_second" ]; then
+  echo "FAIL [ao/array-order]: expected FIRST before SECOND in: $out_ao"
+  fail=1
+fi
+
+# (ap) array with one missing entry — the missing entry is skipped with a
+# stderr warning naming it, but the rest still resolves (not all-or-nothing).
+repo_ap="$tmp/value-ap/.claude"
+mkdir -p "$repo_ap"
+cat >"$repo_ap/sherpa.yaml" <<'YAML'
+name: proj-ap
+pack:
+  knowledge:
+    - ./present-a.md
+    - ./missing.md
+    - ./present-b.md
+YAML
+echo -n "PRESENT-A" >"$repo_ap/present-a.md"
+echo -n "PRESENT-B" >"$repo_ap/present-b.md"
+out_ap=$("$value_script" "$repo_ap/sherpa.yaml" knowledge 2>"$tmp/value-ap-stderr.txt")
+err_ap=$(cat "$tmp/value-ap-stderr.txt")
+assert_contains "ap/present-a-resolves" "$out_ap" "PRESENT-A"
+assert_contains "ap/present-b-resolves" "$out_ap" "PRESENT-B"
+assert_contains "ap/missing-warns-on-stderr" "$err_ap" "missing.md"
+
+# (aq) --raw mode — prints the literal command string with the `cd <base> &&`
+# prefix, without reading any file (the referenced "value" is a shell command,
+# not a path, and is never treated as one).
+repo_aq="$tmp/value-aq/.claude"
+mkdir -p "$repo_aq"
+cat >"$repo_aq/sherpa.yaml" <<'YAML'
+name: proj-aq
+pack:
+  implement:
+    validate: cat ./validate.sh
+YAML
+# validate.sh deliberately does not exist here — --raw must never try to read
+# it as a file; the exact-match assertion below is only possible if the value
+# was treated as a literal command string, not a path.
+out_aq=$("$value_script" "$repo_aq/sherpa.yaml" implement.validate --raw)
+assert_eq "aq/raw-cd-prefix" "$out_aq" "cd '$repo_aq' && cat ./validate.sh"
+
+# (ar) --raw mode, absolute value — an authored value starting with `/` is
+# printed as-is, with no `cd` prefix (matches the old resolve_pack_value's
+# absolute-value passthrough branch).
+repo_ar="$tmp/value-ar/.claude"
+mkdir -p "$repo_ar"
+cat >"$repo_ar/sherpa.yaml" <<'YAML'
+name: proj-ar
+pack:
+  implement:
+    validate: /my-validate-skill
+YAML
+out_ar=$("$value_script" "$repo_ar/sherpa.yaml" implement.validate --raw)
+assert_eq "ar/raw-absolute-passthrough" "$out_ar" "/my-validate-skill"
+
+# (as) --raw mode, base dir with a space — the emitted cd must single-quote
+# it so a consumer's `bash -c` doesn't split it into too many args, and the
+# emitted command must actually run.
+repo_as="$tmp/value as/.claude"
+mkdir -p "$repo_as"
+cat >"$repo_as/sherpa.yaml" <<'YAML'
+name: proj-as
+pack:
+  implement:
+    validate: echo hi >out.txt
+YAML
+out_as=$("$value_script" "$repo_as/sherpa.yaml" implement.validate --raw)
+assert_eq "as/raw-quoted-base-with-space" "$out_as" "cd '$repo_as' && echo hi >out.txt"
+bash -c "$out_as" >/dev/null 2>&1 || { echo "FAIL [as/raw-runnable]: emitted cmd failed: $out_as"; fail=1; }
+[ -f "$repo_as/out.txt" ] || { echo "FAIL [as/raw-runnable-side-effect]: expected $repo_as/out.txt"; fail=1; }
 
 [ "$fail" -eq 0 ] && echo "PASS: all resolution cases" || echo "FAILED"
 exit "$fail"

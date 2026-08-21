@@ -4,12 +4,13 @@
 # Reads the hook payload (JSON) on stdin, scans for per-project YAML configs, and
 # runs each config's `detect` command. On the first match it emits a SessionStart
 # additionalContext ordered as: the layer-selection primer, then the config's
-# `sessionInstructions` (so it survives truncation first), then the `WORKFLOW_PACK:`
-# announcement (built from the config's `pack` map, plus a `configPath=$config` key
-# so consuming layer skills can locate the pack yaml and fetch its `knowledge` values
-# themselves), and a user-facing `systemMessage` naming the loaded pack. On no match
-# it emits a `systemMessage` saying the engine runs generic (so the user knows no
-# project knowledge loaded).
+# `sessionInstructions` (so it survives truncation first), then a bare `WORKFLOW_PACK:`
+# announcement carrying only `name=<name> configPath=<path>` (nothing from the config's
+# `pack` map is eagerly inlined — every value there, `knowledge` and command keys
+# alike, is resolved lazily by the consuming layer skill via scripts/resolve-pack-value.sh
+# and scripts/resolve-pack-basedir.sh, given `configPath`), and a user-facing
+# `systemMessage` naming the loaded pack. On no match it emits a `systemMessage` saying
+# the engine runs generic (so the user knows no project knowledge loaded).
 #
 # Config candidates, highest precedence first:
 #   <cwd>/.sherpa/sherpa.yaml|.yml       project-local, engine-neutral, shareable in-repo (single file)
@@ -38,15 +39,15 @@
 #   decompose:{knowledge,architectureRules}, implement:{knowledge,codeStyleRules,validate}}.
 # See packs/README.md.
 #
-# `knowledge` (bare or section-prefixed, e.g. decompose.knowledge) is inline prose, but
-# this script never inlines it into the `WORKFLOW_PACK:` line — every `knowledge`-suffixed
-# key is skipped here and left for the consuming layer skill to fetch lazily, from the
-# YAML at `configPath`, at the point it's actually needed.
-# Command keys (architectureRules, codeStyleRules, validate) are shell commands: relative
-# values resolve against a base dir (detect also runs from it; command values are
-# pre-wrapped `cd <base> && ...`). Project-local configs base on the proximate
-# .sherpa/.claude/.codex/.pi dir; workspace configs base on the pack's own directory.
-# /- and ~-prefixed command values are left as-is.
+# Nothing under `pack` (neither `knowledge`, bare or section-prefixed e.g.
+# decompose.knowledge, nor the command keys architectureRules/codeStyleRules/validate)
+# is read or inlined by this script anymore — the `WORKFLOW_PACK:` line carries only
+# `name=` and `configPath=`. A consuming layer skill fetches `knowledge` prose or a
+# command key's resolved value lazily, at the point it's actually needed, by calling
+# scripts/resolve-pack-value.sh <configPath> <dotted.key> [--raw] (which resolves
+# relative values against scripts/resolve-pack-basedir.sh <configPath>'s output:
+# project-local configs base on the proximate .sherpa/.claude/.codex/.pi dir; workspace
+# configs base on the pack's own directory).
 #
 # jq builds every JSON payload this script emits, so a missing jq means nothing can be
 # emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
@@ -112,14 +113,6 @@ proximate_base() {
   printf '%s' "$dir"
 }
 
-resolve_pack_value() {
-  local val="$1" base="$2"
-  case "$val" in
-    /*) printf '%s' "$val" ;;
-    *) printf "cd '%s' && %s" "$base" "$val" ;;
-  esac
-}
-
 shopt -s nullglob
 local_candidates=(
   "$cwd/.sherpa/sherpa.yaml" "$cwd/.sherpa/sherpa.yml"
@@ -155,7 +148,9 @@ for config in "${candidates[@]}"; do
     continue
   fi
 
-  # Matched. Build the WORKFLOW_PACK line from name + the pack map.
+  # Matched. Build the WORKFLOW_PACK line from name + configPath only — nothing
+  # from the pack map (knowledge or command keys) is eagerly inlined anymore;
+  # a consuming layer skill fetches those lazily via resolve-pack-value.sh.
   name=$(yq '.name // ""' "$config" 2>/dev/null)
   line="WORKFLOW_PACK: name=$name"
   case "$config" in
@@ -165,25 +160,6 @@ for config in "${candidates[@]}"; do
       line="$line configPath=\"$esc\"" ;;
     *) line="$line configPath=$config" ;;
   esac
-  while IFS= read -r entry; do
-    [ -n "$entry" ] || continue
-    key="${entry%%=*}"
-    raw="${entry#*=}"
-    case "${key##*.}" in
-      knowledge) continue ;;   # resolved lazily by the consuming layer skill via configPath, not eagerly inlined here
-      *)         val=$(resolve_pack_value "$raw" "$base") ;;
-    esac
-    case "$val" in
-      *" "*)
-        esc="${val//\\/\\\\}"
-        esc="${esc//\"/\\\"}"
-        line="$line $key=\"$esc\"" ;;
-      *) line="$line $key=$val" ;;
-    esac
-  done < <(yq '.pack // {} | to_entries | .[] | .key as $k | .value | (
-      (select(tag == "!!map") | to_entries | .[] | ($k + "." + .key) + "=" + (.value | tostring | sub("\n"; " ") | sub(" +$"; ""))),
-      (select(tag != "!!map") | ($k + "=" + (. | tostring | sub("\n"; " ") | sub(" +$"; ""))))
-    )' "$config" 2>/dev/null)
 
   instructions=$(yq '.sessionInstructions // ""' "$config" 2>/dev/null)
   ctx="$PRIMER"
@@ -193,7 +169,7 @@ for config in "${candidates[@]}"; do
   pack_size=$(printf '%s%s' "$instructions" "$line" | wc -c)
   msg="Project \"$name\" loaded into Sherpa from $config 🏔️"
   if [ "$pack_size" -gt 2000 ]; then
-    msg="$msg ⚠️ this pack's announcement is ${pack_size} bytes (excludes the fixed primer) — trim sessionInstructions or command-type fields to stay well clear of hook-context truncation."
+    msg="$msg ⚠️ this pack's announcement is ${pack_size} bytes (excludes the fixed primer) — trim sessionInstructions to stay well clear of hook-context truncation."
   fi
   emit_result "$msg" "$ctx"
 done
