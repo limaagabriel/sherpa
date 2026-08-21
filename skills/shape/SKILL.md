@@ -50,8 +50,8 @@ the opt-in `/persist` skill.
    output, and briefs `shape-reviewer` to reuse those IDs verbatim in the shortlist, traps, and
    collapse record. One `shape-reviewer` dispatch over the pooled candidates
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique), with `PROBLEM` (the
-   frame's problem contract — `shape-reviewer` judges `necessity` against it), `shape.knowledge`
-   when a pack announced it, and the appetite — `shape-reviewer` needs it to judge `bounded`
+   frame's problem contract — `shape-reviewer` judges `necessity` against it), `configPath`
+   when announced (the reviewer resolves `shape.knowledge` itself via resolve-pack-value.sh per its own agent doc), and the appetite — `shape-reviewer` needs these to judge `bounded`
    (`agents/shape-reviewer.md` § Inputs (from caller)). Returns the shortlist with precedent, risk, skeletons,
    traps, and the collapse record.
 4. **Compose the emission** — the driver composes the pitch from `shape-reviewer`'s return value;
