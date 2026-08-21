@@ -45,11 +45,9 @@ UNMET` line feeds into § Verdicts the same way an `acceptance-reviewer` `UNMET`
   the step-builder never asks the user.
 
 Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
-(+ pack `knowledge`/`implement.knowledge` — when a `configPath` is announced, resolve both via
-`yq '.pack.knowledge // ""' "$configPath"` and `yq '.pack.implement.knowledge // ""' "$configPath"`
-immediately before dispatch, then forward as inline prose exactly as before — and
-`implement.codeStyleRules`/`implement.validate` commands, already inlined directly in the
-announcement and unaffected, when announced).
+(+ `configPath` when announced — the step-builder resolves its own `knowledge`/`implement.knowledge` and
+`implement.codeStyleRules` via resolve-pack-value.sh — and `implement.validate` command, already inlined
+directly in the announcement and unaffected, when announced).
 Model tier and post-build review both follow whether the step is mechanical (§ Mechanical steps).
 Each step:
 - Builds in isolation — module still builds, no half-applied artifacts, unless that build failure
@@ -58,12 +56,9 @@ Each step:
 - On `BUILT`, for a normal (non-mechanical) step, two L4 reviewers run in parallel over the step's
   commit range: `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to
   judge the declared `produces` against the built symbols) and `quality-reviewer` (clean, correct,
-  secure, no regression; also gets pack `knowledge`/`implement.knowledge` — when a `configPath` is
-  announced, resolve both via `yq '.pack.knowledge // ""' "$configPath"` and
-  `yq '.pack.implement.knowledge // ""' "$configPath"` immediately before dispatch, then forward
-  as inline prose exactly as before — and `implement.codeStyleRules` command output when
-  announced, plus the current step index + remaining step goals, so it can tell whether a failure
-  is covered by a later step). A mechanical
+  secure, no regression; also gets `configPath` when announced — the quality-reviewer resolves its own
+  `knowledge`/`implement.knowledge` and `implement.codeStyleRules` via resolve-pack-value.sh — plus the current
+  step index + remaining step goals, so it can tell whether a failure is covered by a later step). A mechanical
   step runs the merged single-reviewer path instead (§ Mechanical steps).
 
 ## Verdicts (one gradation)

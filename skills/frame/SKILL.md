@@ -18,12 +18,9 @@ skill — never automatic.
 - **Authority:** the human owns every decision. You propose; they decide.
 - **Stance:** feedback-first — open with a brief take when the human floats an approach.
 - **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
+- **Conventions:** conform to the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyleRules` (when present) is resolved by the subagent via resolve-pack-value.sh.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack forwarding:** when a `configPath` is announced, resolve pack `knowledge` (cross-cutting)
-  and `frame.knowledge` (frame-layer, additive) via `yq '.pack.knowledge // ""' "$configPath"` /
-  `yq '.pack.frame.knowledge // ""' "$configPath"` immediately before dispatch; forward the
-  resulting inline prose text to `frame-reviewer` alongside the frame, exactly as before.
+- **Pack forwarding:** when a `configPath` is announced, forward it directly to `frame-reviewer`. The subagent resolves its own `knowledge` (cross-cutting) and `frame.knowledge` (frame-layer, additive) via resolve-pack-value.sh, per its own agent doc.
 
 ## Steps
 1. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: `/scout`

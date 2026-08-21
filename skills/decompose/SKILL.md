@@ -17,17 +17,9 @@ The plan lives **in context** (printed, not on disk). Persisting is the opt-in `
 - **Authority:** the human owns every decision. You propose; they decide.
 - **Stance:** feedback-first — open with a brief take when the human floats an approach.
 - **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** conform to the project's own style — via the pack's `codeStyleRules` when announced, else the surrounding code; evidence-only (quote file:line).
+- **Conventions:** conform to the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyleRules` (when present) is resolved by the subagent via resolve-pack-value.sh.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack forwarding:** when a `configPath` is announced, resolve pack `knowledge` (cross-cutting)
-  and `decompose.knowledge` (decompose-layer, additive) via `yq '.pack.knowledge // ""' "$configPath"` /
-  `yq '.pack.decompose.knowledge // ""' "$configPath"` immediately before dispatch; forward the
-  resulting inline prose text to BOTH `structure-reviewer` and `readiness-reviewer` alongside the
-  step list, exactly as before. Forward `decompose.architectureRules` (a command dumping
-  architecture constraints, already inlined directly in the WORKFLOW_PACK announcement —
-  unaffected by this change; run it and forward its output) — when announced — to
-  `structure-reviewer` ONLY; `readiness-reviewer`'s Input contract (`agents/readiness-reviewer.md`)
-  excludes architectureRules, a cross-step concern outside its job.
+- **Pack forwarding:** when a `configPath` is announced, forward it to both `structure-reviewer` and `readiness-reviewer` alongside the step list. Both subagents resolve their own `knowledge` (cross-cutting) and `decompose.knowledge` (decompose-layer, additive) via resolve-pack-value.sh. Additionally, `structure-reviewer` resolves `decompose.architectureRules` via resolve-pack-value.sh (architecture constraints live in its agent doc key-list); `readiness-reviewer`'s key-list excludes architectureRules, as that cross-step concern is outside its job.
 
 ## Steps
 0. **Bind the goal — `/decompose`'s step 0, the sole `Outcome` bind site.**
