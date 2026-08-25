@@ -34,7 +34,30 @@ noun is — it bakes in one mechanism over equally valid alternatives.
 > Pass: "a macro-layer run produces discovery that still supports more than one direction" —
 > every noun (macro-layer run, discovery, direction) is observable today.
 
+## Vantage test
+Frame owns the problem only (`protocols/layers.md` — "in frame the problem is unbound"); every
+open question must earn its place by being about the problem, not a rehearsal of the solution.
+Classify each candidate open question:
+- **Problem/scope** — a genuine ambiguity in who / capability / obstacle / costs / solved-signal,
+  or the task's boundary. Stays in the frame's normal **open questions** section.
+- **Solution-shaped** — a tradeoff whose answer picks a mechanism, a technology, or an
+  implementation angle. Does NOT belong in open questions; becomes one line in a new
+  **## Vantage seeds** section instead, for `/shape` to pick up when it derives candidate
+  directions.
+
+> Problem/scope: "which system is the source of truth for X?" — the answer fills a slot
+> (obstacle/costs) about the problem itself; it stays an open question.
+> Solution-shaped: "should X be cached or recomputed?" — the answer picks a mechanism, not a fact
+> about the problem; it routes to Vantage seeds instead.
+
+## Vantage seeds
+A section of one-line solution-shaped tradeoffs surfaced while framing but deliberately left
+unresolved (§ Vantage test) — resolving them would bind a solution, which is `/shape`'s job, not
+frame's. `/shape`'s vantage derivation reads these first when generating candidate directions.
+
 ## Don't
 - Bind an `Outcome` — that's `/decompose` step 0's job.
 - Name a mechanism — noun or verb — in any slot, including the solved-signal.
 - Defer a framing question to the step layer. If it's about the problem, resolve it here.
+- Put a solution-shaped question in open questions — route it to Vantage seeds instead (§ Vantage
+  test).

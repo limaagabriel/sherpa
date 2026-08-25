@@ -16,9 +16,14 @@ Scout the codebase BEFORE asking the user anything. Feeds the frame.
   surface it right then via `AskUserQuestion`, shaped per `protocols/questions.md` — one at a
   time, in the moment, brainstorming-style. Don't batch them to the end. A genuine framing choice
   is a question, never an assumption.
-- **Residual → open questions.** Anything the user chooses to leave open, or a tradeoff not yet
-  resolvable, becomes a line in the frame's **open questions** section — not a forced decision.
+- **Residual → open questions or Vantage seeds.** Anything the user chooses to leave open, or a
+  tradeoff not yet resolvable, splits per `phases/frame.md` § Vantage test: **problem/scope**
+  residue (a genuine ambiguity in who/capability/obstacle/costs/solved-signal, or the task's
+  boundary) becomes a line in the frame's **open questions** section — not a forced decision.
+  **Solution-shaped** residue (a tradeoff whose answer picks a mechanism, technology, or
+  implementation angle) becomes a line in the frame's **Vantage seeds** section instead — it isn't
+  resolved here, but it isn't smuggled into open questions either.
 
 ## Brief (one line each)
 `Scout` (key file:line landmarks + precedent) · `Problem` (the problem contract) · `Constraints` ·
-`Non-goals` · `Assumptions` · `Open questions`.
+`Non-goals` · `Assumptions` · `Open questions` · `Vantage seeds`.

@@ -29,14 +29,19 @@ skill — never automatic.
    shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md` — don't defer.
    **Pitch in context?** Its `solution` field's precedent citations are already-bound discovery and
    its `rabbit holes` are a known constraint — scout only the surface it doesn't cover.
-2. **Compose the frame** = *problem contract + discovery + open questions*
+2. **Compose the frame** = *problem contract + discovery + open questions + Vantage seeds*
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract). Apply
-   § Vocabulary test to the solved-signal before presenting. Open questions hold only what the
-   user left open or a tradeoff not yet resolvable — most were settled live in step 1.
+   § Vocabulary test to the solved-signal before presenting. Classify each residual question per
+   § Vantage test: problem/scope stays in open questions; solution-shaped becomes one line in
+   **Vantage seeds** instead. Open questions hold only what the user left open or a tradeoff not
+   yet resolvable — most were settled live in step 1; Vantage seeds hold the solution-shaped
+   residue, left for `/shape` to pick up.
 3. **Premortem (silent)** (Klein 2007). Imagine this frame already caused a failure; name the
-   most likely reason. Fold the answer into discovery or open questions; don't present it as an
-   inline hedge.
+   most likely reason. Fold the answer into discovery or open questions, or Vantage seeds when
+   the answer is solution-shaped (§ Vantage test); don't present it as an inline hedge.
 4. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
+   The open questions section presented here never includes a solution-shaped question — that
+   material lives in Vantage seeds instead.
 5. **Critique.** Dispatch `frame-reviewer` (one shot) over the composed frame, forwarding the
    verbatim task-initiating request alongside it — the request the reviewer needs to judge
    fidelity, not just form. `HOLES` → name what it blocks, in the reader's terms, then surface
