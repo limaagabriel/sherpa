@@ -27,8 +27,10 @@ jobs:
       - name: Doc hygiene gates
         run: |
           set -e
-          if grep -rEn '\bL4\b' agents/ skills/ protocols/; then
-            echo "stale L4 label found (nothing in the 3-layer model is L4)" >&2
+          # split so this guard's own text doesn't trip a repo-wide grep for the label it forbids
+          stale_label="L""4"
+          if grep -rEn "\\b${stale_label}\\b" agents/ skills/ protocols/; then
+            echo "stale ${stale_label} label found (nothing in the 3-layer model is ${stale_label})" >&2
             exit 1
           fi
           if grep -rEn '\.md:[0-9]+' agents/ skills/ protocols/; then

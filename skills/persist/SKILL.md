@@ -17,7 +17,7 @@ them on disk — to resume in a fresh session, or to commit them.
 3. **Report** the path. Don't commit unless the human asks.
 
 ## Resume
-A later session reads the file back: paste its path into `/decompose` or `/implement`, which
+A later session reads the file back: paste its path into `/shape` or `/implement`, which
 consume it exactly as they would an in-context frame, pitch, or plan.
 
 ## Done when

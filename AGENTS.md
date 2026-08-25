@@ -5,10 +5,10 @@ plugin whose skills/protocols are authored in Claude Code's vocabulary but run
 under **both Claude Code and Codex CLI**. The user composes the workflow; sherpa
 offers the tools.
 
-- Four layers, four entry points (pick by task complexity):
+- Three layers, three entry points (pick by task complexity):
   `/frame <task>` (macro — scout + bind a problem contract), `/shape <task>` (shape —
-  fan out directions, pick one), `/decompose <task>` (step — decompose into steps),
-  `/implement <task>` (build). Smaller block: `/scout`.
+  fan out directions, pick one, then plan the steps), `/implement <task>` (build).
+  Smaller block: `/scout`.
 - Each skill is a standalone entry point: it consumes the upstream artifact if it's
   in context, else does the minimum to proceed — never re-running the layer above.
 - **Nothing persists unless asked** — `/persist` writes the in-context frame, pitch,

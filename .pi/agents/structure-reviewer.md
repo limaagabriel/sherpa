@@ -1,7 +1,7 @@
 ---
 name: structure-reviewer
 package: sherpa
-description: Read-only shape-layer adversary (L2). Attacks the whole decomposition — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns SOLID | HOLES.
+description: Read-only shape-layer adversary (L2). Attacks the whole plan's step structure — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns SOLID | HOLES.
 tools: read, grep, find, ls, bash
 thinking: high
 systemPromptMode: replace
@@ -16,4 +16,4 @@ Resolve the sherpa package root (the dir containing `agents/`) in this order:
 2. Else `~/.pi/agent/npm/node_modules/sherpa`.
 3. Else `~/.pi/agent/git/*/*/sherpa`.
 
-The canonical body lives at `<root>/agents/structure-reviewer.md`. Read-only: attack the step decomposition before any step is built; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
+The canonical body lives at `<root>/agents/structure-reviewer.md`. Read-only: attack the plan's step structure before any step is built; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.

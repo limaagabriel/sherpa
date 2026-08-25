@@ -1,8 +1,8 @@
 # Sherpa
 
-A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: four
+A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
 **composable skills**, one per layer of altitude — `/frame` (macro), `/shape` (shape),
-`/decompose` (step), `/implement` (build) — with bundled scout, shape-builder,
+`/implement` (build) — with bundled scout, shape-builder,
 step-builder, and reviewer subagents that rope up and check the rope at every pitch.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until
@@ -17,8 +17,8 @@ precedent, pinning down acceptance criteria, and adversarially checking the resu
 makes those first-class — but lets *you* decide how much ceremony a task needs:
 
 - **A ceremony gradient.** A fuzzy task starts at `/frame`. A clear problem with multiple
-  directions to weigh starts at `/shape`. One direction that just needs decomposing starts at
-  `/decompose`. One obvious change goes straight to `/implement`. You pick the entry point.
+  directions to weigh, or one direction that still needs turning into a step plan, starts at
+  `/shape`. One obvious change goes straight to `/implement`. You pick the entry point.
 - **Reviewed at every layer.** A frame-reviewer attacks the framing, a shape-reviewer attacks
   the candidate pool, a structure-reviewer attacks how the steps relate and a readiness-reviewer
   attacks each step's own contract, and per-step acceptance + quality reviewers check "right
@@ -54,10 +54,9 @@ project pack), and start a new thread. Verify with `/frame` — if the skill sho
 | Skill | Layer | Does | Start here when |
 |---|---|---|---|
 | `/frame <task>` | macro (L1) | Scout, bind a problem contract, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
-| `/shape <task>` | shape (L2) | Fan out candidate directions along the frame's vantages, skeleton + critique the pool, present a pitch; **wait for your pick**. | the problem's framed and there are multiple directions to weigh (needs a frame — offers `/frame` first if none exists) |
-| `/decompose <task>` | step (L3) | Bind the goal's `Outcome`, decompose into ordered, traceable steps; critique the decomposition; **wait for approval**. | the goal is clear, just needs steps |
-| `/implement <task>` | build (L4) | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
-| `/scout <task>` | — | Standalone codebase scout; also called by `/frame` and `/decompose`. | you just want a lay of the land |
+| `/shape <task>` | shape (L2) | Fan out candidate directions along the frame's vantages, skeleton + critique the pool, present a pitch, **wait for your pick**; once picked, bind the goal's `Outcome`, plan ordered, traceable steps, critique the plan, **wait for approval**. | the problem's framed (or clear enough) and needs a direction picked, a plan built, or both — offers `/frame` first if no frame exists |
+| `/implement <task>` | build (L3) | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
+| `/scout <task>` | — | Standalone codebase scout; also called by `/frame` and `/shape`. | you just want a lay of the land |
 | `/persist` | — | Write the in-context frame, pitch, or plan to disk so a later session can resume. | you want to save or resume |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context,
@@ -67,10 +66,8 @@ task wants:
 ```
 /frame add rate limiting to the public API   # fuzzy → frame it first
    → scouts, asks a few questions, presents a frame
-/shape                                       # fan out directions, pick one
-   → presents a pitch, waits for your pick
-/decompose                                   # decompose the pick into steps
-   → presents steps, waits for your approval
+/shape                                       # fan out directions, pick one, then plan the steps
+   → presents a pitch, waits for your pick, then presents the plan, waits for your approval
 /implement                                   # build them, reviewed per step
 ```
 
@@ -78,15 +75,14 @@ task wants:
 
 ## How it works
 
-```
-/frame      scout + bind a problem contract + ask questions as they arise  →  frame  (in context)
-            frame-reviewer attacks the framing (L1)
-/shape      fan out directions, skeleton + critique the pool  →  pitch  (in context)
-            shape-reviewer attacks the pool: solved, bounded, necessity, collapse (L2)
-/decompose  decompose into steps  ──►  YOU APPROVE  ◄── (hard gate)
-            structure-reviewer attacks how steps relate, readiness-reviewer attacks each step's contract (L3)
-/implement  per step: step-builder commits → acceptance-reviewer + quality-reviewer (L4)
-```
+`/frame` scouts, binds a problem contract, and asks questions as they arise, producing the frame
+in context; `frame-reviewer` attacks the framing (L1). `/shape` fans out candidate directions,
+skeletons and critiques the pool via `shape-reviewer` (solved, bounded, necessity, collapse),
+presents a pitch, and waits for your pick; once picked, it plans the steps and gets that plan
+attacked by `structure-reviewer` (how the steps relate) and `readiness-reviewer` (each step's own
+contract) — all within L2 — then presents the plan and waits: **YOU APPROVE** is this run's one
+hard gate. `/implement` then builds one step at a time: `step-builder` commits, then
+`acceptance-reviewer` and `quality-reviewer` check it — all within L3.
 
 `BLOCK` and a terminal `UNMET`/`FIX` surface to you verbatim; everything else continues
 automatically — see `protocols/workflow/phases/implement.md` § Verdicts for the full state
@@ -127,29 +123,26 @@ pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
 - **`frame-reviewer`** (agent) — cold eyes on the frame's problem contract, discovery, and open questions.
 
 ### L2 Shape
-- **`/shape`** — fans out candidate directions from the frame, skeletons + critiques the pool, presents a pitch for your pick.
+- **`/shape`** — fans out candidate directions from the frame, skeletons + critiques the pool, presents a pitch for your pick; once picked, binds the goal's `Outcome`, plans ordered steps, and waits for your approval.
 - **`shape-builder`** (agent) — read-only candidate builder holding one premise false; the worker `/shape` dispatches.
 - **`shape-reviewer`** (agent) — cold eyes on the pooled candidates; returns a ranked shortlist + traps + collapse record.
-
-### L3 Step
-- **`/decompose`** — binds the goal's `Outcome`, decomposes into ordered steps; waits for your approval.
 - **`structure-reviewer`** (agent) — attacks how steps relate (traceability, gaps, overlap, order, interface mismatch).
 - **`readiness-reviewer`** (agent) — attacks each step's own contract (completeness, over-prescription, single responsibility, risk substance).
 
-### L4 Build
+### L3 Build
 - **`/implement`** — runs approved steps via step-builder + reviewers, pressure per step.
 - **`step-builder`** (agent) — implements one step and lands one commit.
 - **`acceptance-reviewer`** (agent) — judges whether each acceptance criterion is met.
 - **`quality-reviewer`** (agent) — audits the diff for minimality, correctness, security, tests.
 
 ### Cross-cutting
-- **`/scout`** — standalone codebase scout; also called by `/frame` and `/decompose`.
+- **`/scout`** — standalone codebase scout; also called by `/frame` and `/shape`.
 - **`/persist`** — writes the in-context frame, pitch, or plan to disk on request.
 
 ## Layout
 
 ```
-skills/        /frame, /shape, /decompose, /implement, /scout, /persist, using-sherpa
+skills/        /frame, /shape, /implement, /scout, /persist, using-sherpa
 agents/        scout, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, acceptance-reviewer, quality-reviewer
 protocols/     the workflow contracts (the engine's brain)
 packs/         project-pack template + docs

@@ -1,14 +1,14 @@
 ---
 name: frame
-description: Macro layer (L1). Turns a fuzzy task into the frame — scout, problem contract, open questions, no solution bound. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /decompose, /implement.
+description: Macro layer (L1). Turns a fuzzy task into the frame — scout, problem contract, open questions, no solution bound. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /implement.
 ---
 
 # /frame — discover, then bind the problem
 
 Produce **the frame** for `<task>`: the right problem, well-framed, with discovery and the open
-questions named. The top of the ceremony gradient — use it when the task is fuzzy. A task with a
-clear goal and a known approach may skip straight to `/decompose`; a clear problem with no chosen
-direction goes to `/shape` instead
+questions named. The top of the ceremony gradient — use it when the task is fuzzy. A task whose
+problem and solution are both already clear may skip straight to `/implement`; a clear problem
+that still needs a direction picked or turned into a plan goes to `/shape` instead
 (`${CLAUDE_PLUGIN_ROOT}/protocols/layers.md` § A ceremony gradient).
 
 The frame lives **in context** (printed, not on disk). Persisting it is the opt-in `/persist`

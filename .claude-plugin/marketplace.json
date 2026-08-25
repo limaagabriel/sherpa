@@ -4,14 +4,14 @@
     "name": "Gabriel Lima"
   },
   "metadata": {
-    "description": "Sherpa — composable frame/shape/decompose/implement layers; the user composes the workflow",
+    "description": "Sherpa — composable frame/shape/implement layers; the user composes the workflow",
     "version": "0.23.0"
   },
   "plugins": [
     {
       "name": "sherpa",
       "source": "./",
-      "description": "Develop like a sherpa: composable /frame, /shape, /decompose, /implement skills — one per layer (macro, shape, step, build) — with bundled scout/shape-builder/review/build subagents. The user composes the workflow; nothing persists unless you call /persist. Extend via project packs.",
+      "description": "Develop like a sherpa: composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — with bundled scout/shape-builder/review/build subagents. The user composes the workflow; nothing persists unless you call /persist. Extend via project packs.",
       "version": "0.23.0",
       "category": "development",
       "keywords": ["workflow", "planning", "code-review", "adversarial"]

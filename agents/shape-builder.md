@@ -77,7 +77,8 @@ separate critic evaluates what you return.
   - `risk` — the one load-bearing risk that would sink this direction.
   - `skeleton` — 3-6 named beats, an appetite in steps, and explicit no-gos, bound to the three
     properties in `protocols/workflow/phases/shape.md` § Skeleton: rough
-    (no acceptance criteria, no interfaces — those are `/decompose`'s open spaces to fill),
+    (no acceptance criteria, no interfaces — those are `protocols/workflow/phases/shape.md`
+    § Plan's open spaces to fill, once a candidate is picked),
     solved (the beats connect end-to-end, no "and then somehow X"), bounded (fits the
     appetite — restated verbatim from the DISPATCHED value in § Inputs, never a number the
     candidate chose — states what it will not do).

@@ -57,10 +57,10 @@ not just to a sibling builder's output. This is the one exception to "no `/scout
   run (§ Procedure). `shape.knowledge` is not the only key this run touches: each subagent resolves
   its own via resolve-pack-value.sh, per its own agent doc — `shape-reviewer` resolves `knowledge`
   (cross-cutting) and `shape.knowledge` (additive); `structure-reviewer` resolves `knowledge`,
-  `decompose.knowledge`, and `decompose.architecture`; `readiness-reviewer` resolves `knowledge`
-  and `decompose.knowledge` only, never architecture — a cross-step concern outside its per-step
-  scope. No new `shape.architecture` key exists; the plan-tail reviewers keep the `decompose.*`
-  keys their own agent docs already name, unchanged by where they're dispatched from.
+  `shape.knowledge`, and `shape.architecture`; `readiness-reviewer` resolves `knowledge`
+  and `shape.knowledge` only, never architecture — a cross-step concern outside its per-step
+  scope. The plan-tail reviewers resolve the `shape.*` keys their own agent docs already name,
+  unchanged by where they're dispatched from.
 - **Explicit invocation only.** Never auto-fire; OFFER `/shape <problem>` in one declinable line
   instead.
 - **Agent-call math** (derived from `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md`

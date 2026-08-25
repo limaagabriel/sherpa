@@ -2,8 +2,9 @@
 
 Bind the problem before any solution (Pólya 1945) — restate it as a contract, discover, surface open
 questions. Driven by `/frame`. Its artifact is **the frame** — problem contract + discovery +
-open questions. It binds no `Outcome` — that happens at `/decompose` step 0. Binding an end-state
-before discovery completes anchors scouting to one direction.
+open questions. It binds no `Outcome` — that happens once `/shape` plans the picked candidate
+(`protocols/workflow/phases/shape.md` § Plan). Binding an end-state before discovery completes
+anchors scouting to one direction.
 
 ## Problem contract
 One sentence, five bound slots:
@@ -56,8 +57,9 @@ unresolved (§ Vantage test) — resolving them would bind a solution, which is 
 frame's. `/shape`'s vantage derivation reads these first when generating candidate directions.
 
 ## Don't
-- Bind an `Outcome` — that's `/decompose` step 0's job.
+- Bind an `Outcome` — that's `/shape`'s § Plan job, once a candidate is picked
+  (`protocols/workflow/phases/shape.md` § Plan).
 - Name a mechanism — noun or verb — in any slot, including the solved-signal.
-- Defer a framing question to the step layer. If it's about the problem, resolve it here.
+- Defer a framing question to `/shape`. If it's about the problem, resolve it here.
 - Put a solution-shaped question in open questions — route it to Vantage seeds instead (§ Vantage
   test).

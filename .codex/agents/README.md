@@ -27,11 +27,11 @@ here are picked up with no install.
 | frame-reviewer | L1 macro | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | shape-builder | L2 shape | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 | shape-reviewer | L2 shape | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
-| structure-reviewer | L3 step | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
-| readiness-reviewer | L3 step | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
-| step-builder | L4 build | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
-| acceptance-reviewer | L4 build | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
-| quality-reviewer | L4 build | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
+| structure-reviewer | L2 shape | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
+| readiness-reviewer | L2 shape | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
+| step-builder | L3 build | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
+| acceptance-reviewer | L3 build | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
+| quality-reviewer | L3 build | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 | scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 
 All roles use the GPT-5.6 family. Independent reviewer roles use

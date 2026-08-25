@@ -15,7 +15,7 @@ outside the channel that generated them: bind them to a named roster or don't us
 
 ## Verbatim is a quote, not a frame
 Where a phase says to surface a reviewer's or subagent's text verbatim
-(`protocols/workflow/phases/decompose.md`, `protocols/workflow/phases/implement.md`,
+(`protocols/workflow/phases/shape.md`, `protocols/workflow/phases/implement.md`,
 `skills/frame/SKILL.md`, `skills/implement/SKILL.md`), verbatim stays mandatory — a
 driver that paraphrases a `BLOCK` launders the finding. The framing duty is added, never
 substituted: one line before the quote naming, in the reader's terms, what it blocks. Fidelity
