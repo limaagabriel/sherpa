@@ -1,7 +1,7 @@
 ---
 name: structure-reviewer
 package: sherpa
-description: Read-only step-layer adversary (L3). Attacks the whole decomposition — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns SOLID | HOLES.
+description: Read-only shape-layer adversary (L2). Attacks the whole decomposition — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns SOLID | HOLES.
 tools: read, grep, find, ls, bash
 thinking: high
 systemPromptMode: replace

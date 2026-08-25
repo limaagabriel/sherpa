@@ -1,7 +1,7 @@
 ---
 name: readiness-reviewer
 package: sherpa
-description: Read-only step-layer adversary (L3). Attacks each step's own contract in isolation — complete, testable, goal-honest, single-responsibility, risk substantive. Cross-step is structure-reviewer's job. Never sees a diff. Returns SOLID | HOLES.
+description: Read-only shape-layer adversary (L2). Attacks each step's own contract in isolation — complete, testable, goal-honest, single-responsibility, risk substantive. Cross-step is structure-reviewer's job. Never sees a diff. Returns SOLID | HOLES.
 tools: read, grep, find, ls, bash
 thinking: high
 systemPromptMode: replace
