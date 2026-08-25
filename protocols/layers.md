@@ -31,7 +31,7 @@ The three skills are independent tools, not a fixed chain. The entry point match
 
 ```
 fuzzy problem, unclear scope                      →  /frame       (scout, bind a problem contract, surface unknowns)
-problem framed, no direction picked or needs plan →  /shape       (skip /frame — /shape offers to run it if none exists)
+problem framed, no direction picked or needs plan →  /shape       (skip /frame — /shape runs its own quick scout if none exists)
 one obvious change, problem & solution both clear →  /implement   (skip /frame, /shape)
 ```
 
@@ -43,8 +43,11 @@ Two rules keep a lower entry point from re-running the layer above it:
    not running a small `/frame`.
 
 When a skill notices it is underspecified, it **offers** to go up a layer in one declinable line —
-never a forced router; `/shape` uses this when no frame is in context. The user's judgment is the
-router.
+never a forced router; `/implement` uses this when a reviewer recommends a `/shape` revisit (§
+Verdicts, `protocols/workflow/phases/implement.md`). A missing frame is not this case — per rule 2
+above, `/shape` with no frame in context runs its own lighter discovery (quick scout → inline
+contract, `protocols/workflow/phases/shape.md` § Boundaries) instead of offering `/frame`. The
+user's judgment is the router.
 
 ## Handoff & state
 - **In-context by default.** Within one conversation each skill's output is in context for the next.
