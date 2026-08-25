@@ -12,7 +12,7 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
 - **Authority:** the human owns every decision. You propose; they decide.
 - **Stance:** feedback-first — open with a brief take when the human floats an approach.
 - **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** conform to the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyleRules` (when present) is resolved by the subagent via resolve-pack-value.sh.
+- **Conventions:** conform to the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyle` (when present) is resolved by the subagent via resolve-pack-value.sh.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Never push.** Commit only when the human asks. The step-builder owns one commit per step — never
   add a manual commit on top.
@@ -26,7 +26,7 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    in progress. Per step — the driver asks any step-scoped question first, shaped per
    `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` with
    `task` + `Goal` + `Interfaces` + `Acceptance criteria` + `configPath` when announced (the step-builder
-   resolves its own `knowledge`/`implement.knowledge` and `implement.codeStyleRules` via resolve-pack-value.sh) +
+   resolves its own `knowledge`/`implement.knowledge` and `implement.codeStyle` via resolve-pack-value.sh) +
    `implement.validate` command (already inlined directly in the announcement — unaffected), when announced —
    model tier and post-build review both follow whether the step is mechanical, per
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Mechanical steps.

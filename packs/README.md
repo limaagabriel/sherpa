@@ -58,7 +58,7 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 context: ./context.txt
 
 # The WORKFLOW_PACK — extension points the engine consumes, sectioned by skill.
-# Content-bearing keys (knowledge, architectureRules, codeStyleRules, context)
+# Content-bearing keys (knowledge, architecture, codeStyle, context)
 # are file paths or arrays of file paths, resolved via scripts/resolve-pack-value.sh:
 # each relative path resolves against this config's base directory; absolute paths
 # are used as-is. Missing files are warned and skipped per-entry (not all-or-nothing).
@@ -75,11 +75,11 @@ pack:
 
   decompose:
     knowledge: ./decompose-knowledge.md   # optional, additive
-    architectureRules: ./architecture.md
+    architecture: ./architecture.md
 
   implement:
     knowledge: ./implement-knowledge.md   # optional, additive
-    codeStyleRules: ./rules.md
+    codeStyle: ./rules.md
     validate: npm run lint && npm test   # shell command only; never a path
 ```
 
@@ -90,7 +90,7 @@ resolved lazily on demand via `scripts/resolve-pack-value.sh --raw`.
 
 ### Relative paths and resolution
 
-Content-bearing keys (`knowledge`, `architectureRules`, `codeStyleRules`, `context`)
+Content-bearing keys (`knowledge`, `architecture`, `codeStyle`, `context`)
 are resolved by calling `scripts/resolve-pack-value.sh <configPath> <dotted.key>`.
 This script reads the YAML value (string or array of strings), resolves each relative
 entry against the config's base directory, reads each resolved file, and concatenates
@@ -113,7 +113,7 @@ This lets a pack colocate assets next to it:
 detect: ./detect.sh                  # shell command; runs from the config's base dir
 pack:
   implement:
-    codeStyleRules: ./rules.md       # file path; resolved against config's base dir
+    codeStyle: ./rules.md            # file path; resolved against config's base dir
     validate: npm test               # shell command; never a path
 ```
 
@@ -138,15 +138,17 @@ naming coordination between packs needed.
 
 ## What each `pack` key does
 
+> **Breaking change note:** Both `implement.codeStyle` and `decompose.architecture` dropped a trailing `Rules` suffix in this release. A pack still using the suffixed spelling will see it resolve to nothing (no error) — grep your `project.yaml`/`sherpa.yaml` for a `Rules` suffix immediately after `codeStyle` or `architecture` and drop it.
+
 | Key | Type | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|---|
 | `knowledge` (top-level) | file path or array of paths | prose, resolved lazily via `scripts/resolve-pack-value.sh` immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged | every layer, every subagent | engine defaults only |
 | `frame.knowledge` | file path or array of paths | additive prose for the frame layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/frame` skill, `frame-reviewer` | cross-cutting `knowledge` only |
 | `shape.knowledge` | file path or array of paths | additive prose for the shape layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/shape` skill, `shape-reviewer` | cross-cutting `knowledge` only |
 | `decompose.knowledge` | file path or array of paths | additive prose for the decompose layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/decompose` skill, `structure-reviewer`, `readiness-reviewer` | cross-cutting `knowledge` only |
-| `decompose.architectureRules` | file path or array of paths | architecture constraints, resolved lazily and concatenated | `/decompose` drafts steps mindful of it; `structure-reviewer` checks the decomposition against it | no architecture check |
+| `decompose.architecture` | file path or array of paths | architecture constraints, resolved lazily and concatenated | `/decompose` drafts steps mindful of it; `structure-reviewer` checks the decomposition against it | no architecture check |
 | `implement.knowledge` | file path or array of paths | additive prose for the implement layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
-| `implement.codeStyleRules` | file path or array of paths | complete rule set, resolved lazily and concatenated | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
+| `implement.codeStyle` | file path or array of paths | complete rule set, resolved lazily and concatenated | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `implement.validate` | shell command string | command(s) `step-builder` runs before committing (fetched via `--raw` mode of resolver) | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
 | `context` | file path or array of paths | free-form prose for session-start context | `SessionStart` hook as first `additionalContext`, before the `WORKFLOW_PACK:` line | no additional context |
 

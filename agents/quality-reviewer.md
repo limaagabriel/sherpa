@@ -38,7 +38,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
   before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `implement.knowledge` — additive to the cross-cutting `knowledge`.
-  - `implement.codeStyleRules` — cite it in your Architecture judgment.
+  - `implement.codeStyle` — cite it in your Architecture judgment.
 - The current step index + the goals of the remaining (later) steps — when a multi-step plan
   is in context. Lets you tell whether a failure this step leaves is covered by a later step.
 - The step's **Acceptance criteria** and **Interfaces** — forwarded ONLY when this is a mechanical
@@ -49,7 +49,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 
 ## What you audit
 - **Minimality** — no speculative abstraction, no dead flexibility, simplest thing that works.
-- **Architecture** — fits the pack's `codeStyleRules` when announced, else the surrounding code's conventions and patterns.
+- **Architecture** — fits the pack's `codeStyle` when announced, else the surrounding code's conventions and patterns.
 - **Correctness** — logic holds; edge cases (empty, missing, duplicate, malformed) handled.
 - **Security** — input validation at trust boundaries; no injection/secret-leak.
 - **Performance** — no obvious O(n²) on hot paths, no needless work.

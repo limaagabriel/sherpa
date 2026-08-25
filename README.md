@@ -111,7 +111,7 @@ context: ./context.txt                           # file path or array; resolved 
 pack:
   knowledge: ./knowledge.md                      # file path or array; resolved lazily
   implement:
-    codeStyleRules: ./rules.md                   # file path or array; resolved lazily
+    codeStyle: ./rules.md                        # file path or array; resolved lazily
     validate: npm run lint && npm test           # shell command only
 ```
 

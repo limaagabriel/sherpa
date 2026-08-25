@@ -46,7 +46,7 @@ UNMET` line feeds into § Verdicts the same way an `acceptance-reviewer` `UNMET`
 
 Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
 (+ `configPath` when announced — the step-builder resolves its own `knowledge`/`implement.knowledge` and
-`implement.codeStyleRules` via resolve-pack-value.sh — and `implement.validate` command, already inlined
+`implement.codeStyle` via resolve-pack-value.sh — and `implement.validate` command, already inlined
 directly in the announcement and unaffected, when announced).
 Model tier and post-build review both follow whether the step is mechanical (§ Mechanical steps).
 Each step:
@@ -57,7 +57,7 @@ Each step:
   commit range: `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to
   judge the declared `produces` against the built symbols) and `quality-reviewer` (clean, correct,
   secure, no regression; also gets `configPath` when announced — the quality-reviewer resolves its own
-  `knowledge`/`implement.knowledge` and `implement.codeStyleRules` via resolve-pack-value.sh — plus the current
+  `knowledge`/`implement.knowledge` and `implement.codeStyle` via resolve-pack-value.sh — plus the current
   step index + remaining step goals, so it can tell whether a failure is covered by a later step). A mechanical
   step runs the merged single-reviewer path instead (§ Mechanical steps).
 

@@ -21,7 +21,7 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 context: ./context.txt
 
 # Extension points the engine consumes, sectioned by skill. All content-bearing
-# keys (knowledge, architectureRules, codeStyleRules, context) are file paths or
+# keys (knowledge, architecture, codeStyle, context) are file paths or
 # arrays of file paths — resolved via scripts/resolve-pack-value.sh. Paths are
 # literal (no $HOME or ~ expansion); relative paths resolve against the config's
 # base directory. Missing files are warned and skipped per-entry.
@@ -43,9 +43,9 @@ pack:
 
   decompose:
     knowledge: ./decompose-knowledge.md   # optional, additive
-    architectureRules: ./architecture.md
+    architecture: ./architecture.md
 
   implement:
     knowledge: ./implement-knowledge.md   # optional, additive
-    codeStyleRules: ./rules.md
+    codeStyle: ./rules.md
     validate: npm run lint && npm test   # shell command only; never a path

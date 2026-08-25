@@ -25,7 +25,7 @@ the opt-in `/persist` skill.
 - **Authority:** the human owns every decision. You propose; they decide.
 - **Stance:** feedback-first — open with a brief take when the human floats an approach.
 - **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyleRules` (when present) is resolved by the subagent via resolve-pack-value.sh.
+- **Conventions:** the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyle` (when present) is resolved by the subagent via resolve-pack-value.sh.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** when a `configPath` is announced, forward it directly to `shape-reviewer`. The subagent resolves its own `knowledge` (cross-cutting) and `shape.knowledge` (additive) via resolve-pack-value.sh, per its own agent doc.
 - **Explicit invocation only, 5 agent calls per run** (4 `shape-builder` + 1 `shape-reviewer`).

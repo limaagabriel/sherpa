@@ -50,11 +50,11 @@ name: proj-a
 detect: "exit 0"
 pack:
   implement:
-    codeStyleRules: cat ./rules.md
+    codeStyle: cat ./rules.md
 YAML
 out=$(ctx "$repo")
 assert_not_contains "a/command-not-inlined" "$out" "cat ./rules.md"
-assert_not_contains "a/key-not-inlined" "$out" "implement.codeStyleRules"
+assert_not_contains "a/key-not-inlined" "$out" "implement.codeStyle"
 assert_contains "a/message" "$(msg "$repo")" "Project \"proj-a\" loaded into Sherpa from $repo/.codex/sherpa.yaml 🏔️"
 assert_contains "a/primer" "$out" "check whether one of these fits"
 # configPath, bare path (no spaces) — unquoted
@@ -72,7 +72,7 @@ name: proj-b
 detect: "exit 0"
 pack:
   decompose:
-    architectureRules: cat ./arch.md
+    architecture: cat ./arch.md
 YAML
 cleancwd="$tmp/elsewhere"
 mkdir -p "$cleancwd"
@@ -91,7 +91,7 @@ name: proj-d
 detect: "exit 0"
 pack:
   implement:
-    codeStyleRules: cat ./rules.md
+    codeStyle: cat ./rules.md
 YAML
 out=$(ctx "$repo_d")
 assert_contains "d/configPath-quoted" "$out" "configPath=\"$repo_d/.codex/sherpa.yaml\""
@@ -105,7 +105,7 @@ name: proj-f
 detect: "exit 0"
 pack:
   implement:
-    codeStyleRules: cat ./rules.md
+    codeStyle: cat ./rules.md
 YAML
 out=$(ctx "$repo_f")
 assert_not_contains "f/command-not-inlined" "$out" "cat ./rules.md"
@@ -186,7 +186,7 @@ name: proj-n
 detect: "exit 0"
 pack:
   implement:
-    codeStyleRules: cat ./rules.md
+    codeStyle: cat ./rules.md
 YAML
 out=$(ctx "$repo_n")
 assert_not_contains "n/command-not-inlined" "$out" "cat ./rules.md"
@@ -221,7 +221,7 @@ name: proj-p
 detect: "exit 0"
 pack:
   decompose:
-    architectureRules: cat ./arch.md
+    architecture: cat ./arch.md
 YAML
 cleancwd_p="$tmp/elsewhere-p"
 mkdir -p "$cleancwd_p"
@@ -414,7 +414,7 @@ pack:
     knowledge: "Decompose prose."
   implement:
     knowledge: "Implement prose."
-    codeStyleRules: cat ./rules.md
+    codeStyle: cat ./rules.md
 YAML
 out=$(ctx "$repo_ad")
 assert_not_contains "ad/knowledge-absent" "$out" "knowledge="
@@ -422,7 +422,7 @@ assert_not_contains "ad/frame-knowledge-absent" "$out" "frame.knowledge="
 assert_not_contains "ad/shape-knowledge-absent" "$out" "shape.knowledge="
 assert_not_contains "ad/decompose-knowledge-absent" "$out" "decompose.knowledge="
 assert_not_contains "ad/implement-knowledge-absent" "$out" "implement.knowledge="
-assert_not_contains "ad/implement-codeStyleRules-absent" "$out" "implement.codeStyleRules"
+assert_not_contains "ad/implement-codeStyle-absent" "$out" "implement.codeStyle"
 assert_contains "ad/name-and-configPath-present" "$out" "WORKFLOW_PACK: name=proj-ad configPath=$repo_ad/.claude/sherpa.yaml"
 
 # (ae) context is never emitted — a config's top-level `context` (formerly
@@ -539,13 +539,13 @@ cat >"$repo_ao/sherpa.yaml" <<'YAML'
 name: proj-ao
 pack:
   implement:
-    codeStyleRules:
+    codeStyle:
       - ./first.md
       - ./second.md
 YAML
 echo -n "FIRST" >"$repo_ao/first.md"
 echo -n "SECOND" >"$repo_ao/second.md"
-out_ao=$("$value_script" "$repo_ao/sherpa.yaml" implement.codeStyleRules)
+out_ao=$("$value_script" "$repo_ao/sherpa.yaml" implement.codeStyle)
 pos_first=$(printf '%s' "$out_ao" | grep -bo "FIRST" | head -1 | cut -d: -f1)
 pos_second=$(printf '%s' "$out_ao" | grep -bo "SECOND" | head -1 | cut -d: -f1)
 assert_contains "ao/array-has-first" "$out_ao" "FIRST"

@@ -46,7 +46,7 @@ the goal. **Default suspicion, not trust.**
   before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `decompose.knowledge` — additive to the cross-cutting `knowledge`.
-  - `decompose.architectureRules` — architecture constraints; feeds your architecture-violation
+  - `decompose.architecture` — architecture constraints; feeds your architecture-violation
     attack.
 
 ## What you attack
@@ -60,7 +60,7 @@ the goal. **Default suspicion, not trust.**
 - **Overlap** — two steps build the same thing; one is dead weight.
 - **Ordering** — a step depends on a later step's output.
 - **Hidden coupling** — a step's declared blast radius or revert recipe conflicts with, or is silently relied on by, another step's declared blast radius; a hidden coupling like this surfaces only when radii are compared side by side.
-- **Architecture violation** — a step's Change contradicts the pack's `architectureRules` (when announced); quote the constraint and the step.
+- **Architecture violation** — a step's Change contradicts the pack's `architecture` (when announced); quote the constraint and the step.
 - **No-go violation** — a step's Change does one of the pitch's declared `no-gos`, or walks into
   a named `rabbit hole`; quote the no-go/rabbit-hole and the offending step's Change.
 - **Vocabulary leak** — when a problem contract is forwarded, apply

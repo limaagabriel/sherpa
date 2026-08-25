@@ -40,7 +40,7 @@ not a hole you can raise.
   before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `decompose.knowledge` — additive to the cross-cutting `knowledge`.
-- No `decompose.architectureRules` — that's a cross-step concern, `structure-reviewer`'s job,
+- No `decompose.architecture` — that's a cross-step concern, `structure-reviewer`'s job,
   outside your per-step scope; never resolve it.
 
 ## What you attack

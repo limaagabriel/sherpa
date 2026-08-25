@@ -45,13 +45,13 @@ Implement one approved step and commit it. You are dispatched once per step by `
   before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `implement.knowledge` — additive to the cross-cutting `knowledge`.
-  - `implement.codeStyleRules` — conform your output to it.
+  - `implement.codeStyle` — conform your output to it.
   - `implement.validate` — resolve with `--raw` to get the command string, then run it before
     committing (see § Rules).
 
 ## Rules
 - **One commit, real subject.** Stage only files you changed (explicit paths, never `git add -A`). Never amend/reset/reword another commit. Never push.
-- **Follow the pack's `codeStyleRules` when announced; otherwise match the surrounding code's own conventions.**
+- **Follow the pack's `codeStyle` when announced; otherwise match the surrounding code's own conventions.**
 - **Prefer test-first.** When the step produces testable logic, write/adjust the failing test for the acceptance check before implementing, then build to green. Skip for steps with no testable unit (docs, config, pure wiring) — don't force it.
 - **Build/test before committing.** Run the acceptance check; if it can't pass, return `BUILD FAILED` with the evidence rather than committing broken work.
 - **Run the pack's `implement.validate` command, if announced, before committing** — a failure is `BUILD FAILED`, same as a failing acceptance check.
