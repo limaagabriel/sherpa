@@ -5,8 +5,8 @@
 # runs each config's `detect` command. On the first match it emits a SessionStart
 # additionalContext ordered as: the layer-selection primer, then a bare `WORKFLOW_PACK:`
 # announcement carrying only `name=<name> configPath=<path>` (nothing from the config's
-# `pack` map is eagerly inlined — every value there, `knowledge` and command keys
-# alike, is resolved lazily by the consuming layer skill via scripts/resolve-pack-value.sh
+# `pack` map is eagerly inlined — every value there, `knowledge` and every other
+# key alike, is resolved lazily by the consuming layer skill via scripts/resolve-pack-value.sh
 # and scripts/resolve-pack-basedir.sh, given `configPath`), and a user-facing
 # `systemMessage` naming the loaded pack. On no match it emits a `systemMessage` saying
 # the engine runs generic (so the user knows no project knowledge loaded).
@@ -46,13 +46,13 @@
 # See packs/README.md.
 #
 # Nothing under `pack` (neither `knowledge`, bare or section-prefixed e.g.
-# decompose.knowledge, nor the command keys architecture/codeStyle/validate)
-# is read or inlined by this script anymore — the `WORKFLOW_PACK:` line carries only
+# decompose.knowledge, nor architecture/codeStyle/validate) is read or inlined
+# by this script anymore — the `WORKFLOW_PACK:` line carries only
 # `name=` and `configPath=`. Nor is top-level `context` (formerly `sessionInstructions`)
 # read or inlined — using-sherpa's SKILL.md HARD GATE fetches it lazily off the
 # `WORKFLOW_PACK:` line's configPath. A consuming layer skill fetches `knowledge` prose or
-# a command key's resolved value the same way, at the point it's actually needed, by
-# calling scripts/resolve-pack-value.sh <configPath> <dotted.key> [--raw] (which resolves
+# any other content-bearing key's resolved value the same way, at the point it's actually
+# needed, by calling scripts/resolve-pack-value.sh <configPath> <dotted.key> (which resolves
 # relative values against scripts/resolve-pack-basedir.sh <configPath>'s output:
 # project-local configs base on the proximate .sherpa/.claude/.codex/.pi dir; workspace
 # configs base on the pack's own directory).
@@ -148,7 +148,7 @@ for config in "${candidates[@]}"; do
   fi
 
   # Matched. Build the WORKFLOW_PACK line from name + configPath only — nothing
-  # from the pack map (knowledge or command keys) is eagerly inlined anymore;
+  # from the pack map (knowledge or any other key) is eagerly inlined anymore;
   # a consuming layer skill fetches those lazily via resolve-pack-value.sh.
   name=$(yq '.name // ""' "$config" 2>/dev/null)
   line="WORKFLOW_PACK: name=$name"

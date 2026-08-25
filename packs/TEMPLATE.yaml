@@ -21,11 +21,10 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 context: ./context.txt
 
 # Extension points the engine consumes, sectioned by skill. All content-bearing
-# keys (knowledge, architecture, codeStyle, context) are file paths or
+# keys (knowledge, architecture, codeStyle, validate, context) are file paths or
 # arrays of file paths — resolved via scripts/resolve-pack-value.sh. Paths are
 # literal (no $HOME or ~ expansion); relative paths resolve against the config's
 # base directory. Missing files are warned and skipped per-entry.
-# Only validate is a shell command, never a path.
 #
 # For a committed project-local config, relative paths resolve against this file's
 # proximate .sherpa/.claude/.codex/.pi directory. For a workspace pack, relative
@@ -48,4 +47,4 @@ pack:
   implement:
     knowledge: ./implement-knowledge.md   # optional, additive
     codeStyle: ./rules.md
-    validate: npm run lint && npm test   # shell command only; never a path
+    validate: ./validate.md   # file path; its content is the command(s) to run

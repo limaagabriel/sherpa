@@ -45,9 +45,9 @@ UNMET` line feeds into § Verdicts the same way an `acceptance-reviewer` `UNMET`
   the step-builder never asks the user.
 
 Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
-(+ `configPath` when announced — the step-builder resolves its own `knowledge`/`implement.knowledge` and
-`implement.codeStyle` via resolve-pack-value.sh — and `implement.validate` command, already inlined
-directly in the announcement and unaffected, when announced).
+(+ `configPath` when announced — the step-builder resolves its own `knowledge`/`implement.knowledge`,
+`implement.codeStyle`, and `implement.validate` via resolve-pack-value.sh, the same self-resolved way,
+when announced).
 Model tier and post-build review both follow whether the step is mechanical (§ Mechanical steps).
 Each step:
 - Builds in isolation — module still builds, no half-applied artifacts, unless that build failure

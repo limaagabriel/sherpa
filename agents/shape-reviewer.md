@@ -40,8 +40,7 @@ one that judges it.
   Outcome fill, `precedent`, `risk`, and a **skeleton** (beats, appetite, no-gos), per
   `agents/shape-builder.md`'s output contract.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
-  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
-  before your review/build work:
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `shape.knowledge` — additive to the cross-cutting `knowledge`; absent means engine defaults
     only.

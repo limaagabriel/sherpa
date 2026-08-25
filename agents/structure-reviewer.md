@@ -42,8 +42,7 @@ the goal. **Default suspicion, not trust.**
   (`protocols/workflow/phases/decompose.md` § Adversarial decomposition review); absent means none.
   Feeds your no-go-violation attack.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
-  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
-  before your review/build work:
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `decompose.knowledge` — additive to the cross-cutting `knowledge`.
   - `decompose.architecture` — architecture constraints; feeds your architecture-violation

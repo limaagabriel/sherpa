@@ -112,7 +112,7 @@ pack:
   knowledge: ./knowledge.md                      # file path or array; resolved lazily
   implement:
     codeStyle: ./rules.md                        # file path or array; resolved lazily
-    validate: npm run lint && npm test           # shell command only
+    validate: ./validate.md                      # file path; content is the command(s) to run
 ```
 
 Sherpa's single `SessionStart` hook scans the packs dir, detects the active project, and announces

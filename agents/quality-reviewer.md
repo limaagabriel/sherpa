@@ -34,8 +34,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
 - The step's commit range (`<base>..HEAD`).
 - `PRE-EXISTING DIRT` — never attribute it to this step.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
-  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
-  before your review/build work:
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `implement.knowledge` — additive to the cross-cutting `knowledge`.
   - `implement.codeStyle` — cite it in your Architecture judgment.

@@ -39,8 +39,7 @@ are the cold reader who never saw that work — that independence is your whole 
   forwarded by the caller (not the whole conversation, just that one message). Feeds your
   frame–request mismatch attack.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
-  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
-  before your review/build work:
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `frame.knowledge` — additive to the cross-cutting `knowledge`.
 

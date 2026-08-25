@@ -580,52 +580,71 @@ assert_contains "ap/present-a-resolves" "$out_ap" "PRESENT-A"
 assert_contains "ap/present-b-resolves" "$out_ap" "PRESENT-B"
 assert_contains "ap/missing-warns-on-stderr" "$err_ap" "missing.md"
 
-# (aq) --raw mode — prints the literal command string with the `cd <base> &&`
-# prefix, without reading any file (the referenced "value" is a shell command,
-# not a path, and is never treated as one).
+# (aq) implement.validate resolves as file content, the same default way every
+# other content-bearing key does — no special mode. Its content is the
+# command(s) step-builder is meant to run, but resolve-pack-value.sh itself
+# only ever reads and concatenates file content; it never executes anything.
 repo_aq="$tmp/value-aq/.claude"
 mkdir -p "$repo_aq"
 cat >"$repo_aq/sherpa.yaml" <<'YAML'
 name: proj-aq
 pack:
   implement:
-    validate: cat ./validate.sh
+    validate: ./validate.md
 YAML
-# validate.sh deliberately does not exist here — --raw must never try to read
-# it as a file; the exact-match assertion below is only possible if the value
-# was treated as a literal command string, not a path.
-out_aq=$("$value_script" "$repo_aq/sherpa.yaml" implement.validate --raw)
-assert_eq "aq/raw-cd-prefix" "$out_aq" "cd '$repo_aq' && cat ./validate.sh"
+echo -n "npm run lint && npm test" >"$repo_aq/validate.md"
+out_aq=$("$value_script" "$repo_aq/sherpa.yaml" implement.validate)
+assert_eq "aq/validate-content" "$out_aq" "npm run lint && npm test"
 
-# (ar) --raw mode, absolute value — an authored value starting with `/` is
-# printed as-is, with no `cd` prefix (matches the old resolve_pack_value's
-# absolute-value passthrough branch).
+# (ar) implement.validate, absolute path — used as-is, no base-dir prefixing.
+# $tmp is itself an absolute path (mktemp -d), so the authored value below
+# genuinely starts with `/` without needing to touch the real filesystem root.
 repo_ar="$tmp/value-ar/.claude"
-mkdir -p "$repo_ar"
-cat >"$repo_ar/sherpa.yaml" <<'YAML'
+abs_ar="$tmp/value-ar-target/abs-validate.md"
+mkdir -p "$repo_ar" "$(dirname "$abs_ar")"
+cat >"$repo_ar/sherpa.yaml" <<YAML
 name: proj-ar
 pack:
   implement:
-    validate: /my-validate-skill
+    validate: $abs_ar
 YAML
-out_ar=$("$value_script" "$repo_ar/sherpa.yaml" implement.validate --raw)
-assert_eq "ar/raw-absolute-passthrough" "$out_ar" "/my-validate-skill"
+echo -n "make check" >"$abs_ar"
+out_ar=$("$value_script" "$repo_ar/sherpa.yaml" implement.validate)
+assert_eq "ar/validate-absolute-path" "$out_ar" "make check"
 
-# (as) --raw mode, base dir with a space — the emitted cd must single-quote
-# it so a consumer's `bash -c` doesn't split it into too many args, and the
-# emitted command must actually run.
-repo_as="$tmp/value as/.claude"
+# (as) implement.validate, missing file — warned and skipped per-entry, same
+# as every other content-bearing key, not a hard failure.
+repo_as="$tmp/value-as/.claude"
 mkdir -p "$repo_as"
 cat >"$repo_as/sherpa.yaml" <<'YAML'
 name: proj-as
 pack:
   implement:
-    validate: echo hi >out.txt
+    validate: ./missing-validate.md
 YAML
-out_as=$("$value_script" "$repo_as/sherpa.yaml" implement.validate --raw)
-assert_eq "as/raw-quoted-base-with-space" "$out_as" "cd '$repo_as' && echo hi >out.txt"
-bash -c "$out_as" >/dev/null 2>&1 || { echo "FAIL [as/raw-runnable]: emitted cmd failed: $out_as"; fail=1; }
-[ -f "$repo_as/out.txt" ] || { echo "FAIL [as/raw-runnable-side-effect]: expected $repo_as/out.txt"; fail=1; }
+out_as=$("$value_script" "$repo_as/sherpa.yaml" implement.validate 2>"$tmp/value-as-stderr.txt")
+err_as=$(cat "$tmp/value-as-stderr.txt")
+assert_eq "as/validate-missing-empty-stdout" "$out_as" ""
+assert_contains "as/validate-missing-warns-on-stderr" "$err_as" "missing-validate.md"
+
+# (au) an unrecognized, non-empty 3rd argument (e.g. the old --raw mode) is now
+# a hard error — resolve-pack-value.sh has exactly one resolution mode, so a
+# stale caller still passing a mode flag must fail loud, not be silently
+# ignored into new (correct but different) behavior.
+repo_au="$tmp/value-au/.claude"
+mkdir -p "$repo_au"
+cat >"$repo_au/sherpa.yaml" <<'YAML'
+name: proj-au
+pack:
+  implement:
+    validate: ./validate.md
+YAML
+echo -n "npm test" >"$repo_au/validate.md"
+"$value_script" "$repo_au/sherpa.yaml" implement.validate --raw >/dev/null 2>"$tmp/value-au-stderr.txt"
+au_status=$?
+[ "$au_status" -ne 0 ] || { echo "FAIL [au/unrecognized-arg-exits-nonzero]: expected non-zero exit, got 0"; fail=1; }
+err_au=$(cat "$tmp/value-au-stderr.txt")
+assert_contains "au/unrecognized-arg-stderr" "$err_au" "--raw"
 
 [ "$fail" -eq 0 ] && echo "PASS: all resolution cases" || echo "FAILED"
 exit "$fail"

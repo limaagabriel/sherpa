@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Resolves a project-pack config's value(s) at a dotted key under `.pack`,
-# either as concatenated file contents (default) or as a literal, base-dir-
-# prefixed command string (--raw, for `validate`).
+# as concatenated file contents. Every key, including `validate`, resolves
+# this same way — there is no alternate resolution mode.
 #
-# Usage: resolve-pack-value.sh <configPath> <dotted.key> [--raw]
+# Usage: resolve-pack-value.sh <configPath> <dotted.key>
 #
 # <dotted.key> reads `.pack.<dotted.key>` via yq (a bare key with no dot, e.g.
 # `knowledge`, reads the top-level `.pack.knowledge` the same way — there's no
@@ -23,13 +23,6 @@
 # never glues onto the next entry); a path that doesn't exist gets a stderr
 # warning naming it and is skipped, not a hard failure. Files are printed in
 # the order listed, concatenated into one blob on stdout.
-#
-# --raw mode is for `validate` (a command string, not file content): entries
-# are NOT read as files. The literal authored value(s) — space-joined if an
-# array — are printed prefixed for execution, matching the wrapping
-# convention resolve-project-pack.sh's old resolve_pack_value used for every
-# command key: an absolute value (/*) is printed as-is; anything else is
-# printed as `cd '<basedir>' && <value>`.
 
 set -u
 
@@ -37,10 +30,15 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 config="${1:-}"
 key="${2:-}"
-mode="${3:-}"
+extra="${3:-}"
 
 if [ -z "$config" ] || [ -z "$key" ]; then
-  echo "usage: resolve-pack-value.sh <configPath> <dotted.key> [--raw]" >&2
+  echo "usage: resolve-pack-value.sh <configPath> <dotted.key>" >&2
+  exit 1
+fi
+
+if [ -n "$extra" ]; then
+  echo "resolve-pack-value.sh: unrecognized argument: $extra (this script has exactly one resolution mode; no 3rd argument is accepted)" >&2
   exit 1
 fi
 
@@ -64,15 +62,6 @@ mapfile -t entries < <(yq -r "$yq_path // \"\" | [.] | flatten | .[] | select(. 
 [ "${#entries[@]}" -gt 0 ] || exit 0
 
 basedir=$("$here/resolve-pack-basedir.sh" "$config")
-
-if [ "$mode" = "--raw" ]; then
-  joined="${entries[*]}"
-  case "$joined" in
-    /*) printf '%s' "$joined" ;;
-    *) printf "cd '%s' && %s" "$basedir" "$joined" ;;
-  esac
-  exit 0
-fi
 
 for entry in "${entries[@]}"; do
   case "$entry" in

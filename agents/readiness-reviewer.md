@@ -36,8 +36,7 @@ not a hole you can raise.
 - Each step's Goal, Interfaces (`consumes`/`produces`), Acceptance criteria, Blast contract, and
   Risk field.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
-  via `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for `implement.validate`),
-  before your review/build work:
+  via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
   - `decompose.knowledge` — additive to the cross-cutting `knowledge`.
 - No `decompose.architecture` — that's a cross-step concern, `structure-reviewer`'s job,

@@ -28,6 +28,6 @@ context, not deferred until convenient.
 No content-bearing pack key is ever pre-resolved by one component and forwarded as text to
 another. Any consumer that needs a content-bearing key — a layer skill needing content for its own
 reasoning, or a subagent that skill dispatches — resolves that key itself, at the point it needs
-it, by calling `bash scripts/resolve-pack-value.sh <configPath> <key>` (`--raw` for the `validate`
-key, since that's a command string rather than file content). A skill or agent never accepts an
-already-resolved blob handed off by another component in place of running this call itself.
+it, by calling `bash scripts/resolve-pack-value.sh <configPath> <key>`. Every key resolves the same
+way, no exceptions. A skill or agent never accepts an already-resolved blob handed off by another
+component in place of running this call itself.

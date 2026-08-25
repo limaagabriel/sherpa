@@ -58,12 +58,11 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 context: ./context.txt
 
 # The WORKFLOW_PACK — extension points the engine consumes, sectioned by skill.
-# Content-bearing keys (knowledge, architecture, codeStyle, context)
+# Content-bearing keys (knowledge, architecture, codeStyle, validate, context)
 # are file paths or arrays of file paths, resolved via scripts/resolve-pack-value.sh:
 # each relative path resolves against this config's base directory; absolute paths
 # are used as-is. Missing files are warned and skipped per-entry (not all-or-nothing).
 # Paths never expand shell/env vars or ~ — use literal paths only.
-# Only `validate` is a shell command (fetched via --raw mode).
 pack:
   knowledge: ./knowledge.md   # or: [./knowledge.md, ./more-knowledge.md]   # cross-cutting: every layer, every subagent
 
@@ -80,17 +79,17 @@ pack:
   implement:
     knowledge: ./implement-knowledge.md   # optional, additive
     codeStyle: ./rules.md
-    validate: npm run lint && npm test   # shell command only; never a path
+    validate: ./validate.md   # file path whose content is the command(s) to run
 ```
 
 On the first config whose `detect` exits 0, the hook emits `context` first,
 followed by a `WORKFLOW_PACK:` line (built from `name` and `configPath` only),
 as SessionStart `additionalContext`. All other keys, including `validate`, are
-resolved lazily on demand via `scripts/resolve-pack-value.sh --raw`.
+resolved lazily on demand via `scripts/resolve-pack-value.sh`.
 
 ### Relative paths and resolution
 
-Content-bearing keys (`knowledge`, `architecture`, `codeStyle`, `context`)
+Content-bearing keys (`knowledge`, `architecture`, `codeStyle`, `validate`, `context`)
 are resolved by calling `scripts/resolve-pack-value.sh <configPath> <dotted.key>`.
 This script reads the YAML value (string or array of strings), resolves each relative
 entry against the config's base directory, reads each resolved file, and concatenates
@@ -114,12 +113,13 @@ detect: ./detect.sh                  # shell command; runs from the config's bas
 pack:
   implement:
     codeStyle: ./rules.md            # file path; resolved against config's base dir
-    validate: npm test               # shell command; never a path
+    validate: ./validate.md          # file path; its content is the command(s) to run
 ```
 
-Values starting with `/` (absolute paths) are used as-is. For `detect` and `validate`
-(both shell commands), `detect` runs with its working directory set to the base dir
-(its `$CWD` export still points at the repo, so cwd-glob detects work normally).
+Values starting with `/` (absolute paths) are used as-is. `detect` is the one key whose
+value is always a shell command, never a path; it runs with its working directory set to
+the base dir (its `$CWD` export still points at the repo, so cwd-glob detects work
+normally).
 
 ### Colocated assets
 
@@ -140,6 +140,8 @@ naming coordination between packs needed.
 
 > **Breaking change note:** Both `implement.codeStyle` and `decompose.architecture` dropped a trailing `Rules` suffix in this release. A pack still using the suffixed spelling will see it resolve to nothing (no error) — grep your `project.yaml`/`sherpa.yaml` for a `Rules` suffix immediately after `codeStyle` or `architecture` and drop it.
 
+> **Breaking change note:** `implement.validate` changed from a raw shell-command string to a file path (like every other content-bearing key) in this release. A pack still authoring `validate: <command>` will have that string treated as a (nonexistent) file path — it resolves to nothing, silently, and the build/test gate `step-builder` runs before committing stops firing. Move the command into its own file (e.g. `validate.md`) and point `validate` at that file's path instead.
+
 | Key | Type | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|---|
 | `knowledge` (top-level) | file path or array of paths | prose, resolved lazily via `scripts/resolve-pack-value.sh` immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged | every layer, every subagent | engine defaults only |
@@ -149,7 +151,7 @@ naming coordination between packs needed.
 | `decompose.architecture` | file path or array of paths | architecture constraints, resolved lazily and concatenated | `/decompose` drafts steps mindful of it; `structure-reviewer` checks the decomposition against it | no architecture check |
 | `implement.knowledge` | file path or array of paths | additive prose for the implement layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
 | `implement.codeStyle` | file path or array of paths | complete rule set, resolved lazily and concatenated | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
-| `implement.validate` | shell command string | command(s) `step-builder` runs before committing (fetched via `--raw` mode of resolver) | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
+| `implement.validate` | file path or array of paths | command(s) `step-builder` runs before committing, resolved lazily and concatenated — its content IS the command(s) to run | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
 | `context` | file path or array of paths | free-form prose for session-start context | `SessionStart` hook as first `additionalContext`, before the `WORKFLOW_PACK:` line | no additional context |
 
 `configPath` — the resolved path to this pack's yaml/config file — is announced automatically
