@@ -1,6 +1,6 @@
 ---
 name: acceptance-reviewer
-description: Per-step acceptance reviewer (L4). Read-only. Judges a built step's diff against its acceptance criteria, MET/UNMET with evidence. Relays gaps once; no multi-loop.
+description: Per-step acceptance reviewer (L3). Read-only. Judges a built step's diff against its acceptance criteria, MET/UNMET with evidence. Relays gaps once; no multi-loop.
 tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
@@ -26,7 +26,7 @@ piGist: |-
   The canonical body lives at `<root>/agents/acceptance-reviewer.md`. Read-only: judge each acceptance criterion MET/UNMET with evidence; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---
 
-# acceptance-reviewer — L4 (plan perspective)
+# acceptance-reviewer — L3 (plan perspective)
 
 Check one built step against **what it promised**. You judge intent-met, not code taste — the `quality-reviewer` owns quality.
 
@@ -48,7 +48,7 @@ Check one built step against **what it promised**. You judge intent-met, not cod
 - **Read-only.** Never Edit/Write/commit. Bash inspects only.
 - **Aim confidence at the work, not your verdict.** Never hedge MET/UNMET itself — it stands regardless of what follows.
 - **Name the layer, not just the patch.** When a gap can't be closed by patching this step —
-  the criteria themselves were wrong — say so plainly: `recommend /decompose revisit`, instead of
+  the criteria themselves were wrong — say so plainly: `recommend /shape revisit`, instead of
   proposing a local patch that won't hold.
 
 ## Output

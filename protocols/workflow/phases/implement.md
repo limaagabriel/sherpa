@@ -34,7 +34,7 @@ name, same param/return shape, actually reachable — the same way `acceptance-r
 does, and emit one `PRODUCES: MET | UNMET <produces entry> — <evidence>` line per declared
 `produces` entry (skip `produces: none`), even when a mismatch doesn't correspond to any
 acceptance-criterion text — `Interfaces` and `Acceptance criteria` are separate fields
-(`protocols/workflow/phases/decompose.md` § Block 2) that don't map 1:1, so a renamed/reshaped/
+(`protocols/workflow/phases/shape.md` § Block 2) that don't map 1:1, so a renamed/reshaped/
 unreachable `produces` symbol could otherwise pass silently. Verdict handling for mechanical steps:
 `FIX`/`BLOCK` follow § Verdicts exactly as already stated; any `ACCEPTANCE: UNMET` or `PRODUCES:
 UNMET` line feeds into § Verdicts the same way an `acceptance-reviewer` `UNMET` already does
@@ -59,18 +59,18 @@ Each step:
 - Lands exactly one commit (real subject). The step-builder owns it; never add a manual commit on top.
 - **Before dispatching this step's reviewer(s)**, the driver itself (not any subagent) resolves
   `implement.review` — when `configPath` is announced — via `bash scripts/resolve-pack-value.sh
-  <configPath> implement.review`, the same self-resolved, point-of-need way `/decompose` already
-  resolves `decompose.knowledge`/`decompose.architecture`. It's a `.md` file path or array,
-  resolved exactly like `codeStyle`/`knowledge` (no special mode). When it resolves to non-empty
-  content, the driver follows its plain-English instructions to shape which reviewer(s) it
-  dispatches for this step and what extra they're briefed to check, instead of always falling back
-  to the hardcoded pattern below. This mechanism never spawns a new subagent type — whatever gets
-  dispatched is still `acceptance-reviewer` and/or `quality-reviewer`; the prose can only shape
-  which of those run and what extra they check. Any resulting reviewer output still resolves to
-  the existing `PASS`/`FIX`/`BLOCK` / `MET`/`UNMET` vocabulary, folded into § Verdicts unchanged —
-  `implement.review` introduces no new verdict shape. Absent or empty → the driver runs its default
-  dispatch below unchanged.
-- On `BUILT`, for a normal (non-mechanical) step, two L4 reviewers run in parallel over the step's
+  <configPath> implement.review`, the same self-resolved, point-of-need way `structure-reviewer`
+  (dispatched by `/shape`) already resolves `shape.knowledge`/`shape.architecture`. It's a
+  `.md` file path or array, resolved exactly like `codeStyle`/`knowledge` (no special mode). When
+  it resolves to non-empty content, the driver follows its plain-English instructions to shape
+  which reviewer(s) it dispatches for this step and what extra they're briefed to check, instead
+  of always falling back to the hardcoded pattern below. This mechanism never spawns a new
+  subagent type — whatever gets dispatched is still `acceptance-reviewer` and/or `quality-reviewer`;
+  the prose can only shape which of those run and what extra they check. Any resulting reviewer
+  output still resolves to the existing `PASS`/`FIX`/`BLOCK` / `MET`/`UNMET` vocabulary, folded
+  into § Verdicts unchanged — `implement.review` introduces no new verdict shape. Absent or empty
+  → the driver runs its default dispatch below unchanged.
+- On `BUILT`, for a normal (non-mechanical) step, two L3 reviewers run in parallel over the step's
   commit range: `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to
   judge the declared `produces` against the built symbols) and `quality-reviewer` (clean, correct,
   secure, no regression; also gets `configPath` when announced — the quality-reviewer resolves its own
@@ -86,12 +86,12 @@ Every verbatim surface below leads with one line naming, in the reader's terms, 
   verbatim to the human, do not loop again.
 - `MET` + `PASS` → next step.
 - `BLOCK` → stop, surface verbatim to the human.
-- Any reviewer output containing `recommend /decompose revisit` → stop, surface verbatim to the human,
-  offer `/decompose` in one declinable line.
+- Any reviewer output containing `recommend /shape revisit` → stop, surface verbatim to the human,
+  offer `/shape` in one declinable line.
 
 ## Plan-level verification
 - **Trigger.** Once every step is committed with no open `BLOCK`, run the plan's Block 3
-  "How it's verified" (`protocols/workflow/phases/decompose.md` § Block 3 — Why & how) once,
+  "How it's verified" (`protocols/workflow/phases/shape.md` § Block 3 — Why & how) once,
   before presenting (MAST 2025).
 - **Execution.** Run whatever part of Block 3's test plan is re-runnable as-is; treat anything
   that isn't (i.e., requires a human to observe the end state) as a manual checklist item —

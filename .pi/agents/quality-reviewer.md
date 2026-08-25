@@ -1,7 +1,7 @@
 ---
 name: quality-reviewer
 package: sherpa
-description: Per-step quality reviewer (L4). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, and regression risk. Not intent-met — that's acceptance-reviewer's lens (folded in here for mechanical steps). Self-contained.
+description: Per-step quality reviewer (L3). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, and regression risk. Not intent-met — that's acceptance-reviewer's lens (folded in here for mechanical steps). Self-contained.
 tools: read, grep, find, ls, bash
 thinking: high
 systemPromptMode: replace

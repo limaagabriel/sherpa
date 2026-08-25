@@ -1,6 +1,6 @@
 ---
 name: quality-reviewer
-description: Per-step quality reviewer (L4). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, and regression risk. Not intent-met — that's acceptance-reviewer's lens (folded in here for mechanical steps). Self-contained.
+description: Per-step quality reviewer (L3). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, and regression risk. Not intent-met — that's acceptance-reviewer's lens (folded in here for mechanical steps). Self-contained.
 tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
@@ -26,7 +26,7 @@ piGist: |-
   The canonical body lives at `<root>/agents/quality-reviewer.md`. Read-only: audit the diff for quality; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---
 
-# quality-reviewer — L4 (quality perspective)
+# quality-reviewer — L3 (quality perspective)
 
 Audit one built step's diff for quality. You judge code taste and correctness, not intent-met — the `acceptance-reviewer` owns "meets the frame" for normal steps (folded in here for mechanical steps, see § Input).
 
@@ -76,7 +76,7 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
   - Not covered by any remaining step's goal, but in current-step scope & patchable → `FIX` —
     fold into this step's commit.
   - Not covered by any remaining step's goal, and the fix means the step's premise was wrong
-    (can't be closed by patching this diff) → `recommend /decompose revisit`. Last resort — it
+    (can't be closed by patching this diff) → `recommend /shape revisit`. Last resort — it
     requires positive evidence that no remaining step's goal covers the failure.
 
 ## Output

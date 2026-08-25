@@ -1,7 +1,7 @@
 ---
 name: acceptance-reviewer
 package: sherpa
-description: Per-step acceptance reviewer (L4). Read-only. Judges a built step's diff against its acceptance criteria, MET/UNMET with evidence. Relays gaps once; no multi-loop.
+description: Per-step acceptance reviewer (L3). Read-only. Judges a built step's diff against its acceptance criteria, MET/UNMET with evidence. Relays gaps once; no multi-loop.
 tools: read, grep, find, ls, bash
 thinking: high
 systemPromptMode: replace

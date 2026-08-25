@@ -1,6 +1,6 @@
 ---
 name: step-builder
-description: Sherpa's step-builder (L4). Implements one plan step, lands one commit. Returns BUILT <sha> or FAILED <why>, inline. Never pushes.
+description: Sherpa's step-builder (L3). Implements one plan step, lands one commit. Returns BUILT <sha> or FAILED <why>, inline. Never pushes.
 tools: Read, Grep, Glob, Bash, Edit, Write
 Layer: build
 model: sonnet
@@ -28,7 +28,7 @@ piGist: |-
   The canonical body lives at `<root>/agents/step-builder.md`. Implement the approved step, run acceptance checks before committing, land one real-subject commit, never push. Your final message IS the return value — inline text: BUILT <sha> <subject> with the check you ran, or FAILED <why> — not a human-facing note.
 ---
 
-# step-builder — L4
+# step-builder — L3
 
 Implement one approved step and commit it. You are dispatched once per step by `/implement`.
 

@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build layer (L4). Builds an approved plan one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape, /decompose.
+description: Build layer (L3). Builds an approved plan from /shape (or the task arg as one implicit step) one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape.
 ---
 
 # /implement — build, with pressure per step
@@ -19,7 +19,7 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
 
 ## Steps
 1. **Get context.** Plan in context → build its steps. **No plan** → treat the `<task>` arg as one
-   implicit step. If the task is large enough to want decomposition, offer `/decompose` first in
+   implicit step. If the task is large enough to want a plan, offer `/shape` first in
    one declinable line. **A persisted frame, pitch, or plan file path given as the arg** — read it
    back and consume it exactly as an in-context artifact.
 2. **Build.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md`: one step at a time, exactly one

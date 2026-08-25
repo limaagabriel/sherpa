@@ -125,7 +125,7 @@ Every candidate carries one, bound to Shape Up part 1's three properties:
 - **solved** — the beats connect end-to-end. Shape Up: *"All the main elements of the solution are
   there at the macro level and they connect together."*
   > Fail: "beat 4 — persist the result somehow" — "somehow" is an unsolved handoff; the candidate
-  > dies here, at L2, not at L4 with commits already landed.
+  > dies here, at L2, not at L3 with commits already landed.
 - **bounded** — appetite in steps + explicit no-gos. Shape Up: *"It tells the team where to stop."*
   > Fail: "extend to cover every provider users might eventually want" — no step ceiling, no
   > no-go list; the candidate has no stopping point.

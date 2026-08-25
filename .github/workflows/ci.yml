@@ -27,8 +27,8 @@ jobs:
       - name: Doc hygiene gates
         run: |
           set -e
-          if grep -n 'L3' agents/step-builder.md agents/acceptance-reviewer.md agents/quality-reviewer.md skills/implement/SKILL.md protocols/workflow/phases/implement.md; then
-            echo "stale L3 label found in a build-layer (L4) file" >&2
+          if grep -rEn '\bL4\b' agents/ skills/ protocols/; then
+            echo "stale L4 label found (nothing in the 3-layer model is L4)" >&2
             exit 1
           fi
           if grep -rEn '\.md:[0-9]+' agents/ skills/ protocols/; then
