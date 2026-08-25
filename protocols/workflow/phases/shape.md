@@ -6,10 +6,27 @@ Artifact: **the pitch** — the picked skeleton, precedent, and rejected candida
 lost. Changes nothing on disk.
 
 ## Boundaries
-`/shape` does not re-narrow the problem — `/frame`'s job, and reopening it re-does work L1 already
-critiqued. `/shape` requires a frame in context: with none it has no vantage axis at all (see
-Vantages), so the driver offers `/frame` in one declinable line rather than guessing a contract.
-`protocols/layers.md` records `/shape` as the one layer that requires its upstream artifact.
+When a frame is already in context, `/shape` does not re-narrow the problem — `/frame`'s job, and
+reopening it re-does work L1 already critiqued; it reads the frame's problem contract as-is and
+moves straight to Vantages.
+
+**Frameless path.** `/shape` no longer hard-requires a frame. The layer discriminator is what's
+unbound — problem, solution, or nothing (`protocols/layers.md` § A ceremony gradient) — so a task
+whose problem is already clear but whose solution isn't should reach `/shape` directly, with no
+`/frame` detour. With no frame in context: run a quick `/scout` first, then draft an INLINE problem
+contract from the task + that scout's evidence (`protocols/workflow/phases/frame.md` § Problem
+contract), applying its § Vocabulary test to the solved-signal — the same binding `/decompose`'s own
+frameless step 0 already performs, so `/shape` is not inventing a second contract format. This
+inline contract supplies the vantage axis Vantages derives from (obstacle / capability / costs);
+everywhere else this doc reads "the frame's problem contract," the inline contract stands in for it
+when there is no frame. Appetite is asked once this inline contract exists — after the quick scout,
+before wave 1's mainline dispatch (§ Appetite).
+
+**Scout-evidence wall.** That quick scout's output feeds the inline contract and the appetite
+anchoring ONLY — never any builder's brief. Forwarding it there would hand every `shape-builder` the
+same pre-run read of the codebase, the exact anchoring the isolation invariant already bars between
+builders (§ Critique — Isolation invariant, Nemeth 2001); the wall extends that same invariant to
+the driver's own pre-dispatch evidence, not just to a sibling builder's output.
 
 ## Appetite
 A STEP BUDGET, not a time budget. Shape Up (Singer 2019): *"a time budget for a standard team size."* Translated
@@ -23,11 +40,18 @@ The driver ASKS the appetite — it never just shows a number. The question is s
 — each shown WITH a step count alongside. The level is what the human picks; the count is the
 translation, not the unit they reason in.
 
-The counts offered are anchored on the frame's discovery — the surfaces the frame already names,
-never invented. `/shape` cannot dispatch `/scout` (`skills/shape/SKILL.md` § Operating rules) and a frame is
-always in context (`protocols/layers.md` § A ceremony gradient), so the frame's discovery is the only legitimate
-source for the numbers. Discovery anchors the RANGE offered; the human's pick is a budget, not a
-prediction — the line that keeps appetite from becoming an estimate.
+The counts offered are anchored on discovery — the surfaces already named, never invented — from
+whichever source produced it: the frame's discovery when a frame is in context, or, on the
+frameless path (§ Boundaries), the quick scout run for the inline contract. Either source anchors
+the RANGE offered the same way; the human's pick is a budget, not a prediction — the line that keeps
+appetite from becoming an estimate.
+
+**Frameless anchor and timing.** On the frameless path the quick scout IS the discovery appetite
+anchors on — there is nothing else to anchor on until it runs. The driver asks appetite AFTER that
+scout completes and BEFORE wave 1's mainline dispatch: never earlier, when there are no discovered
+surfaces yet to name; never later, once a builder call has already been spent with no budget set.
+This is the same slot the framed path already uses — frameless just makes explicit what the framed
+path gets for free, since the frame's discovery exists before `/shape` even starts.
 
 Each count is DEFENSIBLE, not derived by formula: the driver names which discovered surfaces that
 level's budget would cover and which it would leave out. The count is defended by naming its
@@ -41,6 +65,8 @@ appetite: the human always chooses.
 > Fail: `tight` / `balanced` / `comfortable` offered with no counts attached — a level label with
 > no per-problem anchoring is theater; `tight` must mean something different on a small problem
 > than on a large one, or the words carry nothing.
+> Fail: appetite asked before the frameless path's quick scout runs — nothing discovered yet means
+> nothing to anchor the counts on, and an unanchored range is theater exactly as a missing count is.
 
 ## Vantages
 Derived per-run from the frame's problem contract — NO SHIPPED LIST (Sobek 1999) — plus the
