@@ -1,6 +1,6 @@
 {
   "name": "sherpa",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "Develop like a sherpa: composable /frame, /shape, and /implement skills — one per layer (macro, shape, build) — with bundled scout/shape-builder/review/build subagents and adversarial pressure at every boundary. The user composes the workflow; sherpa offers the tools. Nothing runs unasked, nothing persists unless you call /persist. Project-agnostic; extend with project packs.",
   "author": {
     "name": "Gabriel Lima"
