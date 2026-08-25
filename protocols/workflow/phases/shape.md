@@ -15,9 +15,9 @@ unbound — problem, solution, or nothing (`protocols/layers.md` § A ceremony g
 whose problem is already clear but whose solution isn't should reach `/shape` directly, with no
 `/frame` detour. With no frame in context: run a quick `/scout` first, then draft an INLINE problem
 contract from the task + that scout's evidence (`protocols/workflow/phases/frame.md` § Problem
-contract), applying its § Vocabulary test to the solved-signal — the same binding `/decompose`'s own
-frameless step 0 already performs, so `/shape` is not inventing a second contract format. This
-inline contract supplies the vantage axis Vantages derives from (obstacle / capability / costs);
+contract), applying its § Vocabulary test to the solved-signal — the same contract format `/frame`
+itself uses, so `/shape` is not inventing a second one. This inline contract supplies the vantage
+axis Vantages derives from (obstacle / capability / costs);
 everywhere else this doc reads "the frame's problem contract," the inline contract stands in for it
 when there is no frame. Appetite is asked once this inline contract exists — after the quick scout,
 before wave 1's mainline dispatch (§ Appetite).
@@ -119,7 +119,7 @@ Every candidate carries one, bound to Shape Up part 1's three properties:
 
 - **rough** — 3-6 beats, NO acceptance criteria, NO interfaces. Shape Up: *"Everyone can tell by
   looking at it that it's unfinished. They can see the open spaces where their contributions will
-  go."* Those spaces are `/decompose`'s to fill.
+  go."* Those spaces are this doc's own § Plan to fill, once a candidate is picked.
   > Fail: "beat 3 — add `validateEmail(input): boolean`, false on missing '@'" — that's an
   > interface plus acceptance criteria; the beat is "validate the email," nothing further.
 - **solved** — the beats connect end-to-end. Shape Up: *"All the main elements of the solution are
@@ -130,7 +130,8 @@ Every candidate carries one, bound to Shape Up part 1's three properties:
   > Fail: "extend to cover every provider users might eventually want" — no step ceiling, no
   > no-go list; the candidate has no stopping point.
 
-A skeleton detailed enough to build from makes `/decompose` dead weight — the failure **rough** prevents.
+A skeleton detailed enough to build from makes § Plan's own step-authoring dead weight — the failure
+**rough** prevents.
 
 ## Pitch
 Five fields, per Shape Up: **problem**, **appetite**, **solution**, **rabbit holes**, **no-gos**
@@ -139,8 +140,8 @@ they lost. Every candidate ID the shortlist, the
 traps, or the collapse record uses is resolved by a roster line before the pitch uses it
 (`protocols/prose.md` § The referent rule). The pitch is composed by the driver from
 `shape-reviewer`'s return value, never that return value forwarded
-as the emission (`protocols/prose.md` § Compose, don't relay). Consumed by `/decompose` at its step
-0, where `Outcome` binds.
+as the emission (`protocols/prose.md` § Compose, don't relay). Consumed by this doc's own § Plan,
+where `Outcome` binds — plan-authoring is no longer a separate `/decompose` layer.
 
 **Auto-pick, unless contested.** `shape-reviewer`'s wave-2 ranked shortlist carries a
 `CONTESTED: yes | no` token (§ Critique); the driver's authority to pick the winner hinges on it,
@@ -222,13 +223,141 @@ yes/no contest verdict by parsing rationale prose. `CONTESTED` needs its OWN exp
 `agents/shape-reviewer.md` does not already cover it, and adding it there is a follow-up this doc's
 contract now depends on, not yet done.
 
+## Plan
+Once a candidate is picked (§ Pitch) — auto-picked, or the human's resolution of a `CONTESTED: yes`
+solution open question — this phase's own terminal step turns it into a plan: bind the goal, draft
+steps in the format below, run the silent self-review, then submit to adversarial review before
+presenting for approval. Rejecting the pitch outright (§ Pitch) ends the run here — there's no plan
+to author.
+
+### Bind the goal
+`Outcome` binds here, once the candidate is picked, and nowhere earlier. Bind it from the picked
+candidate's `solution` field (§ Pitch) — auto-picked (`CONTESTED: no`, or wave 1's `SUFFICIENT`
+degenerate case) or the human's pick when `CONTESTED: yes` resolved the solution open question; bind
+`for`/`because`/`done when` as normal. Read the appetite already set at dispatch (§ Appetite) — it
+is not re-asked here — kept only to compare against the plan's final step count when presenting
+(§ Plan proposal format), never forwarded to a reviewer at this layer as judgment material. Bind the
+pitch's `no-gos` and `rabbit holes` fields (§ Pitch) as plan constraints — a plan step that does one
+of the no-gos, or walks into a named rabbit hole, is a defect `structure-reviewer` attacks
+(§ Adversarial plan review); absent (pitch carried none) means no constraint from this source.
+
+### Settle blocking questions
+Settle only what blocks drafting a step boundary — a question that stops a step from being
+written, not a problem or scope question; those stay `/frame`'s job, unresolved here. A genuine
+blocker gets resolved right then: via `AskUserQuestion`, shaped per `protocols/questions.md`, or
+an answer already in the conversation. Leave the rest open.
+
+### Plan proposal format
+Always carries the three blocks — even a one-line fix gets the full shape.
+
+#### Block 1 — Plan at a glance
+- The **plan goal** as a goal contract (§ Goal contract) — the north star every step traces to.
+- A **before / after table** — current → target, one row per affected area.
+- An **appetite note** — one plain sentence comparing the appetite set at dispatch (§ Appetite) to
+  the plan's final step count (e.g. `you picked balanced — 5 steps; this plan has 7`) — descriptive
+  only, no judgment.
+
+#### Block 2 — Steps
+Each step is its own block. Every step carries:
+- **Goal** — a step goal contract (§ Goal contract). Must trace up to the plan goal.
+- **Change** — the concrete delta (this step only).
+- **Interfaces** — `consumes: <exact signatures this step relies on from earlier steps>; produces:
+  <exact names + param/return types later steps rely on>`. `none` on either side when that side
+  doesn't apply to this step — a first step's `consumes`, a terminal step's `produces` — and `none`
+  for the whole field only when the step is fully self-contained. Each step-builder sees only its
+  own step; this is how it learns the names its neighbors use.
+- **Example** — the *shape* of what the step produces — a before→after signature/skeleton or sample
+  input→output — never a finished implementation: plan-time code is authored before any builder
+  reads the target file, and a wrong prescription gets followed rather than corrected.
+- **Acceptance criteria** — `done = <X>, confirmed by <re-runnable automated check>`. Manual
+  observation only when the step states why no automated check is possible.
+- **Blast contract** — `reversibility: one-way-door | revertible; touches: <files/symbols touched
+  or silently affected beyond the listed diff>; revert: <exact command or state restore that undoes
+  this step>`.
+- **Risk** — the one load-bearing risk that would sink this step (mirrors shape-builder.md's
+  candidate-risk field); a real risk, or none — <why> when genuinely none.
+
+#### Block 3 — Why & how
+- **Why this approach** — the next-best alternative and why it lost (bugs: confirming evidence).
+- **How it's verified** — observable end state + test plan.
+
+### Goal contract
+Every goal — the one **plan goal** and each **step goal** — is one sentence, four bound slots (Doran 1981):
+
+> **`<Outcome>` for `<consumers>` because `<motivation>`; done when `<verification>`.**
+
+| Slot | Rule |
+|---|---|
+| **Outcome** | An observable end-**state**, every noun bound. Not an action; not a vague reference. |
+| **For** | Who consumes it. Every new abstraction names **≥2 consumers or a stated concrete value**. |
+| **Because** | The parent intent served. Must not restate the Outcome. |
+| **done when** | `confirmed by <re-runnable automated check>`; manual only with a stated reason. |
+
+### Self-review (silent, before presenting)
+1. **Placeholder scan** — any TBD/vague requirement or unbound noun-phrase? Bind it.
+2. **Consistency** — do steps contradict, and do they sum to the after-state?
+3. **Scope** — one plan's worth?
+4. **Earns-its-keep** — every abstraction's `For` names ≥2 consumers/a value; every `Because`
+   says what breaks if absent. Fails either → cut or justify.
+5. **Premortem** (Klein 2007) — imagine this plan already failed; name the most likely
+   reason. Fold the answer in, or carry it forward as an open question — don't just note it and move on.
+6. **Interface closure** — every step's `Interfaces` consumes entry is produced by an earlier
+   step; every produces entry has a consumer or a stated reason. A mismatch here is cheaper to
+   fix now than at the consuming step.
+7. **Risk substance** — does every step's Risk name a real, specific risk, or is `none`
+   justified by a stated reason? A boilerplate `none` with no reason is a hole to fix.
+
+### Adversarial plan review
+After the silent self-review, before presenting, always dispatch both `structure-reviewer` and
+`readiness-reviewer` via Agent, in parallel — no conditional gate on plan size or reversibility.
+Shape's own appetite step budget (§ Appetite) already bounds scale before a step is ever drafted, so
+the scale-conditional readiness-reviewer gate a standalone `/decompose` once used here is redundant
+and dropped: both reviewers run on every plan this layer produces, not only the ones that cross a
+size or risk threshold.
+
+Forward `structure-reviewer` the inputs it takes: the plan goal + the full step list (each goal in
+contract form, each step's `Interfaces`) + the frame path for context, or the inline problem
+contract (§ Boundaries) when no frame existed, the pitch's `no-gos`/`rabbit holes` when carried
+(§ Bind the goal; absent means none), and `configPath` when announced. `structure-reviewer` resolves
+its own `knowledge`/`decompose.knowledge` and `decompose.architecture` via resolve-pack-value.sh, per
+its own agent doc. Appetite is never forwarded to `structure-reviewer` — it never gated anything
+there. No *additional* necessity or scope check is added at this layer beyond what already runs
+here — the silent self-review's scope/earns-its-keep items and `structure-reviewer`'s own
+traceability attack — plus the human's own read of the plan before approving it. Forward
+`readiness-reviewer` the full step list, with each step's Goal, Interfaces, Acceptance criteria,
+Blast contract, and Risk field, plus `configPath` when announced. `readiness-reviewer` resolves its
+own `knowledge`/`decompose.knowledge` via resolve-pack-value.sh, per its own agent doc — but does not
+resolve `architecture`; that's cross-step context `structure-reviewer` alone consumes, and
+`readiness-reviewer`'s own Input contract has no `architecture` input.
+
+`structure-reviewer` attacks traceability, missing foundation, gaps, overlap, ordering (Wake 2003;
+Reinertsen 2009), hidden coupling, interface-mismatch; `readiness-reviewer` attacks contract
+completeness, over-prescription, goal-contract honesty, single-responsibility, responsibility leak,
+risk-field substance, and blast-contract accuracy. Each returns `SOLID | HOLES`. Handle: both
+`SOLID` → present. Either returns `HOLES` → fix what you can; a hole only the human can close → name
+what it blocks, in the reader's terms, then surface verbatim (`protocols/prose.md` § Verbatim is a
+quote, not a frame) and wait. These are the independent eyes your own self-review can't be — always
+both, never one alone.
+
+### Approval
+Wait for **explicit** approval before any `/implement` action — "approved", "go", "ship it", "lgtm".
+A question, critique, or your own answer is **not** approval. When in doubt, you are not approved.
+
 ## Don't
 - Re-narrow the problem — `/frame`'s job, already critiqued.
 - Ship a fixed vantage taxonomy — vantages derive from the frame's slots, per run.
 - Let a builder see another builder's output or the pool so far.
-- Hand a skeleton acceptance criteria or interfaces — `/decompose`'s to fill, not `/shape`'s.
+- Hand a skeleton acceptance criteria or interfaces before a candidate is picked — § Plan fills
+  those in, once picked, not the fan-out stage.
 - Auto-select a candidate when the shortlist is `CONTESTED: yes` — that pick belongs to the human
   alone; auto-pick only fires on `CONTESTED: no` (§ Pitch). Or state the critique ceiling as "must
   not judge ordering."
 - Silently reconcile a candidate's stated appetite with the dispatched value — a deviation is
   a trap the critic names.
+- Forward the appetite to `structure-reviewer`, or treat it as a ceiling on the step list — it is a
+  plain step-count comparison at presentation time (§ Plan proposal format), nothing more.
+- Skip approval, even for small fixes.
+- Re-refine intent beyond § Plan's own bind, or surface open questions — that's `/frame`'s job.
+- Reference a file before verifying it exists.
+- Present a plan without the silent self-review and both `structure-reviewer`'s and
+  `readiness-reviewer`'s passes — both always run, no scale gate.
