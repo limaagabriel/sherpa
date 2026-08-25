@@ -1,4 +1,4 @@
-# Implement
+# Implement (build layer)
 
 Build the plan one step at a time with a single step-builder + reviewers — acceptance and quality
 for normal steps, quality alone (covering both) for mechanical steps (§ Mechanical steps).

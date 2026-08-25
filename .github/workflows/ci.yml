@@ -41,6 +41,40 @@ jobs:
             echo "retired SHAPE_KNOWLEDGE symbol still referenced" >&2
             exit 1
           fi
+          # retired /decompose skill: packs/README.md's Step-11 breaking-change note is the one
+          # deliberate historical mention (decompose.knowledge -> shape.knowledge); anything else
+          # is a regression back to the pre-3-layer-model tree/schema.
+          if grep -rn 'skills/decompose' agents/ hooks/ packs/ protocols/ scripts/ skills/ | grep -v '^packs/README\.md:'; then
+            echo "retired skills/decompose path still referenced outside packs/README.md's historical note" >&2
+            exit 1
+          fi
+          if grep -rn 'decompose\.knowledge' agents/ hooks/ packs/ protocols/ scripts/ skills/ | grep -v '^packs/README\.md:'; then
+            echo "retired decompose.knowledge key still referenced outside packs/README.md's historical note" >&2
+            exit 1
+          fi
+          # layer-label positive asserts: the right label must actually be present, not just the
+          # wrong one absent. Agents self-declare via frontmatter 'Layer:'; skills/phase docs via
+          # an inline (L<n>) mention (see protocols/layers.md).
+          for f in agents/structure-reviewer.md agents/readiness-reviewer.md; do
+            if ! grep -q '^Layer: shape$' "$f"; then
+              echo "$f missing 'Layer: shape' (L2) self-declaration" >&2
+              exit 1
+            fi
+          done
+          for f in agents/step-builder.md agents/acceptance-reviewer.md agents/quality-reviewer.md; do
+            if ! grep -q '^Layer: build$' "$f"; then
+              echo "$f missing 'Layer: build' (L3) self-declaration" >&2
+              exit 1
+            fi
+          done
+          if ! grep -q '(L3)' skills/implement/SKILL.md; then
+            echo "skills/implement/SKILL.md missing '(L3)' build-layer self-declaration" >&2
+            exit 1
+          fi
+          if ! grep -q '^# Implement (build layer)$' protocols/workflow/phases/implement.md; then
+            echo "protocols/workflow/phases/implement.md missing '(build layer)' self-declaration" >&2
+            exit 1
+          fi
           total=0
           for f in agents/*.md skills/*/SKILL.md; do
             n=$(sed -n '/^---$/,/^---$/p' "$f" | sed -n '/^description:/,/^[a-z]*:/p' | sed '$d' | sed '1s/^description: *//' | tr -d '"' | wc -w)
