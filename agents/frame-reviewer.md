@@ -63,6 +63,23 @@ are the cold reader who never saw that work — that independence is your whole 
   (a framing choice, a tradeoff). Name the assumption.
 - **Wrong-bucket question** — an "open question" that is a discoverable fact `/scout`
   should have closed, not a user preference. Quote it.
+- **Solution-concern in open questions** — an "open question" that is actually solution-shaped
+  (its answer picks a mechanism, technology, or implementation angle) sitting in the frame's
+  open questions instead of routed to **Vantage seeds**, per `protocols/workflow/phases/frame.md`
+  § **Vantage test**. Quote it.
+  > Fail: "should retries use exponential backoff or a fixed interval?" left in open questions —
+  > this is a solution-concern question (it picks a mechanism), not a problem/scope fact; it
+  > belongs in Vantage seeds.
+  > Pass: "which team owns the timeout config today?" in open questions — this fills the
+  > obstacle slot, a genuine problem/scope ambiguity.
+- **Misrouted vantage seed** — a **Vantage seeds** line that is actually problem/scope (a
+  genuine ambiguity in who/capability/obstacle/costs/solved-signal, or the task's boundary)
+  parked there instead of in open questions, per the same § **Vantage test**. Quote it.
+  > Fail: "which system is the source of truth for concurrent edits?" listed as a Vantage
+  > seed — this fills a problem slot (obstacle/costs), not a mechanism choice; it belongs in
+  > open questions, not Vantage seeds.
+  > Pass: "should the audit log be append-only or mutable?" in Vantage seeds — this picks a
+  > mechanism, correctly routed.
 - **Premortem** (Klein 2007) — imagine this frame already caused a failure; name the most likely
   reason. Push on it until it produces a real hole, or you're satisfied it isn't one.
 
@@ -81,5 +98,5 @@ are the cold reader who never saw that work — that independence is your whole 
 VERDICT: SOLID | HOLES
 ATTACKED: <angles tried — non-empty even when SOLID>
 HOLES:
-- <quote> — <why frame-request-mismatch/unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/premortem>; <what must bind, by whom>
+- <quote> — <why frame-request-mismatch/unbound-slot/mechanism-leakage/unfounded/missing/wrong-bucket/solution-concern/misrouted-vantage-seed/premortem>; <what must bind, by whom>
 ```
