@@ -15,9 +15,12 @@ No CI wiring. These run by hand when you're validating a reviewer prompt change,
 1. Pick the fixture matching the reviewer you're validating (see the table below).
 2. Dispatch that reviewer fresh — a new Agent call, no prior context, exactly as its owning skill
    would (e.g. `frame-reviewer` gets only what `/frame`'s own dispatch step gives it: the frame,
-   the verbatim request, pack knowledge). Forward ONLY the `.artifact.md` file's content. Never
-   forward the `.answer.md` file, and never mention that this is an eval — a reviewer told it's
-   being tested may reason differently than it would in real use.
+   the verbatim request, pack knowledge; for `/shape`'s plan tail, both `structure-reviewer` and
+   `readiness-reviewer` are always dispatched in parallel with the full step list — `structure-reviewer`
+   also getting the plan's no-gos and rabbit holes when carried — per `protocols/workflow/phases/shape.md`
+   § Adversarial plan review). Forward ONLY
+   the `.artifact.md` file's content. Never forward the `.answer.md` file, and never mention that
+   this is an eval — a reviewer told it's being tested may reason differently than it would in real use.
 3. Capture the reviewer's verbatim output.
 4. Open the matching `.answer.md` and judge by hand (see Pass criterion) — this is a human read,
    not a string match; a paraphrased catch counts.
