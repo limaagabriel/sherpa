@@ -39,9 +39,6 @@ pack:
 
   shape:
     knowledge: ./shape-knowledge.md   # optional, additive
-
-  decompose:
-    knowledge: ./decompose-knowledge.md   # optional, additive
     architecture: ./architecture.md
 
   implement:

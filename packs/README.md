@@ -71,9 +71,6 @@ pack:
 
   shape:
     knowledge: ./shape-knowledge.md   # optional, additive
-
-  decompose:
-    knowledge: ./decompose-knowledge.md   # optional, additive
     architecture: ./architecture.md
 
   implement:
@@ -143,13 +140,14 @@ naming coordination between packs needed.
 
 > **Breaking change note:** `implement.validate` changed from a raw shell-command string to a file path (like every other content-bearing key) in this release. A pack still authoring `validate: <command>` will have that string treated as a (nonexistent) file path — it resolves to nothing, silently, and the build/test gate `step-builder` runs before committing stops firing. Move the command into its own file (e.g. `validate.md`) and point `validate` at that file's path instead.
 
+> **Breaking change note:** The `decompose:` section was folded into `shape:` in this release — `decompose.knowledge` is now `shape.knowledge`, and `decompose.architecture` is now `shape.architecture`. A pack still authoring a `decompose:` section will see it silently ignored (no error) — move its `knowledge`/`architecture` keys under `shape:` instead.
+
 | Key | Type | Fills | Engine seam that consumes it | When absent |
 |---|---|---|---|---|
 | `knowledge` (top-level) | file path or array of paths | prose, resolved lazily via `scripts/resolve-pack-value.sh` immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged | every layer, every subagent | engine defaults only |
 | `frame.knowledge` | file path or array of paths | additive prose for the frame layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/frame` skill, `frame-reviewer` | cross-cutting `knowledge` only |
-| `shape.knowledge` | file path or array of paths | additive prose for the shape layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/shape` skill, `shape-reviewer` | cross-cutting `knowledge` only |
-| `decompose.knowledge` | file path or array of paths | additive prose for the decompose layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/decompose` skill, `structure-reviewer`, `readiness-reviewer` | cross-cutting `knowledge` only |
-| `decompose.architecture` | file path or array of paths | architecture constraints, resolved lazily and concatenated | `/decompose` drafts steps mindful of it; `structure-reviewer` checks the decomposition against it | no architecture check |
+| `shape.knowledge` | file path or array of paths | additive prose for the shape layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `/shape` skill, `shape-reviewer`, `structure-reviewer`, `readiness-reviewer` | cross-cutting `knowledge` only |
+| `shape.architecture` | file path or array of paths | architecture constraints, resolved lazily and concatenated | plan-tail drafting (the `/shape` driver, composing the plan proposal); `structure-reviewer` checks the plan against it | no architecture check |
 | `implement.knowledge` | file path or array of paths | additive prose for the implement layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
 | `implement.codeStyle` | file path or array of paths | complete rule set, resolved lazily and concatenated | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `implement.validate` | file path or array of paths | command(s) `step-builder` runs before committing, resolved lazily and concatenated — its content IS the command(s) to run | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |

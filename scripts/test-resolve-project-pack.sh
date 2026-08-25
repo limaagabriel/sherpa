@@ -71,7 +71,7 @@ cat >"$packs/proj-b/project.yaml" <<'YAML'
 name: proj-b
 detect: "exit 0"
 pack:
-  decompose:
+  shape:
     architecture: cat ./arch.md
 YAML
 cleancwd="$tmp/elsewhere"
@@ -220,7 +220,7 @@ cat >"$packs_p/proj-p/project.yaml" <<'YAML'
 name: proj-p
 detect: "exit 0"
 pack:
-  decompose:
+  shape:
     architecture: cat ./arch.md
 YAML
 cleancwd_p="$tmp/elsewhere-p"
@@ -410,8 +410,7 @@ pack:
     knowledge: "Frame prose."
   shape:
     knowledge: "Shape prose."
-  decompose:
-    knowledge: "Decompose prose."
+    architecture: "Shape architecture prose."
   implement:
     knowledge: "Implement prose."
     codeStyle: cat ./rules.md
@@ -420,7 +419,7 @@ out=$(ctx "$repo_ad")
 assert_not_contains "ad/knowledge-absent" "$out" "knowledge="
 assert_not_contains "ad/frame-knowledge-absent" "$out" "frame.knowledge="
 assert_not_contains "ad/shape-knowledge-absent" "$out" "shape.knowledge="
-assert_not_contains "ad/decompose-knowledge-absent" "$out" "decompose.knowledge="
+assert_not_contains "ad/shape-architecture-absent" "$out" "shape.architecture="
 assert_not_contains "ad/implement-knowledge-absent" "$out" "implement.knowledge="
 assert_not_contains "ad/implement-codeStyle-absent" "$out" "implement.codeStyle"
 assert_contains "ad/name-and-configPath-present" "$out" "WORKFLOW_PACK: name=proj-ad configPath=$repo_ad/.claude/sherpa.yaml"
