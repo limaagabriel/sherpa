@@ -45,6 +45,12 @@ Audit one built step's diff for quality. You judge code taste and correctness, n
   `acceptance-reviewer` is dispatched for it; absent for a normal step, where `acceptance-reviewer`
   covers this instead. `Interfaces`' declared `produces` entries drive the produces-matching check
   below, not just contextual forwarding.
+- `implement.review` prose — forwarded into your brief by the driver only when its interpretation of
+  that pack key (`protocols/workflow/phases/implement.md` § Per-step build) calls for folding extra
+  criteria into your dispatch specifically; absent otherwise. Resolving `implement.review` itself is
+  the driver's own pre-dispatch step, not yours. When it's forwarded, prefix any finding in your
+  output list that this prose drove with `[project-review]`, so a human can tell it apart from your
+  own judgment.
 
 ## What you audit
 - **Minimality** — no speculative abstraction, no dead flexibility, simplest thing that works.

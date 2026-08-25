@@ -25,6 +25,7 @@ These rules apply when the cwd / target / branch lives in a <Project> codebase.
 
 ## Style (consumed by the engine via the announcement)
 - **codeStyle:** a file path or array of file paths; resolved lazily via `scripts/resolve-pack-value.sh` against the config's base directory, missing files warned and skipped per-entry. The `step-builder` conforms its output to the resolved prose, and the `quality-reviewer` cites rules from it when announced.
+- **review:** a file path or array of file paths; resolved lazily via `scripts/resolve-pack-value.sh` against the config's base directory, missing files warned and skipped per-entry. Resolved by the `/implement` driver itself, right before dispatching each step's reviewer(s) — not by any subagent — and its plain-English instructions shape which reviewer(s) run and what extra they check.
 - **knowledge:** a file path or array of file paths; resolved lazily via `scripts/resolve-pack-value.sh` against the config's base directory, missing files warned and skipped per-entry. Resolved immediately before each layer's dispatch, then forwarded to that layer's subagent(s) unchanged. Subagents cannot Read files or invoke a Skill to obtain this input — the prose is delivered directly.
 - Absent → reviewers fall back to the file's language conventions + in-file/module precedent (`style — language-convention fallback`) — never skipped outright.
 

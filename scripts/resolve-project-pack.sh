@@ -42,11 +42,11 @@
 # the detection); it's required for workspace configs (one dir shared by many projects).
 # Config schema (camelCase): name, detect (a command; exit 0 = match; optional for project-local),
 #   context, pack:{knowledge, frame:{knowledge}, shape:{knowledge},
-#   decompose:{knowledge,architecture}, implement:{knowledge,codeStyle,validate}}.
+#   decompose:{knowledge,architecture}, implement:{knowledge,codeStyle,validate,review}}.
 # See packs/README.md.
 #
 # Nothing under `pack` (neither `knowledge`, bare or section-prefixed e.g.
-# decompose.knowledge, nor architecture/codeStyle/validate) is read or inlined
+# decompose.knowledge, nor architecture/codeStyle/validate/review) is read or inlined
 # by this script anymore — the `WORKFLOW_PACK:` line carries only
 # `name=` and `configPath=`. Nor is top-level `context` (formerly `sessionInstructions`)
 # read or inlined — using-sherpa's SKILL.md HARD GATE fetches it lazily off the

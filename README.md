@@ -113,6 +113,7 @@ pack:
   implement:
     codeStyle: ./rules.md                        # file path or array; resolved lazily
     validate: ./validate.md                      # file path; content is the command(s) to run
+    review: ./review.md                          # file path; prose the driver reads before dispatching reviewers
 ```
 
 Sherpa's single `SessionStart` hook scans the packs dir, detects the active project, and announces

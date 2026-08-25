@@ -27,7 +27,9 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` with
    `task` + `Goal` + `Interfaces` + `Acceptance criteria` + `configPath` when announced (the step-builder
    resolves its own `knowledge`/`implement.knowledge`, `implement.codeStyle`, and `implement.validate` via
-   resolve-pack-value.sh, the same self-resolved way) —
+   resolve-pack-value.sh, the same self-resolved way). Before dispatching that step's reviewer(s), the
+   driver itself resolves `implement.review` via resolve-pack-value.sh and, when it resolves to non-empty
+   content, follows its instructions to shape that dispatch instead of the default —
    model tier and post-build review both follow whether the step is mechanical, per
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/implement.md` § Mechanical steps.
 3. **Verdicts.** Handle verdicts per

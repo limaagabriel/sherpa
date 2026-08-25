@@ -20,6 +20,10 @@ normal step. This is the single owner classifying steps as mechanical; no other 
 at the default model. This replaces and subsumes the old "pure-codegen only" haiku rule that used
 to live in § Per-step build.
 
+**Pre-dispatch resolution.** The same `implement.review` pre-dispatch resolution (§ Per-step build)
+applies here too, before the merged single-reviewer dispatch below — the driver resolves it first
+and, when non-empty, follows it to shape this mechanical step's dispatch instead of the default.
+
 **Merged review.** For a mechanical step, on `BUILT`, dispatch ONLY `quality-reviewer` — skip
 `acceptance-reviewer` entirely for this step — but extend `quality-reviewer`'s brief for this
 dispatch to also include the step's `Acceptance criteria` and `Interfaces` (the inputs
@@ -53,6 +57,19 @@ Each step:
 - Builds in isolation — module still builds, no half-applied artifacts, unless that build failure
   is covered by a later step's goal.
 - Lands exactly one commit (real subject). The step-builder owns it; never add a manual commit on top.
+- **Before dispatching this step's reviewer(s)**, the driver itself (not any subagent) resolves
+  `implement.review` — when `configPath` is announced — via `bash scripts/resolve-pack-value.sh
+  <configPath> implement.review`, the same self-resolved, point-of-need way `/decompose` already
+  resolves `decompose.knowledge`/`decompose.architecture`. It's a `.md` file path or array,
+  resolved exactly like `codeStyle`/`knowledge` (no special mode). When it resolves to non-empty
+  content, the driver follows its plain-English instructions to shape which reviewer(s) it
+  dispatches for this step and what extra they're briefed to check, instead of always falling back
+  to the hardcoded pattern below. This mechanism never spawns a new subagent type — whatever gets
+  dispatched is still `acceptance-reviewer` and/or `quality-reviewer`; the prose can only shape
+  which of those run and what extra they check. Any resulting reviewer output still resolves to
+  the existing `PASS`/`FIX`/`BLOCK` / `MET`/`UNMET` vocabulary, folded into § Verdicts unchanged —
+  `implement.review` introduces no new verdict shape. Absent or empty → the driver runs its default
+  dispatch below unchanged.
 - On `BUILT`, for a normal (non-mechanical) step, two L4 reviewers run in parallel over the step's
   commit range: `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to
   judge the declared `produces` against the built symbols) and `quality-reviewer` (clean, correct,

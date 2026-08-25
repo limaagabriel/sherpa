@@ -646,5 +646,23 @@ au_status=$?
 err_au=$(cat "$tmp/value-au-stderr.txt")
 assert_contains "au/unrecognized-arg-stderr" "$err_au" "--raw"
 
+# (av) implement.review resolves as file content, the same default generic way
+# every other content-bearing key does — no special mode. This key needs no
+# special-casing in resolve-pack-value.sh itself (it's already fully generic
+# for any dotted key); it's the `/implement` driver, not this script, that
+# reads and acts on the resolved prose (protocols/workflow/phases/implement.md
+# § Per-step build).
+repo_av="$tmp/value-av/.claude"
+mkdir -p "$repo_av"
+cat >"$repo_av/sherpa.yaml" <<'YAML'
+name: proj-av
+pack:
+  implement:
+    review: ./review.md
+YAML
+echo -n "Also flag any new REST endpoint missing an OpenAPI annotation." >"$repo_av/review.md"
+out_av=$("$value_script" "$repo_av/sherpa.yaml" implement.review)
+assert_eq "av/review-content" "$out_av" "Also flag any new REST endpoint missing an OpenAPI annotation."
+
 [ "$fail" -eq 0 ] && echo "PASS: all resolution cases" || echo "FAILED"
 exit "$fail"

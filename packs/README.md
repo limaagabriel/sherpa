@@ -58,7 +58,7 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 context: ./context.txt
 
 # The WORKFLOW_PACK — extension points the engine consumes, sectioned by skill.
-# Content-bearing keys (knowledge, architecture, codeStyle, validate, context)
+# Content-bearing keys (knowledge, architecture, codeStyle, validate, review, context)
 # are file paths or arrays of file paths, resolved via scripts/resolve-pack-value.sh:
 # each relative path resolves against this config's base directory; absolute paths
 # are used as-is. Missing files are warned and skipped per-entry (not all-or-nothing).
@@ -80,6 +80,7 @@ pack:
     knowledge: ./implement-knowledge.md   # optional, additive
     codeStyle: ./rules.md
     validate: ./validate.md   # file path whose content is the command(s) to run
+    review: ./review.md   # optional; prose the /implement driver reads before dispatching reviewers
 ```
 
 On the first config whose `detect` exits 0, the hook emits `context` first,
@@ -89,7 +90,7 @@ resolved lazily on demand via `scripts/resolve-pack-value.sh`.
 
 ### Relative paths and resolution
 
-Content-bearing keys (`knowledge`, `architecture`, `codeStyle`, `validate`, `context`)
+Content-bearing keys (`knowledge`, `architecture`, `codeStyle`, `validate`, `review`, `context`)
 are resolved by calling `scripts/resolve-pack-value.sh <configPath> <dotted.key>`.
 This script reads the YAML value (string or array of strings), resolves each relative
 entry against the config's base directory, reads each resolved file, and concatenates
@@ -152,7 +153,18 @@ naming coordination between packs needed.
 | `implement.knowledge` | file path or array of paths | additive prose for the implement layer, resolved the same lazy way alongside the cross-cutting `knowledge` | `step-builder`, `quality-reviewer` | cross-cutting `knowledge` only |
 | `implement.codeStyle` | file path or array of paths | complete rule set, resolved lazily and concatenated | `step-builder` output conformance + `quality-reviewer` style pass | falls back to language conventions + in-file precedent — `style — language-convention fallback` |
 | `implement.validate` | file path or array of paths | command(s) `step-builder` runs before committing, resolved lazily and concatenated — its content IS the command(s) to run | `step-builder`'s existing "build/test before committing" gate — a failure is `BUILD FAILED` | `step-builder` runs its own acceptance check only |
+| `implement.review` | file path or array of paths | prose instructions, resolved lazily and concatenated, read by the `/implement` driver itself at its pre-dispatch resolution point, right before dispatching that step's reviewer(s) | `/implement`'s driver, and whichever of `acceptance-reviewer`/`quality-reviewer` it ends up dispatching | driver uses its default two-reviewer/mechanical-single-reviewer dispatch unchanged |
 | `context` | file path or array of paths | free-form prose for session-start context | `SessionStart` hook as first `additionalContext`, before the `WORKFLOW_PACK:` line | no additional context |
+
+`implement.review`'s content is plain prose the `/implement` driver reads and acts on directly —
+not a structured directive. For example, a `review.md` containing just:
+
+```
+Also flag any new REST endpoint missing an OpenAPI annotation.
+```
+
+lets the driver fold that instruction into `quality-reviewer`'s brief for the steps where it
+applies, without any new engine surface — no new subagent, no new verdict shape.
 
 `configPath` — the resolved path to this pack's yaml/config file — is announced automatically
 by the engine alongside `name` in the `WORKFLOW_PACK:` line. All other keys,
