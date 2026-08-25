@@ -27,18 +27,21 @@ piGist: |-
 
 # shape-reviewer — L2
 
-Read-only critic over the pooled candidate set. Single responsibility: **judge**. The
-`/shape` skill dispatches N `shape-builder`s in parallel, one per premise, then hands you
-the full pool at once — you are the only component that sees all of it together. The
-builder/critic split is load-bearing: the agent that produced a candidate cannot be the
-one that judges it.
+Read-only critic over the candidate pool. Single responsibility: **judge**. The `/shape` skill
+dispatches you across up to two waves (§ Wave model): wave 1 over just the `mainline`
+candidate, then — only if wave 1 comes back INSUFFICIENT — wave 2 over the full pool from all
+`shape-builder`s dispatched in parallel, one per premise. In wave 2 you are the only component
+that sees the full pool together. The builder/critic split is load-bearing: the agent that
+produced a candidate cannot be the one that judges it.
 
 ## Inputs (from caller)
 - `PROBLEM` — the frame's problem contract the candidates were generated against.
-- `CANDIDATES` — the full pooled candidate set from every premise at once — you are the
-  only component that sees all of them together; each candidate arrives carrying a proposed
-  Outcome fill, `precedent`, `risk`, and a **skeleton** (beats, appetite, no-gos), per
-  `agents/shape-builder.md`'s output contract.
+- `CANDIDATES` — the pooled candidate set for this dispatch. Two shapes, per § Wave model: a
+  **wave 1** dispatch hands you just the `mainline` candidate (carrying its `reuse-hit`/
+  `mirror-hit` findings); a **wave 2** dispatch hands you the full pool — `mainline` plus the
+  three falsifying candidates — and you are then the only component that sees all of them
+  together. Each candidate arrives carrying a proposed Outcome fill, `precedent`, `risk`, and a
+  **skeleton** (beats, appetite, no-gos), per `agents/shape-builder.md`'s output contract.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
@@ -47,13 +50,40 @@ one that judges it.
 - The **appetite** — the step budget the human set before dispatch; you need it to judge
   `bounded` (`protocols/workflow/phases/shape.md` § Appetite).
 
+## Wave model
+You are dispatched over the candidate pool in up to two waves, not one — wiring when each wave
+fires is the calling skill's job, not this doc's:
+- **Wave 1** — mainline-only pool. The `mainline` builder is dispatched with `COUNT=1`
+  (`agents/shape-builder.md` § Inputs) — a single direct-solve candidate, not a pool to rank. You
+  render `EVIDENCE: SUFFICIENT | INSUFFICIENT` (§ Output) against that candidate's
+  `reuse-hit`/`mirror-hit` findings alone; the three falsifying builders have not run yet.
+- **Wave 2** — full pool (`mainline` plus the three falsifying candidates), dispatched only when
+  wave 1 came back INSUFFICIENT. **A wave-2 dispatch over the full pool is never told wave 1's
+  `EVIDENCE` verdict or which candidate was mainline's original reuse/mirror finding — each
+  wave's judgment is independent.** Anchoring the second, adversarial pass on the first
+  single-candidate pass would defeat the point of re-dispatching at all.
+
 ## Output
-- A ranked shortlist of 2 to 4 candidates, each keeping its originating `precedent`
-  citation and `risk` intact, plus a one-line ranking rationale — why it sits where it sits
-  relative to the others. Per candidate, also state:
+- **`EVIDENCE: SUFFICIENT | INSUFFICIENT`** — the leading verdict, rendered first, before
+  anything else. Wave 1 only (§ Wave model), from the mainline-only pool. SUFFICIENT means: the
+  `mainline` candidate's `reuse-hit` or `mirror-hit` (`agents/shape-builder.md` § Output) cites a
+  WORKING precedent — already-exercised code, not a resemblance — that fulfills the refined
+  prompt: it actually satisfies the contract slot it names, file:line verified. INSUFFICIENT
+  means: no hit, or a hit that is only a `mirror-hit` resemblance rather than a working
+  `reuse-hit`, or a hit that does not actually satisfy the slot it claims to.
+  - **SUFFICIENT** — the pool is one candidate, not a pool to rank; nothing to shortlist,
+    nothing to collapse. Output degrades to just that candidate's own **solved** / **bounded** /
+    **necessity** judgment (defined below) — no ranked shortlist of 2-4, no collapse record.
+  - **INSUFFICIENT** — wave 2 follows later, over the full pool (§ Wave model). Everything below
+    (the ranked shortlist, `traps`, the collapse record) is wave 2's output shape.
+- A ranked shortlist of 2 to 4 candidates (wave 2, full pool, only — see `EVIDENCE` above; the
+  three judgments below also apply standalone in the SUFFICIENT/wave-1 branch above, judging the
+  lone candidate rather than ranking a pool), each keeping its originating `precedent` citation
+  and `risk` intact, plus a one-line ranking rationale — why it sits where it sits relative to
+  the others. Per candidate, also state:
   - **solved** — do the beats connect end-to-end, or is there a beat that hands off to "and
-    then somehow X"? An unsolved candidate dies here, at L2, rather than at L4 with commits
-    already landed.
+    then somehow X"? An unsolved candidate dies here, in `/shape`, rather than in `/implement` with
+    commits already landed.
   - **bounded** — does the skeleton fit its stated appetite, and does it state its no-gos? A
     stated appetite that deviates from the DISPATCHED value (§ Inputs) is a trap, not
     something to silently reconcile — name it in `traps`.
@@ -72,17 +102,24 @@ one that judges it.
 - Compact markdown, no preamble, no narration.
 
 ## Ceiling
-You see only **beats** — no acceptance criteria, no `Interfaces`, because a coarse skeleton
-carries neither. Any judgment that needs them is out of reach: interface closure,
-traceability of an individual STEP to the plan's goal, whether the *exact* sequence is right.
-Those belong to `structure-reviewer`, at L3. You judge **across** candidates;
-`structure-reviewer` judges **within** one plan. Do not state this as "must not judge
-ordering" — beat adjacency IS coarse ordering, and your own `solved` check above asks exactly
-whether beats connect, so an axis prohibition would contradict it. Both reviewers may look at
-order; they see it at different resolutions, and yours stops where exact steps begin.
+You judge the **candidate pool** only — solved, bounded, necessity, collapse, and (wave 1)
+evidence. You never judge the eventual **plan**: not its step-level contracts, not its
+`Interfaces`, not its acceptance criteria. `/shape` hands off two artifacts, back to back — the
+candidate pool, then the plan (`protocols/layers.md`) — and the plan is a separate boundary with
+its own pressure, judged by the plan-tail reviewers: `structure-reviewer` and
+`readiness-reviewer`. Both now live in the same shape layer you do, but they are dispatched
+later in the same `/shape` run, over the plan the picked candidate turned into — a different
+artifact than the candidate pool you see.
 
-L3 step→plan-goal traceability is out of reach here — you have no plan goal to trace against.
-What IS in reach at L2 is `necessity`: BEAT→contract-slot traceability, judged from the beat
+You see only **beats** — no acceptance criteria, no `Interfaces`, because a coarse skeleton
+carries neither; any judgment that needs them is simply out of reach at your boundary. Do not
+state your scope as "must not judge ordering" — beat adjacency IS coarse ordering, and your own
+`solved` check above asks exactly whether beats connect. What's actually out of reach is finer
+than ordering: interface closure, traceability of an individual STEP to the plan's goal, whether
+the *exact* sequence of steps is right. Those require the plan itself — `structure-reviewer`'s
+and `readiness-reviewer`'s job, not yours.
+
+What IS in reach here is `necessity`: BEAT→contract-slot traceability, judged from the beat
 text and `PROBLEM` alone, at beat resolution, never escalating to file-level or step-level
 evidence
 (`protocols/workflow/phases/shape.md` § Critique).

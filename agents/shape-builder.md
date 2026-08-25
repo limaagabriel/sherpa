@@ -43,13 +43,32 @@ separate critic evaluates what you return.
     solves the frame's stated obstacle directly — the direction a falsifying dispatch is barred
     from returning (`protocols/workflow/phases/shape.md` § Vantages). The `who`/solved-signal
     off-limits restriction applies only to falsifying dispatches; it's moot for `mainline`, which
-    holds everything true by definition.
+    holds everything true by definition. Before generating any candidate, `mainline` also checks
+    the reuse/mirror rungs — see `reuse-hit`/`mirror-hit` in § Output.
 - `TARGET_DIR` — absolute path to read. Default: current working directory.
-- `COUNT` — how many candidate directions to return. Default: 3.
+- `COUNT` — how many candidate directions to return. Default: 3. **Exception:** a `mainline`
+  wave-1 dispatch (`agents/shape-reviewer.md` § Wave model) is issued with `COUNT=1` — wave 1's
+  whole point is a single direct-solve check before deciding whether to diverge at all, and a
+  multi-candidate mainline pool at wave 1 would defeat the single-candidate degrade path's own
+  premise.
 - Appetite — the step budget each candidate's skeleton must fit
   (`protocols/workflow/phases/shape.md` § Appetite).
 
 ## Output
+- **`mainline` only — checked before generating divergent candidates:**
+  - `reuse-hit: <file:line — fulfills <problem-contract slot> because <reason>> | none` — a
+    working, already-exercised piece of code that already fulfills the refined prompt's need,
+    cited with `file:line` and which contract slot (`who` / `capability` / `obstacle` / `costs` /
+    `solved-signal`) it satisfies.
+  - `mirror-hit: <file:line — resembles <problem-contract slot> because <reason>> | none` — a
+    similar-shaped existing solution elsewhere in the codebase that could be adapted, same
+    citation shape as `reuse-hit`.
+  These two fields are ADDITIVE to `mainline`'s candidate-generation output below — `mainline`
+  still returns its candidate(s) as usual; `reuse-hit`/`mirror-hit` just also report what was
+  found on the reuse/mirror rungs before generating anything new. Falsifying dispatches
+  (`obstacle`/`capability`/`costs`) never emit these two fields — only `mainline` holds the
+  contract's slots true, so a "hit" against the true contract isn't a falsifying builder's job;
+  its whole premise is that a slot is false.
 - `COUNT` candidate directions. Each candidate carries:
   - a proposed Outcome fill — one sentence naming an observable end-state the problem could
     resolve to, NOT an action, NOT a plan.
