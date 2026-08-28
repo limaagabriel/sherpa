@@ -4,6 +4,7 @@ description: Read-only critic. Judges pooled candidates for solved/bounded/neces
 tools: Read, Grep, Glob, Bash
 Layer: shape
 model: opus
+effort: high
 codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only

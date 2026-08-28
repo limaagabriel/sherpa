@@ -4,6 +4,7 @@ description: Per-step acceptance reviewer (L3). Read-only. Judges a built step's
 tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
+effort: high
 codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only

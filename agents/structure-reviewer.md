@@ -4,6 +4,7 @@ description: Read-only shape-layer adversary (L2). Attacks the whole plan's step
 tools: Read, Grep, Glob, Bash
 Layer: shape
 model: opus
+effort: high
 codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only

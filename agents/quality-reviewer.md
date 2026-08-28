@@ -4,6 +4,7 @@ description: Per-step quality reviewer (L3). Read-only. Audits a built step's di
 tools: Read, Grep, Glob, Bash
 Layer: build
 model: sonnet
+effort: high
 codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only

@@ -4,6 +4,7 @@ description: Read-only macro-layer adversary (L1). Attacks the frame's problem c
 tools: Read, Grep, Glob, Bash
 Layer: macro
 model: opus
+effort: high
 codexModel: gpt-5.6-terra
 codexReasoningEffort: high
 codexSandbox: read-only

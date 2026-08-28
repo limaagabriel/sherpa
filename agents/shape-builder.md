@@ -4,6 +4,7 @@ description: Read-only candidate builder. Holds one premise false — or, for `m
 tools: Read, Grep, Glob, Bash
 Layer: shape
 model: sonnet
+effort: medium
 codexModel: gpt-5.6-luna
 codexReasoningEffort: medium
 codexSandbox: read-only

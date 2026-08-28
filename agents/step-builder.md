@@ -4,6 +4,7 @@ description: Sherpa's step-builder (L3). Implements one plan step, lands one com
 tools: Read, Grep, Glob, Bash, Edit, Write
 Layer: build
 model: sonnet
+effort: medium
 codexModel: gpt-5.6-luna
 codexReasoningEffort: high
 codexSandbox: workspace-write
