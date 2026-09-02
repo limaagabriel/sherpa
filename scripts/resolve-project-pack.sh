@@ -11,18 +11,15 @@
 # `systemMessage` naming the loaded pack. On no match it emits a `systemMessage` saying
 # the engine runs generic (so the user knows no project knowledge loaded).
 #
-# `context` (the config's top-level prose, formerly `sessionInstructions`) is never
+# `session` (the config's SessionStart-hook prose, formerly `context`) is never
 # read or emitted by this script — using-sherpa's SKILL.md HARD GATE fully owns its
-# delivery via lazy resolution (scripts/resolve-pack-value.sh <configPath> context),
-# triggered off the `WORKFLOW_PACK:` line's configPath. This keeps `context` off the
+# delivery via lazy resolution (scripts/resolve-pack-value.sh <configPath> session),
+# triggered off the `WORKFLOW_PACK:` line's configPath. This keeps `session` off the
 # hook-truncation-sensitive path entirely, at the cost of a required lazy fetch by
 # the consuming skill.
 #
 # Config candidates, highest precedence first:
-#   <cwd>/.sherpa/sherpa.yaml|.yml       project-local, engine-neutral, shareable in-repo (single file)
-#   <cwd>/.claude/sherpa.yaml|.yml       project-local, engine-specific, shareable in-repo (single file)
-#   <cwd>/.codex/sherpa.yaml|.yml        project-local, engine-specific, shareable in-repo (single file)
-#   <cwd>/.pi/sherpa.yaml|.yml           project-local, engine-specific, shareable in-repo (single file)
+#   <cwd>/.sherpa/project.yaml|.yml      project-local, single canonical location (single file)
 #   Workspace packs dir (many, one dir per pack: <dir>/*/project.yaml|.yml), chosen by
 #   this precedence:
 #     1. $SHERPA_CONFIG_DIR set   -> packs dir is $SHERPA_CONFIG_DIR/projects
@@ -39,23 +36,22 @@
 #        workspace dir, after the XDG path, using the same per-pack layout.
 # First config whose detect matches wins, so a project-local pack overrides the workspace.
 # `detect` is optional for project-local configs (file presence at that fixed path is
-# the detection); it's required for workspace configs (one dir shared by many projects).
-# Config schema (camelCase): name, detect (a command; exit 0 = match; optional for project-local),
-#   context, pack:{knowledge, frame:{knowledge}, shape:{knowledge,architecture},
-#   implement:{knowledge,codeStyle,validate,review}}.
-# See packs/README.md.
+# the detection) and must never be relied on there; it's required for workspace configs
+# (one dir shared by many projects).
+# Config schema (camelCase): name, detect (a command; exit 0 = match; optional for
+# project-local). Every content-bearing value (session, context, and the frame/shape/
+# implement section keys) is now a fixed convention path resolved by
+# scripts/resolve-pack-value.sh relative to scripts/resolve-pack-basedir.sh's output —
+# no YAML pointer keys are read for them anymore. See packs/README.md for the full
+# 9-key convention-path table.
 #
-# Nothing under `pack` (neither `knowledge`, bare or section-prefixed e.g.
-# shape.knowledge, nor architecture/codeStyle/validate/review) is read or inlined
-# by this script anymore — the `WORKFLOW_PACK:` line carries only
-# `name=` and `configPath=`. Nor is top-level `context` (formerly `sessionInstructions`)
-# read or inlined — using-sherpa's SKILL.md HARD GATE fetches it lazily off the
-# `WORKFLOW_PACK:` line's configPath. A consuming layer skill fetches `knowledge` prose or
-# any other content-bearing key's resolved value the same way, at the point it's actually
-# needed, by calling scripts/resolve-pack-value.sh <configPath> <dotted.key> (which resolves
-# relative values against scripts/resolve-pack-basedir.sh <configPath>'s output:
-# project-local configs base on the proximate .sherpa/.claude/.codex/.pi dir; workspace
-# configs base on the pack's own directory).
+# Nothing content-bearing (neither `context`/`session` nor any frame/shape/implement
+# key) is read or inlined by this script anymore — the `WORKFLOW_PACK:` line carries
+# only `name=` and `configPath=`. A consuming layer skill fetches `session`, `context`,
+# or any other convention key's resolved value lazily, at the point it's actually
+# needed, by calling scripts/resolve-pack-value.sh <configPath> <key> (which resolves
+# against scripts/resolve-pack-basedir.sh <configPath>'s output: always the config
+# file's own directory, project-local or workspace alike).
 #
 # jq builds every JSON payload this script emits, so a missing jq means nothing can be
 # emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
@@ -99,43 +95,24 @@ else
   packs_dirs=("${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects" "$HOME/.claude/sherpa/projects")
 fi
 
-proximate_base() {
-  local dir
-  dir=$(cd "$(dirname "$1")" 2>/dev/null && pwd) || { dirname "$1"; return; }
-  local d="$dir"
-  while [ "$d" != "/" ]; do
-    case "$(basename "$d")" in
-      .sherpa|.claude|.codex|.pi) printf '%s' "$d"; return ;;
-    esac
-    d=$(dirname "$d")
-  done
-  printf '%s' "$dir"
-}
-
 shopt -s nullglob
 local_candidates=(
-  "$cwd/.sherpa/sherpa.yaml" "$cwd/.sherpa/sherpa.yml"
-  "$cwd/.claude/sherpa.yaml" "$cwd/.claude/sherpa.yml"
-  "$cwd/.codex/sherpa.yaml"  "$cwd/.codex/sherpa.yml"
-  "$cwd/.pi/sherpa.yaml"     "$cwd/.pi/sherpa.yml"
+  "$cwd/.sherpa/project.yaml" "$cwd/.sherpa/project.yml"
 )
 candidates=("${local_candidates[@]}")
 for _pd in "${packs_dirs[@]}"; do candidates+=("$_pd"/*/project.yaml "$_pd"/*/project.yml); done
 
-is_local() {
-  local c
-  for c in "${local_candidates[@]}"; do [ "$c" = "$1" ] && return 0; done
-  return 1
-}
-
 for config in "${candidates[@]}"; do
   [ -f "$config" ] || continue
   detect=$(yq '.detect // ""' "$config" 2>/dev/null) || continue
-  if is_local "$config"; then
-    base=$(proximate_base "$config")
-  else
-    base=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || base=$(dirname "$config")
-  fi
+  # Base dir is always the config file's own directory now — local and
+  # workspace configs alike (see resolve-pack-basedir.sh).
+  base=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || base=$(dirname "$config")
+
+  local_match=0
+  case "$config" in
+    "$cwd/.sherpa/project.yaml"|"$cwd/.sherpa/project.yml") local_match=1 ;;
+  esac
 
   # Project-local configs live at a fixed path under $cwd — finding the file
   # there already proves the project is active, so `detect` is optional.
@@ -143,7 +120,7 @@ for config in "${candidates[@]}"; do
   # is required to pick the right one.
   if [ -n "$detect" ]; then
     ( cd "$base" 2>/dev/null && CWD="$cwd" bash -c "$detect" ) >/dev/null 2>&1 || continue
-  elif ! is_local "$config"; then
+  elif [ "$local_match" -ne 1 ]; then
     continue
   fi
 
