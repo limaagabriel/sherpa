@@ -43,6 +43,11 @@ produced a candidate cannot be the one that judges it.
   three falsifying candidates — and you are then the only component that sees all of them
   together. Each candidate arrives carrying a proposed Outcome fill, `precedent`, `risk`, and a
   **skeleton** (beats, appetite, no-gos), per `agents/shape-builder.md`'s output contract.
+- `DIRECTION` — forwarded by the caller only on a directed dispatch: the human's settled
+  direction, carried verbatim (`protocols/workflow/phases/shape.md` § Boundaries — Directed).
+  On a directed dispatch the candidate you receive is mainline's, with its Outcome pinned to
+  `DIRECTION` rather than a direct-solve of mainline's own devising (`agents/shape-builder.md`
+  § Rules).
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
   - `knowledge` — cross-cutting project knowledge.
@@ -63,8 +68,25 @@ fires is the calling skill's job, not this doc's:
   `EVIDENCE` verdict or which candidate was mainline's original reuse/mirror finding — each
   wave's judgment is independent.** Anchoring the second, adversarial pass on the first
   single-candidate pass would defeat the point of re-dispatching at all.
+- **Directed lane** — fires instead of wave 1/wave 2, only when the dispatch carries `DIRECTION`
+  (§ Inputs): a single pinned candidate, mainline's, Outcome pinned to `DIRECTION`. You render
+  `DIRECTION: SOLID | HOLES` (§ Output) in place of `EVIDENCE` against that one candidate. No
+  wave 2 follows regardless of what you find — the three falsifying builders never ran
+  (`protocols/workflow/phases/shape.md` § Critique — Directed lane).
 
 ## Output
+- **`DIRECTION: SOLID | HOLES`** — the leading verdict on the directed lane (§ Wave model),
+  rendered first, before anything else, in place of `EVIDENCE` — `EVIDENCE` is defined over the
+  `reuse-hit`/`mirror-hit` findings a wave-1 mainline-only pool carries, and a pinned candidate
+  (§ Inputs) has no such pool to judge; it is judged on fit to `DIRECTION` instead. `HOLES` fires
+  on any of: an unsolved beat — a beat that hands off to "and then somehow X"; a `reuse-hit`
+  showing `DIRECTION` rebuilds working code already present in the codebase rather than solving
+  something new; or `DIRECTION` rewriting a slot of the problem contract (`who` / `capability` /
+  `obstacle` / `costs` / solved-signal) instead of solving within it. Traps — an untraced beat
+  (necessity), an appetite deviation — are listed in `traps` below but do not gate `HOLES`; on
+  `SOLID` the run continues with those traps riding into the pitch as normal. Then the same
+  **solved** / **bounded** / **necessity** judgment (defined below) as the `SUFFICIENT` degenerate
+  branch below — no shortlist, no collapse record.
 - **`EVIDENCE: SUFFICIENT | INSUFFICIENT`** — the leading verdict, rendered first, before
   anything else. Wave 1 only (§ Wave model), from the mainline-only pool. SUFFICIENT means: the
   `mainline` candidate's `reuse-hit` or `mirror-hit` (`agents/shape-builder.md` § Output) cites a
