@@ -28,6 +28,23 @@ same pre-run read of the codebase, the exact anchoring the isolation invariant a
 builders (§ Critique — Isolation invariant, Nemeth 2001); the wall extends that same invariant to
 the driver's own pre-dispatch evidence, not just to a sibling builder's output.
 
+**Directed.** `DIRECTION` is the human's settled solution direction, carried verbatim — bound only
+from the human's own words marking it settled: the `/shape` arg, or an explicit statement in
+conversation. A floated preference or a passing example is not `DIRECTION`. When it's unclear
+whether the human meant to settle it, the driver asks (`protocols/questions.md`), never infers.
+`DIRECTION` never rewrites `who` / `capability` / `obstacle` / `costs` / solved-signal; a stated
+"direction" that only restates the problem, rather than solving it, is named as such in one line,
+not bound, and the default path runs. Framed and frameless paths both admit `DIRECTION` — an
+overlay on either path (§ Vantages), never a third path. The scout-evidence wall above is
+unchanged: scout output is still never forwarded to any builder; `DIRECTION` is the human's own
+words, not scout output, and IS forwarded — to mainline (§ Vantages). Authority:
+`protocols/layers.md` § A ceremony gradient names `"no direction picked or needs plan"` as
+`/shape`'s entry condition — direction and plan are two separate things a run may still owe — and
+its L2 discriminator states shape's unbound question as "which direction, and whether a full plan
+for that direction adds up to the goal": a directed run answers the first half at entry, but still
+owes the second, which the directed critique lane (§ Critique — Directed lane) and plan tail exist
+to close.
+
 ## Appetite
 A STEP BUDGET, not a time budget. Shape Up (Singer 2019): *"a time budget for a standard team size."* Translated
 into sherpa's terms: *fixed time, variable scope* becomes **fixed step count, variable scope**. The
@@ -114,6 +131,15 @@ is an EVALUATION axis, so all N builders would describe the SAME candidate score
 critic's collapse record would then merge them back. A premise, unlike a concern, changes what a
 candidate CAN BE — not how it's judged.
 
+**Directed run.** When `DIRECTION` is bound (§ Boundaries — Directed), the run dispatches
+`mainline` alone, `COUNT=1`, its brief carrying `DIRECTION` alongside the problem contract.
+Mainline's `Outcome` fill is PINNED to `DIRECTION`: it skeletonizes that direction into beats, it
+never substitutes a direction of its own. The three falsifying builders are never dispatched — a
+premise-negating builder exploring outside a direction the human already settled would waste a
+call on candidates the pitch can't use. Wave 2 is unreachable on a directed run: there is no
+`EVIDENCE: INSUFFICIENT` gate to fail into it, because the directed lane never renders `EVIDENCE`
+at all (§ Critique — Directed lane).
+
 ## Skeleton
 Every candidate carries one, bound to Shape Up part 1's three properties:
 
@@ -154,6 +180,17 @@ not a blanket "human always picks":
 - Wave 1's `SUFFICIENT` degenerate case (§ Critique) has exactly one candidate and nothing to
   contest against — that candidate goes straight into the pitch as the winner, the same as an
   uncontested wave-2 pick.
+- A directed run whose directed lane rendered `DIRECTION: SOLID` (§ Critique — Directed lane) has
+  exactly one pinned candidate and nothing to contest — that candidate goes straight into the pitch
+  as the winner, the same as the `SUFFICIENT` case above.
+
+**Directed branch.** A directed `SOLID` pitch is composed like any other, with one pinned candidate
+and nothing to contest, so the driver plans it — but three fields differ from a contested or
+`SUFFICIENT` pitch: `solution` is the skeletonized `DIRECTION` candidate itself (§ Vantages —
+Directed run); rejected candidates reads "none — direction supplied by the human," not a list of
+losing candidates a fan-out that never ran couldn't have produced; and there is no shortlist to
+render — a shortlist ranks a pool of more than one, and this pool is one. Traps the directed lane
+found (§ Critique — Directed lane) still ride into the pitch as normal.
 
 Rejecting the pitch outright — the auto-picked winner, or both contested candidates — is always a
 valid outcome, not a failure, whichever branch produced it.
@@ -191,6 +228,26 @@ builder's output every run (`agents/shape-reviewer.md` § Wave model):
 Run totals: wave 1 alone costs 2 agent calls; a run whose evidence is INSUFFICIENT continues into
 wave 2 and pays 5 more, for **7 agent calls total** before the plan tail (`structure-reviewer`,
 `readiness-reviewer` — separate dispatches, later in the same run, not counted here).
+
+**Directed lane.** When `DIRECTION` is bound (§ Boundaries — Directed) the critique dispatches only
+one `shape-reviewer` call, over the single pinned candidate the directed dispatch produced
+(§ Vantages — Directed run); it never renders `EVIDENCE` — there is no second candidate pool to
+gate into wave 2 with. It leads with `DIRECTION: SOLID | HOLES` in place of the `EVIDENCE` token.
+`HOLES` fires on any of: an unsolved beat; a `reuse-hit` showing `DIRECTION` rebuilds working code
+already present in the codebase rather than solving something new; or `DIRECTION` rewriting a slot
+of the problem contract instead of solving within it. Traps — an untraced beat, an appetite
+deviation — do not gate `SOLID`; they ride into the pitch the same as wave 2's traps do (§ Pitch),
+and the run continues. `SOLID` → the pitch (§ Pitch), then § Plan, same as any other pitched run.
+`HOLES` → one framing line naming what it blocks, in the reader's terms, then the finding verbatim
+(`protocols/prose.md` § Verbatim is a quote, not a frame); the human then picks one of three: amend
+`DIRECTION`, fall back to the default (undirected) path, or stop. Falling back re-enters wave 1 with
+`DIRECTION` dropped — never forwarded to any builder from that point on — `PROBLEM` and the
+appetite already set (§ Appetite) reused as-is. Cost, on this doc's own basis, before the plan
+tail: the directed lane alone is 1 builder call + 1 reviewer call = **2 agent calls**; a fallback
+adds wave 1's 2 plus, if wave 1 comes back INSUFFICIENT, wave 2's 5 more — up to **7 agent calls**
+on top, **9 agent calls total** before the plan tail. The isolation invariant and the anchoring
+guard below are unchanged by the directed lane: there is only ever one candidate and one reviewer
+call in this lane, so neither has anything beyond what it already bars to guard against here.
 
 **Anchoring guard** — a wave-2 `shape-reviewer` call is never told wave 1's `EVIDENCE` verdict, nor
 which candidate was mainline's original reuse/mirror finding (`agents/shape-reviewer.md` § Wave
@@ -232,9 +289,12 @@ to author.
 
 ### Bind the goal
 `Outcome` binds here, once the candidate is picked, and nowhere earlier. Bind it from the picked
-candidate's `solution` field (§ Pitch) — auto-picked (`CONTESTED: no`, or wave 1's `SUFFICIENT`
-degenerate case) or the human's pick when `CONTESTED: yes` resolved the solution open question; bind
-`for`/`because`/`done when` as normal. Read the appetite already set at dispatch (§ Appetite) — it
+candidate's `solution` field (§ Pitch) — auto-picked (`CONTESTED: no`, wave 1's `SUFFICIENT`
+degenerate case, or a directed `DIRECTION: SOLID`, § Pitch — Directed branch) or the human's pick
+when `CONTESTED: yes` resolved the solution open question; bind `for`/`because`/`done when` as
+normal. On a directed run, `solution` is `DIRECTION` itself, by pinning (§ Vantages — Directed
+run) — the bind mechanism here doesn't change, only what fills the field it binds from. Read the
+appetite already set at dispatch (§ Appetite) — it
 is not re-asked here — kept only to compare against the plan's final step count when presenting
 (§ Plan proposal format), never forwarded to a reviewer at this layer as judgment material. Bind the
 pitch's `no-gos` and `rabbit holes` fields (§ Pitch) as plan constraints — a plan step that does one
@@ -350,8 +410,18 @@ A question, critique, or your own answer is **not** approval. When in doubt, you
 - Hand a skeleton acceptance criteria or interfaces before a candidate is picked — § Plan fills
   those in, once picked, not the fan-out stage.
 - Auto-select a candidate when the shortlist is `CONTESTED: yes` — that pick belongs to the human
-  alone; auto-pick only fires on `CONTESTED: no` (§ Pitch). Or state the critique ceiling as "must
+  alone; auto-pick only fires on `CONTESTED: no`, wave 1's `SUFFICIENT` degenerate case, or a
+  directed `DIRECTION: SOLID` (§ Pitch — Directed branch). Or state the critique ceiling as "must
   not judge ordering."
+- Infer `DIRECTION` from a floated preference or a passing example — bind it only from the human's
+  own words marking it settled (§ Boundaries — Directed).
+- Let `DIRECTION` rewrite a contract slot — `who` / `capability` / `obstacle` / `costs` /
+  solved-signal stay bound to the frame or inline contract, never to `DIRECTION`
+  (§ Boundaries — Directed).
+- Dispatch a falsifying builder when `DIRECTION` is bound — a directed run dispatches `mainline`
+  alone (§ Vantages — Directed run).
+- Forward `DIRECTION` into a falsifying builder's brief — the scout-evidence wall bars it the same
+  way it bars scout output (§ Boundaries — Directed).
 - Silently reconcile a candidate's stated appetite with the dispatched value — a deviation is
   a trap the critic names.
 - Forward the appetite to `structure-reviewer`, or treat it as a ceiling on the step list — it is a
