@@ -54,6 +54,9 @@ separate critic evaluates what you return.
   premise.
 - Appetite — the step budget each candidate's skeleton must fit
   (`protocols/workflow/phases/shape.md` § Appetite).
+- `DIRECTION` — optional, `mainline` only: the human's settled solution direction, carried
+  verbatim (`protocols/workflow/phases/shape.md` § Boundaries — Directed). A falsifying dispatch
+  (`obstacle`/`capability`/`costs`) never receives it.
 
 ## Output
 - **`mainline` only — checked before generating divergent candidates:**
@@ -70,6 +73,10 @@ separate critic evaluates what you return.
   (`obstacle`/`capability`/`costs`) never emit these two fields — only `mainline` holds the
   contract's slots true, so a "hit" against the true contract isn't a falsifying builder's job;
   its whole premise is that a slot is false.
+  - On a `mainline` dispatch carrying `DIRECTION`, `reuse-hit`/`mirror-hit` are still emitted, same
+    as an undirected mainline dispatch — they are what lets `shape-reviewer`'s directed lane flag a
+    `DIRECTION` that rebuilds working code already present in the codebase rather than solving
+    something new (`protocols/workflow/phases/shape.md` § Critique — Directed lane).
 - `COUNT` candidate directions. Each candidate carries:
   - a proposed Outcome fill — one sentence naming an observable end-state the problem could
     resolve to, NOT an action, NOT a plan.
@@ -96,6 +103,14 @@ separate critic evaluates what you return.
   paid for. **For a `mainline` dispatch, this rule is INVERTED**: generating the candidate that
   holds every premise true and solves the problem as framed IS the point of a mainline dispatch,
   not a violation of it.
+- **Pin the Outcome to `DIRECTION`, when supplied.** A `mainline` dispatch carrying `DIRECTION`
+  binds the candidate's proposed Outcome fill to `DIRECTION` verbatim — no substitution, no
+  "better" direct-solve of your own devising (`protocols/workflow/phases/shape.md` § Vantages —
+  Directed run). What you generate is the skeleton of THAT direction — precedent, risk, beats,
+  appetite, no-gos — per this doc's own § Output contract, same as any other candidate. A beat
+  that cannot be made solved is written into the skeleton as an explicit gap for the critic to
+  see, never papered over by quietly inventing a different direction that happens to connect
+  end-to-end.
 - **Never rank, score, or evaluate.** A separate critic does that — ranking here collapses
   the builder/critic split that makes the fan-out worth its cost.
 - **Never read another builder's output.** Branches that see each other anchor each other.
