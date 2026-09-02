@@ -271,14 +271,10 @@ mainline — judged exactly like the others: solved, bounded, necessity, collaps
 a default the human falls back to just because it exists — `shape-reviewer` must not rank its
 candidates above a stronger falsifying candidate merely for being the "safe" choice.
 
-**`CONTESTED: yes | no`** — a NEW token this phase doc now depends on, carried on wave 2's ranked
-shortlist (§ Pitch consumes it to decide who picks). `agents/shape-reviewer.md`'s current output
-contract has no such field: it has a per-candidate one-line ranking rationale ("why it sits where
-it sits relative to the others"), but that explains one candidate's OWN position, not whether the
-pool's top two sit close enough to be worth contesting — a driver cannot reliably derive a
-yes/no contest verdict by parsing rationale prose. `CONTESTED` needs its OWN explicit field;
-`agents/shape-reviewer.md` does not already cover it, and adding it there is a follow-up this doc's
-contract now depends on, not yet done.
+**`CONTESTED: yes | no`** is defined in `agents/shape-reviewer.md` § Output, rendered on wave 2's
+ranked shortlist only, and consumed here by § Pitch to decide who picks the winner: a driver
+cannot reliably derive a yes/no contest verdict by parsing the per-candidate ranking rationale
+prose alone.
 
 ## Plan
 Once a candidate is picked (§ Pitch) — auto-picked, or the human's resolution of a `CONTESTED: yes`

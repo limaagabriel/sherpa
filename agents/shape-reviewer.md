@@ -117,6 +117,15 @@ fires is the calling skill's job, not this doc's:
 
   (§ Skeleton of `protocols/workflow/phases/shape.md` defines solved and bounded; § Critique
   defines necessity — don't re-derive them.)
+- **`CONTESTED: yes | no`** — rendered on the wave-2 ranked shortlist (full pool) only, never on
+  the wave-1 `SUFFICIENT` degenerate branch or the directed lane (§ Wave model) — both hand back
+  one candidate each, with nothing to contest. `yes` when the top two candidates' margin is close
+  enough that the pick belongs to the human: the top two survive collapse as distinct angles, and
+  neither's solved/bounded/necessity judgment dominates the other's. `no` otherwise. Consumed by
+  `protocols/workflow/phases/shape.md` § Pitch to decide who picks the winner. `CONTESTED: yes`
+  does not loosen § Rules' "Commit to a ranking" — it is not "here are all of them, you decide";
+  it is still a committed, ranked top-2 handed to the human as one solution open question, not an
+  un-ranked pool.
 - `traps` — candidates that look attractive but are not, each with the ONE-LINE reason
   (hidden cost, false economy, will not scale, premature abstraction, appetite deviates from
   the dispatched value, beat untraced to a `PROBLEM` slot).
