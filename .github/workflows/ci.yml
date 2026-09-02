@@ -52,6 +52,18 @@ jobs:
             echo "retired decompose.knowledge key still referenced outside packs/README.md's historical note" >&2
             exit 1
           fi
+          # retired pack-config schema: dotted `pack:` YAML content-bearing keys, and the
+          # old 4-variant project-local filenames, are retired in favor of fixed convention
+          # paths under a single .sherpa/project.yaml. packs/README.md's own breaking-change
+          # note is the one deliberate historical mention of both retired shapes.
+          if grep -rEn '\.pack\.|^pack:[[:space:]]*$' agents/ hooks/ packs/ protocols/ scripts/ skills/ | grep -v '^packs/README\.md:'; then
+            echo "retired dotted pack: YAML schema still referenced outside packs/README.md's historical note" >&2
+            exit 1
+          fi
+          if grep -rEn '\.sherpa/sherpa\.ya?ml|\.claude/sherpa\.ya?ml|\.codex/sherpa\.ya?ml|\.pi/sherpa\.ya?ml' agents/ hooks/ packs/ protocols/ scripts/ skills/ | grep -v '^packs/README\.md:'; then
+            echo "retired project-local pack filename still referenced outside packs/README.md's historical note" >&2
+            exit 1
+          fi
           # layer-label positive asserts: the right label must actually be present, not just the
           # wrong one absent. Agents self-declare via frontmatter 'Layer:'; skills/phase docs via
           # an inline (L<n>) mention (see protocols/layers.md).

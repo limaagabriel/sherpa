@@ -91,30 +91,34 @@ gate.
 
 ## Project packs (optional)
 
-The engine ships generic. To layer in your project's conventions, drop one directory per project:
+The engine ships generic. To layer in your project's conventions, either commit a pack
+inside the repo, or drop one directory per project in a shared workspace dir:
 
 ```
-<packs dir>/<project>/project.yaml
+<repo>/.sherpa/project.yaml         # project-local, single canonical location
+<packs dir>/<project>/project.yaml  # workspace (many projects, one dir)
 ```
 
 `<packs dir>` is `$SHERPA_CONFIG_DIR/projects` if set, else `$WORKFLOW_PACKS_DIR` if set, else
 `${XDG_CONFIG_HOME:-~/.config}/sherpa/projects`.
 
-```yaml
-name: my-project
-detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
-context: ./context.txt                           # file path or array; resolved via scripts/resolve-pack-value.sh
-pack:
-  knowledge: ./knowledge.md                      # file path or array; resolved lazily
-  implement:
-    codeStyle: ./rules.md                        # file path or array; resolved lazily
-    validate: ./validate.md                      # file path; content is the command(s) to run
-    review: ./review.md                          # file path; prose the driver reads before dispatching reviewers
+`project.yaml` carries metadata only — `name`, and `detect` (a shell command; required for a
+workspace pack, forbidden for a project-local pack since the file's fixed location already
+proves the project active). Every content-bearing value is a fixed convention path next to
+that `project.yaml`, not a YAML key:
+
+```
+.sherpa/project.yaml
+.sherpa/context.md                 # cross-cutting, forwarded into every subagent's brief
+.sherpa/implement/codeStyle.md     # complete rule set; resolved lazily
+.sherpa/implement/validate.md      # content is the command(s) step-builder runs before committing
+.sherpa/implement/review.md        # prose the driver reads before dispatching reviewers
 ```
 
-Sherpa's single `SessionStart` hook scans the packs dir, detects the active project, and announces
-its pack — no per-project hook to write. If nothing matches, the engine runs generic and every
-pack-dependent step no-ops. Details and the full schema: `packs/README.md`.
+Sherpa's single `SessionStart` hook scans for a matching config, detects the active project,
+and announces its pack — no per-project hook to write. If nothing matches, the engine runs
+generic and every pack-dependent step no-ops. Full 9-key convention-path table and resolution
+rules: `packs/README.md`.
 
 ## Components
 

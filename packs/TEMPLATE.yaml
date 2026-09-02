@@ -1,48 +1,31 @@
-# Copy to <packs dir>/<project>/project.yaml (or <repo>/.sherpa/sherpa.yaml) and edit.
+# Copy to <packs dir>/<project>/project.yaml (workspace) or
+# <repo>/.sherpa/project.yaml (project-local) and edit.
 # <packs dir> is $SHERPA_CONFIG_DIR/projects if set, else $WORKFLOW_PACKS_DIR if set,
 # else ${XDG_CONFIG_HOME:-~/.config}/sherpa/projects.
-# Drop any pack key you don't fill — its engine seam simply no-ops.
-# See README.md for what each key does.
+#
+# This file carries metadata only — name and detect. Every content-bearing value
+# lives in a fixed convention file (or same-named directory of files) next to
+# this project.yaml, not in this YAML. See packs/README.md for the full table.
 
 name: my-project
 
 # A shell command, run with $CWD exported. Exit 0 = this project is active.
 # Detect however you like: cwd glob, file presence (test -f gradlew),
 # git remote (git -C "$CWD" remote get-url origin | grep -q my-org), etc.
-# Committing this file inside the repo (.claude|.codex|.pi/sherpa.yaml)? Drop
-# `detect` entirely — the file's fixed location already proves the project is
-# active. Only the shared workspace dir (many projects, one dir) needs a real one.
-detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
+# Required for a workspace pack (one dir is shared by many projects).
+# FORBIDDEN — delete this whole line — for a project-local pack: the file's
+# fixed location (<repo>/.sherpa/project.yaml) already proves the project active.
+# Example (workspace only): detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 
-# What the main agent must do at session start when detected.
-# A file path or array of file paths — resolved via scripts/resolve-pack-value.sh.
-# Paths are literal (no $HOME or ~ expansion); relative paths resolve against the
-# config's base directory. Missing files are warned and skipped per-entry.
-context: ./context.txt
-
-# Extension points the engine consumes, sectioned by skill. All content-bearing
-# keys (knowledge, architecture, codeStyle, validate, review, context) are file paths or
-# arrays of file paths — resolved via scripts/resolve-pack-value.sh. Paths are
-# literal (no $HOME or ~ expansion); relative paths resolve against the config's
-# base directory. Missing files are warned and skipped per-entry.
-#
-# For a committed project-local config, relative paths resolve against this file's
-# proximate .sherpa/.claude/.codex/.pi directory. For a workspace pack, relative
-# paths resolve against this pack's own directory (<packs dir>/<project>/), so two
-# packs can each keep their own same-named file (e.g. rules.md) without colliding.
-# See README.md § Relative paths and resolution.
-pack:
-  knowledge: ./knowledge.md   # or: [./knowledge.md, ./extra-knowledge.md]
-
-  frame:
-    knowledge: ./frame-knowledge.md   # optional, additive
-
-  shape:
-    knowledge: ./shape-knowledge.md   # optional, additive
-    architecture: ./architecture.md
-
-  implement:
-    knowledge: ./implement-knowledge.md   # optional, additive
-    codeStyle: ./rules.md
-    validate: ./validate.md   # file path; its content is the command(s) to run
-    review: ./review.md   # optional; prose the /implement driver reads before dispatching reviewers
+# Convention paths (create only the ones you need, next to this file):
+#   session.md                    SessionStart-hook prose, read once at session start
+#   context.md                    cross-cutting, forwarded into every subagent's brief
+#   frame/context.md              additive to context.md, for the frame layer only
+#   shape/context.md              additive to context.md, for the shape layer only
+#   shape/architecture.md         architecture constraints
+#   implement/context.md          additive to context.md, for the implement layer only
+#   implement/codeStyle.md        complete rule set step-builder conforms output to
+#   implement/validate.md         command(s) step-builder runs before committing
+#   implement/review.md           prose the /implement driver reads before dispatching reviewers
+# Any stem may instead be a same-named directory of *.md files, concatenated
+# LC_ALL=C sort-by-filename. Full table and resolution rules: packs/README.md.
