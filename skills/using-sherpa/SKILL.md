@@ -8,7 +8,7 @@ description: Sherpa's layer-selection nudge — check /frame, /shape, /implement
 Sherpa is a ceremony gradient: match the layer to how well-formed the task already is.
 
 - **Fuzzy task, unclear scope or open design questions** → `/frame` — scout the code, bind a problem contract, surface open questions.
-- **Problem framed but no direction picked, or a direction picked that still needs turning into a step plan** → `/shape` — fan out competing shaped candidates from the frame (or its own quick discovery), critique the pool, pick one, then plan and critique the ordered steps.
+- **Problem clear with a settled direction, or clear needing one picked** → `/shape` — pass your settled direction as `DIRECTION` to skip fan-out and plan it directly, or let `/shape` scout, fan out, critique, pick one, and plan.
 - **One obvious change** → `/implement` — build it with per-step review.
 
 Before taking free-form action, check whether one of these fits. Skip sherpa only when none of them apply.

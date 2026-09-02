@@ -16,8 +16,8 @@ Asking an agent to "just build it" skips the parts that make work trustworthy: s
 precedent, pinning down acceptance criteria, and adversarially checking the result. Sherpa
 makes those first-class — but lets *you* decide how much ceremony a task needs:
 
-- **A ceremony gradient.** A fuzzy task starts at `/frame`. A clear problem with multiple
-  directions to weigh, or one direction that still needs turning into a step plan, starts at
+- **A ceremony gradient.** A fuzzy task starts at `/frame`. A clear problem—whether you have
+  a direction to pass as `DIRECTION` or need `/shape` to scout and pick one—starts at
   `/shape`. One obvious change goes straight to `/implement`. You pick the entry point.
 - **Reviewed at every layer.** A frame-reviewer attacks the framing, a shape-reviewer attacks
   the candidate pool, a structure-reviewer attacks how the steps relate and a readiness-reviewer
@@ -54,7 +54,7 @@ project pack), and start a new thread. Verify with `/frame` — if the skill sho
 | Skill | Layer | Does | Start here when |
 |---|---|---|---|
 | `/frame <task>` | macro (L1) | Scout, bind a problem contract, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
-| `/shape <task>` | shape (L2) | Fan out candidate directions along the frame's vantages, skeleton + critique the pool, present a pitch, **wait for your pick**; once picked, bind the goal's `Outcome`, plan ordered, traceable steps, critique the plan, **wait for approval**. | the problem's framed (or clear enough) and needs a direction picked, a plan built, or both — offers `/frame` first if no frame exists |
+| `/shape <task>` | shape (L2) | Fan out candidate directions along the frame's vantages, skeleton + critique the pool, present a pitch, **wait for your pick**; once picked, bind the goal's `Outcome`, plan ordered, traceable steps, critique the plan, **wait for approval**. | the problem's framed (or clear enough), you're ready to pass a direction as `DIRECTION`, or need `/shape` to scout and fan out |
 | `/implement <task>` | build (L3) | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
 | `/scout <task>` | — | Standalone codebase scout; also called by `/frame` and `/shape`. | you just want a lay of the land |
 | `/persist` | — | Write the in-context frame, pitch, or plan to disk so a later session can resume. | you want to save or resume |
