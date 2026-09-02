@@ -44,8 +44,8 @@ the goal. **Default suspicion, not trust.**
   Feeds your no-go-violation attack.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
-  - `knowledge` — cross-cutting project knowledge.
-  - `shape.knowledge` — additive to the cross-cutting `knowledge`.
+  - `context` — cross-cutting project prose.
+  - `shape.context` — additive to the cross-cutting `context`.
   - `shape.architecture` — architecture constraints; feeds your architecture-violation
     attack.
 

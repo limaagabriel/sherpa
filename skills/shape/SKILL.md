@@ -63,11 +63,11 @@ mainline (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Boundari
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack forwarding:** when a `configPath` is announced, forward it to `shape-reviewer`,
   `structure-reviewer`, and `readiness-reviewer` — all three now dispatch inside this one `/shape`
-  run (§ Procedure). `shape.knowledge` is not the only key this run touches: each subagent resolves
-  its own via resolve-pack-value.sh, per its own agent doc — `shape-reviewer` resolves `knowledge`
-  (cross-cutting) and `shape.knowledge` (additive); `structure-reviewer` resolves `knowledge`,
-  `shape.knowledge`, and `shape.architecture`; `readiness-reviewer` resolves `knowledge`
-  and `shape.knowledge` only, never architecture — a cross-step concern outside its per-step
+  run (§ Procedure). `shape.context` is not the only key this run touches: each subagent resolves
+  its own via resolve-pack-value.sh, per its own agent doc — `shape-reviewer` resolves `context`
+  (cross-cutting) and `shape.context` (additive); `structure-reviewer` resolves `context`,
+  `shape.context`, and `shape.architecture`; `readiness-reviewer` resolves `context`
+  and `shape.context` only, never architecture — a cross-step concern outside its per-step
   scope. The plan-tail reviewers resolve the `shape.*` keys their own agent docs already name,
   unchanged by where they're dispatched from.
 - **Explicit invocation only.** Never auto-fire; OFFER `/shape <problem>` in one declinable line

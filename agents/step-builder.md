@@ -43,8 +43,8 @@ Implement one approved step and commit it. You are dispatched once per step by `
 - `PRE-EXISTING DIRT` — `git status --short` from before your run; never stage or claim it.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
-  - `knowledge` — cross-cutting project knowledge.
-  - `implement.knowledge` — additive to the cross-cutting `knowledge`.
+  - `context` — cross-cutting project prose.
+  - `implement.context` — additive to the cross-cutting `context`.
   - `implement.codeStyle` — conform your output to it.
   - `implement.validate` — resolve like every other key (no special mode); its content is the
     command(s) to run before committing (see § Rules).

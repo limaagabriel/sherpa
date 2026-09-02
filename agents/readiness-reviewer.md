@@ -38,8 +38,8 @@ not a hole you can raise.
   Risk field.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
-  - `knowledge` — cross-cutting project knowledge.
-  - `shape.knowledge` — additive to the cross-cutting `knowledge`.
+  - `context` — cross-cutting project prose.
+  - `shape.context` — additive to the cross-cutting `context`.
 - No `shape.architecture` — that's a cross-step concern, `structure-reviewer`'s job,
   outside your per-step scope; never resolve it.
 

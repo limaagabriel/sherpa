@@ -41,8 +41,8 @@ are the cold reader who never saw that work — that independence is your whole 
   frame–request mismatch attack.
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
-  - `knowledge` — cross-cutting project knowledge.
-  - `frame.knowledge` — additive to the cross-cutting `knowledge`.
+  - `context` — cross-cutting project prose.
+  - `frame.context` — additive to the cross-cutting `context`.
 
 ## What you attack
 - **Frame–request mismatch** — the frame is well-formed (every slot bound, no leakage) but

@@ -375,14 +375,14 @@ Forward `structure-reviewer` the inputs it takes: the plan goal + the full step 
 contract form, each step's `Interfaces`) + the frame path for context, or the inline problem
 contract (§ Boundaries) when no frame existed, the pitch's `no-gos`/`rabbit holes` when carried
 (§ Bind the goal; absent means none), and `configPath` when announced. `structure-reviewer` resolves
-its own `knowledge`/`shape.knowledge` and `shape.architecture` via resolve-pack-value.sh, per
+its own `context`/`shape.context` and `shape.architecture` via resolve-pack-value.sh, per
 its own agent doc. Appetite is never forwarded to `structure-reviewer` — it never gated anything
 there. No *additional* necessity or scope check is added at this layer beyond what already runs
 here — the silent self-review's scope/earns-its-keep items and `structure-reviewer`'s own
 traceability attack — plus the human's own read of the plan before approving it. Forward
 `readiness-reviewer` the full step list, with each step's Goal, Interfaces, Acceptance criteria,
 Blast contract, and Risk field, plus `configPath` when announced. `readiness-reviewer` resolves its
-own `knowledge`/`shape.knowledge` via resolve-pack-value.sh, per its own agent doc — but does not
+own `context`/`shape.context` via resolve-pack-value.sh, per its own agent doc — but does not
 resolve `architecture`; that's cross-step context `structure-reviewer` alone consumes, and
 `readiness-reviewer`'s own Input contract has no `architecture` input.
 

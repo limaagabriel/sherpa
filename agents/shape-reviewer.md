@@ -50,8 +50,8 @@ produced a candidate cannot be the one that judges it.
   § Rules).
 - You are given `configPath` when a pack is announced. Resolve your relevant key(s) yourself
   via `bash scripts/resolve-pack-value.sh <configPath> <key>`, before your review/build work:
-  - `knowledge` — cross-cutting project knowledge.
-  - `shape.knowledge` — additive to the cross-cutting `knowledge`; absent means engine defaults
+  - `context` — cross-cutting project prose.
+  - `shape.context` — additive to the cross-cutting `context`; absent means engine defaults
     only.
 - The **appetite** — the step budget the human set before dispatch; you need it to judge
   `bounded` (`protocols/workflow/phases/shape.md` § Appetite).

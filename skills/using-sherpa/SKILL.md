@@ -18,7 +18,7 @@ Before acting on any task-initiating prompt — not a reply, confirmation, or an
 ## HARD GATE — pack resolution
 
 If a pack is resolved (`configPath` announced): (a) read the pack config at `configPath`, (b) run
-`bash scripts/resolve-pack-value.sh <configPath> context`, (c) read and follow that output — before
+`bash scripts/resolve-pack-value.sh <configPath> session`, (c) read and follow that output — before
 any other tool, skill, or answer. This is required the instant a `configPath` shows up in session
 context, not deferred until convenient.
 

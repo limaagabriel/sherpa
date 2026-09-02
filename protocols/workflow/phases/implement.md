@@ -49,7 +49,7 @@ UNMET` line feeds into § Verdicts the same way an `acceptance-reviewer` `UNMET`
   the step-builder never asks the user.
 
 Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
-(+ `configPath` when announced — the step-builder resolves its own `knowledge`/`implement.knowledge`,
+(+ `configPath` when announced — the step-builder resolves its own `context`/`implement.context`,
 `implement.codeStyle`, and `implement.validate` via resolve-pack-value.sh, the same self-resolved way,
 when announced).
 Model tier and post-build review both follow whether the step is mechanical (§ Mechanical steps).
@@ -60,8 +60,8 @@ Each step:
 - **Before dispatching this step's reviewer(s)**, the driver itself (not any subagent) resolves
   `implement.review` — when `configPath` is announced — via `bash scripts/resolve-pack-value.sh
   <configPath> implement.review`, the same self-resolved, point-of-need way `structure-reviewer`
-  (dispatched by `/shape`) already resolves `shape.knowledge`/`shape.architecture`. It's a
-  `.md` file path or array, resolved exactly like `codeStyle`/`knowledge` (no special mode). When
+  (dispatched by `/shape`) already resolves `shape.context`/`shape.architecture`. It's a
+  `.md` file path or array, resolved exactly like `codeStyle`/`context` (no special mode). When
   it resolves to non-empty content, the driver follows its plain-English instructions to shape
   which reviewer(s) it dispatches for this step and what extra they're briefed to check, instead
   of always falling back to the hardcoded pattern below. This mechanism never spawns a new
@@ -74,7 +74,7 @@ Each step:
   commit range: `acceptance-reviewer` (met its criteria? also gets the step's `Interfaces`, to
   judge the declared `produces` against the built symbols) and `quality-reviewer` (clean, correct,
   secure, no regression; also gets `configPath` when announced — the quality-reviewer resolves its own
-  `knowledge`/`implement.knowledge` and `implement.codeStyle` via resolve-pack-value.sh — plus the current
+  `context`/`implement.context` and `implement.codeStyle` via resolve-pack-value.sh — plus the current
   step index + remaining step goals, so it can tell whether a failure is covered by a later step). A mechanical
   step runs the merged single-reviewer path instead (§ Mechanical steps).
 

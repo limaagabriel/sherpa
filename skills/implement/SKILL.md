@@ -26,7 +26,7 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
    in progress. Per step — the driver asks any step-scoped question first, shaped per
    `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, then dispatches `step-builder` with
    `task` + `Goal` + `Interfaces` + `Acceptance criteria` + `configPath` when announced (the step-builder
-   resolves its own `knowledge`/`implement.knowledge`, `implement.codeStyle`, and `implement.validate` via
+   resolves its own `context`/`implement.context`, `implement.codeStyle`, and `implement.validate` via
    resolve-pack-value.sh, the same self-resolved way). Before dispatching that step's reviewer(s), the
    driver itself resolves `implement.review` via resolve-pack-value.sh and, when it resolves to non-empty
    content, follows its instructions to shape that dispatch instead of the default —

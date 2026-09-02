@@ -20,7 +20,7 @@ skill — never automatic.
 - **No narration between tools.** One short sentence only when the *task* changes.
 - **Conventions:** conform to the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyle` (when present) is resolved by the subagent via resolve-pack-value.sh.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack forwarding:** when a `configPath` is announced, forward it directly to `frame-reviewer`. The subagent resolves its own `knowledge` (cross-cutting) and `frame.knowledge` (frame-layer, additive) via resolve-pack-value.sh, per its own agent doc.
+- **Pack forwarding:** when a `configPath` is announced, forward it directly to `frame-reviewer`. The subagent resolves its own `context` (cross-cutting) and `frame.context` (frame-layer, additive) via resolve-pack-value.sh, per its own agent doc.
 
 ## Steps
 1. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: `/scout`
