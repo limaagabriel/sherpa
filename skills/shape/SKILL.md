@@ -1,6 +1,6 @@
 ---
 name: shape
-description: Shape layer (L2). Fans out N candidates from a problem contract, critiques the pool, picks one, then plans it. Frameless-tolerant - runs its own scout when no frame exists. Triggers - "/shape", "/shape <problem>", "brainstorm directions". Counterparts - /frame, /implement, /persist.
+description: Shape layer (L2). Fans out N candidates from a problem contract, critiques the pool, picks one, then plans it. Frameless-tolerant - runs its own scout when no frame exists. Pass a settled DIRECTION to skip the fan-out. Triggers - "/shape", "/shape <problem>", "brainstorm directions". Counterparts - /frame, /implement, /persist.
 ---
 
 # /shape — fan out candidate directions, pick, then plan
@@ -34,6 +34,13 @@ Isolation invariant); the wall extends that invariant to the driver's own pre-di
 not just to a sibling builder's output. This is the one exception to "no `/scout` dispatch" below
 — the wall, not a ban on running it, keeps it safe.
 
+**Directed.** Framed and frameless both admit `DIRECTION` as an overlay on whichever path is
+already running, never a third path. It is bound only from the human's own settled words — ask
+when unclear (`${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`), never inferred. It never rewrites a
+contract slot. The scout-evidence wall above still holds: scout output is still never forwarded to
+any builder; `DIRECTION` is the human's own words, not scout output, and IS forwarded — to
+mainline (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Boundaries — Directed).
+
 ## Inputs
 - `PROBLEM` — the problem contract to fan out on. A frame's problem contract when one is in
   context (used as-is), or the driver's own inline contract on the frameless path (§ Boundaries).
@@ -45,6 +52,8 @@ not just to a sibling builder's output. This is the one exception to "no `/scout
 - Appetite — a step budget the human sets once, before wave 1's mainline dispatch, anchored on
   whichever discovery exists by then — the frame's, or the frameless path's quick scout
   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Appetite).
+- `DIRECTION` — optional; the human's settled solution direction, carried verbatim; bound per
+  `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Boundaries — Directed.
 
 ## Operating rules
 - **Authority:** the human owns every decision. You propose; they decide.
@@ -70,27 +79,46 @@ not just to a sibling builder's output. This is the one exception to "no `/scout
   `readiness-reviewer` (plan tail). The **INSUFFICIENT** path — wave 2 fires — costs **9**: those
   same 4, plus wave 2's 4 `shape-builder` calls (mainline re-dispatched fresh at `COUNT=3`, plus
   the three falsifying builders, concurrent) + 1 more `shape-reviewer` call over the full pool.
+  The **DIRECTED** path — `DIRECTION` bound — costs **4** total, the same shape as SUFFICIENT: 1
+  `shape-builder` (mainline, `COUNT=1`, brief carrying `DIRECTION`) + 1 `shape-reviewer` (directed
+  lane) + `structure-reviewer` + `readiness-reviewer`. A `DIRECTION: HOLES` fallback into the
+  default path adds up to 7 more (wave 1's 2, plus wave 2's 5 if wave 1 also comes back
+  INSUFFICIENT) — **11 agent calls total**, worst case.
 - **No `/scout` dispatch to a builder** — each `shape-builder` reads the codebase itself; a shared
   evidence base would anchor the branches, the failure mode the fan-out exists to avoid. The
   frameless path's own quick `/scout` (§ Boundaries) is the driver's, never forwarded into a
   builder's brief — the scout-evidence wall.
 
 ## Procedure
-1. **Establish `PROBLEM`, then ask appetite.** Frame in context → read its problem contract as-is,
-   move straight to step 2. No frame → run a quick `/scout`, draft the inline problem contract from
-   the task + that scout's evidence, applying the § Vocabulary test to the solved-signal
-   (§ Boundaries) — remember the scout-evidence wall: that scout's output stops here, never
-   forwarded to a builder. Either way, ASK the appetite next, shaped per
-   `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, anchored on whichever discovery now exists
+1. **Establish `PROBLEM`, then bind `DIRECTION`, then ask appetite.** Frame in context → read its
+   problem contract as-is, move straight to step 2. No frame → run a quick `/scout`, draft the
+   inline problem contract from the task + that scout's evidence, applying the § Vocabulary test to
+   the solved-signal (§ Boundaries) — remember the scout-evidence wall: that scout's output stops
+   here, never forwarded to a builder. Either way, once `PROBLEM` is established and before appetite
+   is asked, bind `DIRECTION` when the human has supplied one — ask when unclear (§ Boundaries).
+   Then ASK the appetite, shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, anchored on
+   whichever discovery now exists
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Appetite) — before any builder
    call is spent.
-2. **Wave 1 — mainline only.** Dispatch one `mainline` `shape-builder` at `COUNT=1`: `PROBLEM`,
-   `TARGET_DIR`, the appetite — nothing else. Then dispatch `shape-reviewer` over that single
-   candidate. It renders `EVIDENCE: SUFFICIENT | INSUFFICIENT` first
+2. **Wave 1 — mainline only, or the directed lane.** Dispatch one `mainline` `shape-builder` at
+   `COUNT=1`: `PROBLEM`, `TARGET_DIR`, the appetite — plus `DIRECTION` when bound — nothing else.
+   **`DIRECTION` bound** — `shape-builder` pins its Outcome fill to `DIRECTION`
+   (`${CLAUDE_PLUGIN_ROOT}/agents/shape-builder.md` § Rules); dispatch
+   `shape-reviewer`, which runs its directed lane and leads with `DIRECTION: SOLID | HOLES`, never
+   `EVIDENCE` (`${CLAUDE_PLUGIN_ROOT}/agents/shape-reviewer.md` § Output — directed lane).
+   **`SOLID`** — skip step 3, go straight to step 4. **`HOLES`** — one framing line naming what it
+   blocks, then the finding verbatim (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Verbatim is a
+   quote, not a frame); ASK per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md`, showing the fallback
+   cost in the question, between: amend `DIRECTION`; fall back to the default path (`DIRECTION`
+   dropped, never forwarded to any builder from here on; `PROBLEM` and the appetite reused as-is;
+   re-enter this step's undirected wave 1, which may in turn fire step 3); or stop. **No
+   `DIRECTION`** — dispatch `shape-reviewer` over that single candidate. It renders
+   `EVIDENCE: SUFFICIENT | INSUFFICIENT` first
    (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Critique — the SUFFICIENT bar).
    **`SUFFICIENT`** — the output degrades to that one candidate's own solved/bounded/necessity
    judgment; skip step 3, go straight to step 4. **`INSUFFICIENT`** — continue to step 3.
-3. **Wave 2 — full pool (only on `INSUFFICIENT`).** Dispatch the three falsifying `shape-builder`s
+3. **Wave 2 — full pool (only on `INSUFFICIENT`; never fires on a directed run).** Dispatch the
+   three falsifying `shape-builder`s
    (one per obstacle/capability/costs vantage, `who`/solved-signal off limits to them) plus
    `mainline` RE-DISPATCHED fresh at `COUNT=3` — wave 1's `COUNT=1` candidate is discarded, not
    reused as a pool slot — four builder calls, ONE message, concurrent.
@@ -106,8 +134,13 @@ not just to a sibling builder's output. This is the one exception to "no `/scout
    value as the emission (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Compose, don't relay).
    `CONTESTED: no`, or wave 1's `SUFFICIENT` degenerate case — auto-pick the winner, no wait.
    `CONTESTED: yes` — surface the top-2 as ONE solution open question in the pitch and wait for the
-   human's resolution; that pick belongs to them alone. Rejecting the pitch outright — the
-   auto-pick, or both contested candidates — is a valid outcome; it ends the run here, before any
+   human's resolution; that pick belongs to them alone. **`DIRECTION: SOLID`** — one pinned
+   candidate, nothing to contest; the driver plans it, no wait, the same as the auto-pick cases
+   above (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch — Directed branch); the
+   pitch's roster is one line and its rejected-candidates field reads "none — direction supplied by
+   the human," with the directed lane's `traps` (if any) still riding in. Rejecting the pitch
+   outright — the auto-pick, or both contested candidates — is a valid outcome; it ends the run
+   here, before any
    plan is drafted. **Emit the pitch** — see `## Output`.
 5. **Plan the pick.** Once a candidate is picked, follow
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Plan in the same run — this is not
@@ -137,11 +170,13 @@ not just to a sibling builder's output. This is the one exception to "no `/scout
    one roster line first — its ID bound to a short plain-words name plus what it does — because a
    pool-internal ID carries no meaning outside the dispatch bookkeeping that produced it
    (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § The referent rule). No ID appears before its
-   roster line.
+   roster line. On a directed run the pool is one pinned candidate, so the roster is one line.
 2. **The pitch** — five fields per
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Pitch (problem, appetite, solution,
    rabbit holes, no-gos), carrying the picked skeleton, its precedent, and the rejected candidates
-   with why they lost. Rejecting it outright ends the run here.
+   with why they lost. On a directed run the rejected-candidates field reads "none — direction
+   supplied by the human" instead — a fan-out that never ran couldn't have produced losing
+   candidates. Rejecting it outright ends the run here.
 3. **The plan proposal** — once a candidate is picked, the three blocks per
    `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/shape.md` § Plan proposal format: Block 1 (plan
    goal as a goal contract, before/after table, appetite note comparing the dispatched appetite to
