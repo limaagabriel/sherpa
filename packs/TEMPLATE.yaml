@@ -4,8 +4,8 @@
 # else ${XDG_CONFIG_HOME:-~/.config}/sherpa/projects.
 #
 # This file carries metadata only — name and detect. Every content-bearing value
-# lives in a fixed convention file (or same-named directory of files) next to
-# this project.yaml, not in this YAML. See packs/README.md for the full table.
+# lives in a fixed convention file next to this project.yaml, not in this YAML.
+# See packs/README.md.
 
 name: my-project
 
@@ -18,14 +18,9 @@ name: my-project
 # Example (workspace only): detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 
 # Convention paths (create only the ones you need, next to this file):
-#   session.md                    SessionStart-hook prose, read once at session start
-#   context.md                    cross-cutting, forwarded into every subagent's brief
-#   frame/context.md              additive to context.md, for the frame layer only
-#   shape/context.md              additive to context.md, for the shape layer only
-#   shape/architecture.md         architecture constraints
-#   implement/context.md          additive to context.md, for the implement layer only
-#   implement/codeStyle.md        complete rule set step-builder conforms output to
-#   implement/validate.md         command(s) step-builder runs before committing
-#   implement/review.md           prose the /implement driver reads before dispatching reviewers
-# Any stem may instead be a same-named directory of *.md files, concatenated
-# LC_ALL=C sort-by-filename. Full table and resolution rules: packs/README.md.
+#   session.md              SessionStart-hook prose, read once at session start
+#   context.md              cross-cutting, forwarded into every subagent's brief
+#   frame/context.md        additive to context.md, for the frame layer only
+#   shape/context.md        additive to context.md, for the shape layer only
+#   implement/context.md    additive to context.md, for the implement layer only
+# Full rules: packs/README.md.
