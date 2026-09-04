@@ -1,72 +1,24 @@
 #!/usr/bin/env bash
 # Generic project-pack resolver for sherpa's SessionStart hook.
 #
-# Reads the hook payload (JSON) on stdin, scans for per-project YAML configs, and
-# runs each config's `detect` command. On the first match it emits a SessionStart
-# additionalContext ordered as: the layer-selection primer, then a bare `WORKFLOW_PACK:`
-# announcement carrying only `name=<name> configPath=<path>` (nothing from the config's
-# `pack` map is eagerly inlined — every value there, `knowledge` and every other
-# key alike, is resolved lazily by the consuming layer skill via scripts/resolve-pack-value.sh
-# and scripts/resolve-pack-basedir.sh, given `configPath`), and a user-facing
-# `systemMessage` naming the loaded pack. On no match it emits a `systemMessage` saying
-# the engine runs generic (so the user knows no project knowledge loaded).
-#
-# `session` (the config's SessionStart-hook prose, formerly `context`) is never
-# read or emitted by this script — using-sherpa's SKILL.md HARD GATE fully owns its
-# delivery via lazy resolution (scripts/resolve-pack-value.sh <configPath> session),
-# triggered off the `WORKFLOW_PACK:` line's configPath. This keeps `session` off the
-# hook-truncation-sensitive path entirely, at the cost of a required lazy fetch by
-# the consuming skill.
+# Reads the hook payload (JSON) on stdin, scans per-project YAML configs, and runs
+# each config's `detect`. On the first match it emits additionalContext = the
+# layer-selection primer, a bare `WORKFLOW_PACK: name=<name> configPath=<path>` line,
+# and — when the matched pack has a `session.md` — a framing line plus that file's
+# content (truncated at 4 KB) labeled as binding rules. Also emits a `systemMessage`
+# naming the loaded pack, or "running generic" on no match.
 #
 # Config candidates, highest precedence first:
-#   <cwd>/.sherpa/project.yaml|.yml      project-local, single canonical location (single file)
-#   Workspace packs dir (many, one dir per pack: <dir>/*/project.yaml|.yml), chosen by
-#   this precedence:
-#     1. $SHERPA_CONFIG_DIR set   -> packs dir is $SHERPA_CONFIG_DIR/projects
-#        SHERPA_CONFIG_DIR names the sherpa config ROOT, not the packs dir itself, so
-#        packs resolve at $SHERPA_CONFIG_DIR/projects/<name>/project.yaml|.yml. This is
-#        the var for relocating sherpa's whole config root (packs plus any future
-#        non-pack config), for pack authors who don't want to live under ~/.config.
-#     2. else $WORKFLOW_PACKS_DIR set -> packs dir is $WORKFLOW_PACKS_DIR (unchanged)
-#        WORKFLOW_PACKS_DIR points DIRECTLY at the packs dir, no `/projects` suffix, so
-#        packs resolve at $WORKFLOW_PACKS_DIR/<name>/project.yaml|.yml. This var can
-#        only move the packs dir, never the root above it.
-#     3. else -> ${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects, and
-#        $HOME/.claude/sherpa/projects is also scanned as a legacy read-fallback
-#        workspace dir, after the XDG path, using the same per-pack layout.
-# First config whose detect matches wins, so a project-local pack overrides the workspace.
-# `detect` is optional for project-local configs (file presence at that fixed path is
-# the detection) and must never be relied on there; it's required for workspace configs
-# (one dir shared by many projects).
-# Config schema (camelCase): name, detect (a command; exit 0 = match; optional for
-# project-local). Every content-bearing value (session, context, and the frame/shape/
-# implement section keys) is now a fixed convention path resolved by
-# scripts/resolve-pack-value.sh relative to scripts/resolve-pack-basedir.sh's output —
-# no YAML pointer keys are read for them anymore. See packs/README.md for the full
-# 9-key convention-path table.
-#
-# Nothing content-bearing (neither `context`/`session` nor any frame/shape/implement
-# key) is read or inlined by this script anymore — the `WORKFLOW_PACK:` line carries
-# only `name=` and `configPath=`. A consuming layer skill fetches `session`, `context`,
-# or any other convention key's resolved value lazily, at the point it's actually
-# needed, by calling scripts/resolve-pack-value.sh <configPath> <key> (which resolves
-# against scripts/resolve-pack-basedir.sh <configPath>'s output: always the config
-# file's own directory, project-local or workspace alike).
-#
-# jq builds every JSON payload this script emits, so a missing jq means nothing can be
-# emitted at all — the script exits 0 silently. yq only parses pack YAML, so a missing yq
-# still emits the using-sherpa primer plus a systemMessage warning that packs are disabled.
-#
-# Never errors out: a failing SessionStart hook must not block the session.
-#
-# Assumption (not independently verified in this session): Codex's hook runtime
-# consumes hookSpecificOutput.additionalContext the same way Claude Code's SessionStart
-# hook does. This is inferred from Codex's explicit hooks.json wiring in
-# .codex-plugin/plugin.json, paired with Claude Code's directory-convention pickup of
-# the same hooks/hooks.json file — not a matching manifest declaration on the Claude
-# side. No Codex harness was run here to confirm it. By contrast, Pi's consumption IS
-# verified directly: .pi/extensions/sherpa.ts's resolvePackContext() reads this script's
-# JSON stdout and forwards additionalContext verbatim.
+#   <cwd>/.sherpa/project.yaml|.yml   project-local, single canonical location
+#   Workspace packs dir (<dir>/*/project.yaml|.yml), where <dir> is $SHERPA_CONFIG_DIR/
+#   projects if set, else $WORKFLOW_PACKS_DIR itself if set, else
+#   ${XDG_CONFIG_HOME:-$HOME/.config}/sherpa/projects (plus the legacy
+#   $HOME/.claude/sherpa/projects read-fallback dir).
+# `detect` is optional for project-local configs (file presence is the detection),
+# required for workspace configs. Every other content-bearing pack value is a fixed
+# convention path resolved lazily by a consuming skill via scripts/resolve-pack-value.sh
+# — never read or inlined here. Missing jq exits silently; missing yq still emits the
+# primer plus a warning. Never errors out. Pi's .pi/extensions/sherpa.ts forwards this.
 
 input=$(cat 2>/dev/null) || exit 0
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null) || exit 0
@@ -138,6 +90,15 @@ for config in "${candidates[@]}"; do
   esac
 
   ctx="$PRIMER"$'\n\n'"$line"
+  if [ -f "$base/session.md" ]; then
+    size=$(wc -c <"$base/session.md" 2>/dev/null) || size=0
+    if [ "$size" -gt 4096 ]; then
+      session=$(head -c 4096 "$base/session.md")$'\n'"(session.md truncated at 4 KB — keep it short)"
+    else
+      session=$(cat "$base/session.md" 2>/dev/null)
+    fi
+    ctx="$ctx"$'\n\n'"PROJECT SESSION RULES — from $base/session.md. Follow them before any other tool, skill, or answer."$'\n'"$session"
+  fi
   msg="Project \"$name\" loaded into Sherpa from $config 🏔️"
   emit_result "$msg" "$ctx"
 done

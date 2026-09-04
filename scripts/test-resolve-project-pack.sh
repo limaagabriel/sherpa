@@ -158,6 +158,44 @@ assert_contains "h/workflow-pack-line-only" "$out_h" "WORKFLOW_PACK: name=proj-h
 assert_not_contains "h/no-context-content-leak" "$out_h" "leaked context content"
 assert_not_contains "h/no-knowledge-leak" "$out_h" "should never leak"
 
+# (h2) a pack with a session.md gets it inlined into additionalContext, framed
+# as binding rules, right after the WORKFLOW_PACK: line.
+repo_h2="$tmp/repo-h2"
+mkdir -p "$repo_h2/.sherpa"
+cat >"$repo_h2/.sherpa/project.yaml" <<'YAML'
+name: proj-h2
+detect: "exit 0"
+YAML
+echo -n "Always run tests before committing." >"$repo_h2/.sherpa/session.md"
+out_h2=$(ctx "$repo_h2")
+line_h2="WORKFLOW_PACK: name=proj-h2 configPath=$repo_h2/.sherpa/project.yaml"
+after_h2="${out_h2#*"$line_h2"}"
+assert_contains "h2/session-follows-workflow-pack-line" "$after_h2" "PROJECT SESSION RULES"
+assert_contains "h2/session-content-present" "$after_h2" "Always run tests before committing."
+
+# (h3) a pack without session.md emits no PROJECT SESSION RULES line at all.
+repo_h3="$tmp/repo-h3"
+mkdir -p "$repo_h3/.sherpa"
+cat >"$repo_h3/.sherpa/project.yaml" <<'YAML'
+name: proj-h3
+detect: "exit 0"
+YAML
+out_h3=$(ctx "$repo_h3")
+assert_not_contains "h3/no-session-md-no-rules-line" "$out_h3" "PROJECT SESSION RULES"
+
+# (h4) a session.md over 4096 bytes is truncated to exactly the first 4096
+# bytes, plus the truncation notice line.
+repo_h4="$tmp/repo-h4"
+mkdir -p "$repo_h4/.sherpa"
+cat >"$repo_h4/.sherpa/project.yaml" <<'YAML'
+name: proj-h4
+detect: "exit 0"
+YAML
+head -c 5000 /dev/zero | tr '\0' 'x' >"$repo_h4/.sherpa/session.md"
+expected_h4="$(head -c 4096 "$repo_h4/.sherpa/session.md")"$'\n'"(session.md truncated at 4 KB — keep it short)"
+out_h4=$(ctx "$repo_h4")
+assert_contains "h4/session-truncated-to-4kb-plus-notice" "$out_h4" "$expected_h4"
+
 # (i) no pack matches at all — the layer-selection primer must still be
 # force-loaded via additionalContext, and systemMessage says so.
 nomatch_i="$tmp/nomatch-i"
