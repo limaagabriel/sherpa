@@ -1,98 +1,60 @@
 #!/usr/bin/env bash
-# Resolves a project-pack config's value at a fixed convention key, as file
-# content read straight off disk — no YAML lookup is involved anymore.
+# Prints a project pack's context for a subagent, in one call.
 #
-# Usage: resolve-pack-value.sh <configPath> <key>
+# Usage: resolve-pack-value.sh <configPath> [frame|shape|implement]
 #
-# <key> must be one of the 9 fixed convention keys below. Each maps to a path
-# stem relative to resolve-pack-basedir.sh's output for this configPath (see
-# packs/README.md for the full rationale):
-#   session              -> session.md
-#   context              -> context.md
-#   frame.context        -> frame/context.md
-#   shape.context        -> shape/context.md
-#   shape.architecture   -> shape/architecture.md
-#   implement.context    -> implement/context.md
-#   implement.codeStyle  -> implement/codeStyle.md
-#   implement.validate   -> implement/validate.md
-#   implement.review     -> implement/review.md
-# Any other <key> is a programming-contract violation (not a missing-value
-# case) and is a hard failure.
-#
-# Precedence, per stem:
-#   1. <stem>.md exists       -> print its content, done.
-#   2. else <stem>/ exists    -> concatenate every *.md directly inside it,
-#                                 `LC_ALL=C sort`-by-filename, done.
-#   3. both exist              -> the file wins (its content is printed), and
-#                                 a stderr warning names the ambiguity.
-#   4. neither exists          -> print nothing to stdout; warn to stderr.
-# A missing convention path is a warning, never a hard failure, matching this
-# script's tone before this change.
+# Base dir = dirname(configPath). Prints <basedir>/context.md if present,
+# then <basedir>/<layer>/context.md if a layer was given and present, with
+# exactly one blank line between them when both print. A missing file prints
+# nothing and warns nothing (exit 0). An unknown layer, a missing configPath,
+# or a 3rd argument is a one-line stderr usage error, exit 1.
 
 set -u
 
-here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
 config="${1:-}"
-key="${2:-}"
+layer="${2:-}"
 extra="${3:-}"
-
-if [ -z "$config" ] || [ -z "$key" ]; then
-  echo "usage: resolve-pack-value.sh <configPath> <key>" >&2
+if [ -z "$config" ]; then
+  echo "usage: resolve-pack-value.sh <configPath> [frame|shape|implement]" >&2
   exit 1
 fi
 
 if [ -n "$extra" ]; then
-  echo "resolve-pack-value.sh: unrecognized argument: $extra (this script has exactly one resolution mode; no 3rd argument is accepted)" >&2
+  echo "resolve-pack-value.sh: unrecognized argument: $extra" >&2
   exit 1
 fi
 
-case "$key" in
-  session) stem="session" ;;
-  context) stem="context" ;;
-  frame.context) stem="frame/context" ;;
-  shape.context) stem="shape/context" ;;
-  shape.architecture) stem="shape/architecture" ;;
-  implement.context) stem="implement/context" ;;
-  implement.codeStyle) stem="implement/codeStyle" ;;
-  implement.validate) stem="implement/validate" ;;
-  implement.review) stem="implement/review" ;;
+case "$layer" in
+  ""|frame|shape|implement) ;;
   *)
-    echo "resolve-pack-value.sh: unrecognized key: $key (expected one of: session, context, frame.context, shape.context, shape.architecture, implement.context, implement.codeStyle, implement.validate, implement.review)" >&2
+    echo "resolve-pack-value.sh: unrecognized layer: $layer (expected one of: frame, shape, implement)" >&2
     exit 1
     ;;
 esac
 
-basedir=$("$here/resolve-pack-basedir.sh" "$config")
+basedir=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || basedir=$(dirname "$config")
 
-file="$basedir/$stem.md"
-dir="$basedir/$stem"
+root_file="$basedir/context.md"
+layer_file=""
+[ -n "$layer" ] && layer_file="$basedir/$layer/context.md"
 
-file_exists=0
-dir_exists=0
-[ -f "$file" ] && file_exists=1
-[ -d "$dir" ] && dir_exists=1
+root_exists=0
+layer_exists=0
+[ -f "$root_file" ] && root_exists=1
+[ -n "$layer_file" ] && [ -f "$layer_file" ] && layer_exists=1
 
-if [ "$file_exists" -eq 1 ]; then
-  if [ "$dir_exists" -eq 1 ]; then
-    echo "resolve-pack-value.sh: ambiguous convention path (both $stem.md and $stem/ exist) — using the file: $file" >&2
-  fi
-  cat "$file"
-  exit 0
+# $(...) strips trailing newlines, so re-adding exactly one below guarantees
+# a single blank line between the blocks, regardless of source trailing
+# newlines.
+if [ "$root_exists" -eq 1 ]; then
+  root_content=$(cat "$root_file")
+  printf '%s\n' "$root_content"
 fi
 
-if [ "$dir_exists" -eq 1 ]; then
-  # `LC_ALL=C sort` gives a byte-order sort, independent of locale, so the
-  # concatenation order is stable across machines.
-  mapfile -t files < <(find "$dir" -maxdepth 1 -type f -name '*.md' 2>/dev/null | LC_ALL=C sort)
-  if [ "${#files[@]}" -gt 0 ]; then
-    for f in "${files[@]}"; do
-      cat "$f"
-      printf '\n'
-    done
-    exit 0
-  fi
+if [ "$layer_exists" -eq 1 ]; then
+  [ "$root_exists" -eq 1 ] && printf '\n'
+  layer_content=$(cat "$layer_file")
+  printf '%s\n' "$layer_content"
 fi
 
-echo "resolve-pack-value.sh: missing convention path: $stem.md (or $stem/)" >&2
 exit 0

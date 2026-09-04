@@ -58,7 +58,7 @@ for config in "${candidates[@]}"; do
   [ -f "$config" ] || continue
   detect=$(yq '.detect // ""' "$config" 2>/dev/null) || continue
   # Base dir is always the config file's own directory now — local and
-  # workspace configs alike (see resolve-pack-basedir.sh).
+  # workspace configs alike (see resolve-pack-value.sh).
   base=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || base=$(dirname "$config")
 
   local_match=0
