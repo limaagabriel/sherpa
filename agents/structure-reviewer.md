@@ -58,9 +58,6 @@ run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the
   the rule and the step.
 - **No-go violation** — a step's Change does one of the proposal's declared `no-gos`, or walks into a
   named rabbit hole; quote it and the offending step's Change.
-- **Vocabulary leak** — every noun and verb in the problem statement's done signal must already
-  appear in who/capability/obstacle, or be observable before any change; a mechanism-naming word
-  is leakage — quote it and the contract.
 - **Premortem** — imagine this plan already caused a failure; name the most likely reason and push
   on it until it produces a real hole, or you're satisfied it isn't one.
 
@@ -72,7 +69,7 @@ run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the
   proposing a local patch that won't hold.
 
 ## Output
-The GAPS category for this reviewer is one of: orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / pack-constraint-violation / no-go-violation / vocabulary-leak / premortem.
+The GAPS category for this reviewer is one of: orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / pack-constraint-violation / no-go-violation / premortem.
 <!-- shared:reviewer-output -->VERDICT: OK | GAPS
 ATTACKED: <angles tried — non-empty even when OK>
 GAPS:

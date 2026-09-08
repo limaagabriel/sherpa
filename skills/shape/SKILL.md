@@ -43,7 +43,13 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
 ## Procedure
 1. **Establish `PROBLEM`.**
    1. **Frame in context** — read its contract as-is.
-   2. **No frame** — run the quick scout, draft the inline contract.
+   2. **No frame** — run the quick scout, draft the inline contract. Then dispatch
+      `frame-reviewer` (one shot) against the just-drafted contract, the verbatim
+      task-initiating request, and `configPath` — the same single-pass critique `/frame` runs
+      before presenting, since no `/frame` ran here to supply it. `OK` → proceed. `GAPS` the
+      driver can close itself (e.g. reword a mechanism-leaking word) → fix and re-check once.
+      `GAPS` only the human can close (e.g. a genuine missing question) → one framing line
+      naming what it blocks, then the finding quoted exactly, and wait.
 
    Bind `DIRECTION` when the human has one (ask when unclear). Then STATE the step budget —
    anchored on the discovery in hand (frame's, or the frameless quick scout): name what it covers

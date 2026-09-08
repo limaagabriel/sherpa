@@ -62,11 +62,14 @@ persisting it is the opt-in `/persist` skill — never automatic.
 4. **Premortem (silent).** Imagine this frame already caused a failure; name the most likely
    reason. Fold the answer into discovery, open questions, or design questions — never an inline
    hedge.
-5. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
-6. **Critique.** Dispatch `frame-reviewer` (one shot) with the frame, the verbatim
-   task-initiating request, and `configPath`. `GAPS` → one framing line naming what it blocks in
-   the reader's terms, then the finding quoted exactly; fix what you can; a hole only the human can
-   close → wait.
+5. **Critique.** Dispatch `frame-reviewer` (one shot) with the frame, the verbatim
+   task-initiating request, and `configPath`. Fix what `frame-reviewer` found and you can close
+   yourself before the human ever sees the frame. A hole only the human can close stays open —
+   don't hide it, carry it into the next step.
+6. **Present** the frame once, in sections scaled to complexity. If a `GAPS` finding is still open,
+   present it together with the frame: one framing line naming what it blocks in the reader's
+   terms, then the finding quoted exactly. Then ask for confirmation — once, after critique, not
+   per-section during composition. Revise on feedback.
 
 ## Don't
 - Bind an `Outcome` — that's `/shape`'s job, once a candidate is picked.
@@ -75,5 +78,6 @@ persisting it is the opt-in `/persist` skill — never automatic.
 - Put a solution-shaped question in open questions — route it to design questions instead.
 
 ## Done when
-The frame is composed, presented, and critiqued. Hand off to `/shape` (it reads the frame from
+The frame is composed, critiqued, and presented (with any open GAPS finding shown alongside it).
+Hand off to `/shape` (it reads the frame from
 context), or offer `/persist` if the user wants it on disk.
