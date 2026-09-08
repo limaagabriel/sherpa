@@ -26,7 +26,10 @@ more than its own (however worded — "Feature Envy", "reaches into customer mor
 "should live on customer/membership instead of Cart" all count), per EVALS.md's Pass criterion: it
 must quote the offending method (or the specific lines above) and tag it with "Smell baseline",
 "Feature Envy", or a reasonably equivalent category (e.g. "misplaced responsibility" tied to the same
-quoted lines). A PASS verdict, or a FIX list that doesn't mention this specific method, fails the
-fixture. A catch that instead miscategorizes the finding under Architecture or Minimality — without
-quoting the right lines — does not count as a pass for this fixture, since the whole point is that
-this defect does not fit those two bullets.
+quoted lines). A "Message Chains" or "Law of Demeter" catch that quotes the same three lines
+(`this.customer.membership.tier`, `yearsActive`, `avgAnnualSpend`) also counts as a pass, since
+Message Chains is a live adjacent Smell-baseline category over the identical evidence. A PASS verdict,
+or a FIX list that doesn't mention this specific method, fails the fixture. A catch that instead
+miscategorizes the finding under Architecture or Minimality — without quoting the right lines — does
+not count as a pass for this fixture, since the whole point is that this defect does not fit those
+two bullets.
