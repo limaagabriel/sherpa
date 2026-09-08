@@ -14,7 +14,10 @@ persisting it is the opt-in `/persist` skill — never automatic.
 - **No narration between tools.** One short sentence only when the *task* changes.
 - **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
   *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
-  description one clause naming its downstream consequence, recommended option first.
+  description one clause naming its downstream consequence, recommended option first. A pure
+  preference question gets no walk. Skip the introduction for a surface the reader already showed
+  they know. The test for any human-facing prose: could the reader act on it without opening the
+  code? If not, introduce or translate the term.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to `frame-reviewer` — it resolves it itself.

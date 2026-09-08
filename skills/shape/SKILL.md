@@ -28,7 +28,9 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
 - **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
   *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
   description one clause naming its downstream consequence (never a restatement of the label),
-  recommended option first.
+  recommended option first. A pure preference question gets no walk. Skip the introduction for a
+  surface the reader already showed they know. The test for any human-facing prose: could the
+  reader act on it without opening the code? If not, introduce or translate the term.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via
   `bash scripts/resolve-pack-value.sh <configPath> shape`.
 - **Isolation:** builders never see another builder's output, or the driver's own scout — enforced

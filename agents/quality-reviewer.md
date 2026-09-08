@@ -88,6 +88,10 @@ endorses is suppressed there, not flagged. Speculative Generality overlaps **Min
 Shotgun Surgery, Divergent Change, Middle Man, and Refused Bequest overlap **Architecture** above —
 report an overlapping defect once, under whichever bullet already names it, never twice.
 
+> Fail: `Cart.loyaltyDiscount()` reads `this.customer.membership.tier`, `.yearsActive`, and
+> `.avgAnnualSpend`, never touching `Cart`'s own state — Feature Envy; it belongs on the
+> membership side.
+
 ## Rules
 - **Aim confidence at the diff, not your verdict.** Never hedge PASS/FIX/BLOCK itself — it stands
   regardless of what follows.

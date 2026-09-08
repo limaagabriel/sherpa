@@ -9,7 +9,7 @@ identical; only the mechanism differs.
 |---|---|---|
 | "dispatch X via the Agent tool / `subagent_type: \"X\"`" | Agent tool, that subagent type | dispatch the role **X** through pi-subagents — the `subagent` tool or `/run X` (registered from `.pi/agents/X.md`; see `.pi/agents/README.md`) |
 | "fresh `Agent` call", "stateless", "never `SendMessage`" | new Agent invocation each time | dispatch a fresh pi-subagents agent each time — never resume a prior one |
-| `AskUserQuestion` | structured multiple-choice tool | `ask_user_question` (rpiv) — a 1:1 structured equivalent. Only if that tool is absent, ask **one numbered free-text question** listing the options (mark the recommended one), then wait. Same batching/serialization rules as the prose. The preamble renders as ordinary prose above `ask_user_question`, exactly as under Claude Code; the free-text fallback carries that same preamble, plus each option's consequence clause (`protocols/questions.md`'s **The two-part shape** / **The walk** / **The options**). |
+| `AskUserQuestion` | structured multiple-choice tool | `ask_user_question` (rpiv) — a 1:1 structured equivalent. Only if that tool is absent, ask **one numbered free-text question** listing the options (mark the recommended one), then wait. Same batching/serialization rules as the prose. The prose walk — *found* (what turned up, in user-observable terms), *which means* (why there's a choice), *so* (the hand-off), skipped for a pure preference question — renders as ordinary prose above `ask_user_question`, exactly as under Claude Code; the free-text fallback carries that same walk, plus each option's consequence clause, recommended option first. |
 | the `Skill` tool (main agent invokes a skill) | Skill tool | native pi skills — discovered via `resources_discover` (the extension registers `skills/`). Subagents have no skill tool under either harness — they `Read` the `SKILL.md` by path, unchanged. |
 | model `haiku` / `sonnet` / `opus` for a subagent | Agent frontmatter `model:` | the role's `thinking` tier in `.pi/agents/X.md`; ignore the Claude model name — **no Claude model names exist under pi** |
 | `${CLAUDE_PLUGIN_ROOT}` in a path or hook | set by Claude Code | `$SHERPA_PLUGIN_ROOT`, exported by `.pi/extensions/sherpa.ts` (derived from `import.meta.url`). If unset, resolve the package root from its install path |
@@ -19,10 +19,10 @@ identical; only the mechanism differs.
 - **Structured questions are native.** pi's `ask_user_question` (rpiv) maps onto
   `AskUserQuestion` 1:1 — use it directly. The numbered free-text fallback applies
   only when that tool is unavailable; never fabricate a choice the user didn't make.
-  The preamble precedes either form — ordinary prose above `ask_user_question`, or
-  above the numbered list in the fallback; each fallback option keeps its
-  consequence clause (`protocols/questions.md`'s The two-part shape / The walk /
-  The options).
+  The prose walk (found / which means / so, skipped for a pure preference question)
+  precedes either form — ordinary prose above `ask_user_question`, or above the
+  numbered list in the fallback; each fallback option keeps its consequence clause,
+  recommended option first.
 - **Subagent dispatch needs pi-subagents.** The manifest declares
   `pi.subagents.agents: ["./.pi/agents"]`, so the roles auto-register on load —
   see `.pi/agents/README.md`. When **pi-subagents is absent**, degrade gracefully:
