@@ -1,12 +1,12 @@
 ---
 name: implement
-description: Build layer (L3). Builds an approved plan from /shape (or the task arg as one implicit step) one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape.
+description: Build layer. Builds an approved plan from /shape (or the task arg as one implicit step) one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape.
 ---
 
 # /implement — build, with pressure per step
 
-Build to completion. The bottom of the ceremony gradient — for a one-obvious-change task, start
-here directly. Pressure lives per step (acceptance + quality), not in a final gate.
+Build to completion. Match the layer to how clear the task is — for a one-obvious-change task,
+start here directly. Pressure lives per step (acceptance + quality), not in a final gate.
 
 ## Operating rules
 - **Authority:** the human owns every decision. You propose; they decide.
@@ -33,7 +33,7 @@ here directly. Pressure lives per step (acceptance + quality), not in a final ga
 2. **Per step.**
    - Ask any step-scoped question first, per Operating rules — the step-builder never asks the user.
    - Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
-     + `PRE-EXISTING DIRT` (`git status --short` run before this step's dispatch) + `configPath`
+     + `UNCOMMITTED BEFORE STEP` (`git status --short` run before this step's dispatch) + `configPath`
      when announced.
    - **Mechanical step** — its Change is entirely one of: pure codegen (a mechanical transform, no
      design judgment), docs-only (prose/comments, no behavior change), config-only (a

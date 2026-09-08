@@ -4,12 +4,12 @@ sherpa is the plugin behind this repo: three composable, opt-in skills, authored
 Code's vocabulary but run under **Claude Code, Codex CLI, and pi**. The user composes the
 workflow; sherpa offers the tools.
 
-- **`/frame <task>`** (macro) — scout + bind a problem contract, ask questions as they arise.
-- **`/shape <task>`** (shape) — skeleton + critique a candidate, fan out only on `FAN-OUT`, plan
+- **`/frame <task>`** (frame) — scout + bind a problem statement, ask questions as they arise.
+- **`/shape <task>`** (shape) — skeleton + critique a candidate, fan out only on `EXPAND`, plan
   the approved one.
 - **`/implement <task>`** (build) — build the plan (or the task as one implicit step), one
   reviewed step at a time.
-- **Nothing persists unless asked** — `/persist` writes the in-context frame, pitch, or plan to
+- **Nothing persists unless asked** — `/persist` writes the in-context frame, proposal, or plan to
   disk; there is no automatic run-state.
 
 ## Versioning

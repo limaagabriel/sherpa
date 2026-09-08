@@ -1,7 +1,7 @@
 ---
 name: readiness-reviewer
 package: sherpa
-description: Read-only shape-layer adversary (L2). Attacks each step's own contract in isolation — complete, testable, goal-honest, single-responsibility, risk substantive. Cross-step is structure-reviewer's job. Never sees a diff. Returns SOLID | HOLES.
+description: Read-only shape-layer adversary. Attacks each step's own contract in isolation — complete, testable, goal-honest, single-responsibility, risk substantive. Cross-step is structure-reviewer's job. Never sees a diff. Returns OK | GAPS.
 tools: read, grep, find, ls, bash
 thinking: high
 systemPromptMode: replace
@@ -16,4 +16,4 @@ Resolve the sherpa package root (the dir containing `agents/`) in this order:
 2. Else `~/.pi/agent/npm/node_modules/sherpa`.
 3. Else `~/.pi/agent/git/*/*/sherpa`.
 
-The canonical body lives at `<root>/agents/readiness-reviewer.md`. Read-only: attack each step's own contract before any step is built; never edit or write. Your final message IS the return value (VERDICT: SOLID | HOLES), not a human-facing note.
+The canonical body lives at `<root>/agents/readiness-reviewer.md`. Read-only: attack each step's own contract before any step is built; never edit or write. Your final message IS the return value (VERDICT: OK | GAPS), not a human-facing note.

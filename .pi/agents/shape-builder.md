@@ -1,7 +1,7 @@
 ---
 name: shape-builder
 package: sherpa
-description: Read-only candidate builder. Holds one premise false — or, for `mainline`, holds every slot true. Returns COUNT candidates, each with precedent, risk, and a coarse step skeleton.
+description: Read-only candidate builder. Holds one premise false — or, for the direct approach, holds every slot true. Returns COUNT candidates, each with precedent, risk, and a coarse step skeleton.
 tools: read, grep, find, ls, bash
 thinking: medium
 systemPromptMode: replace
