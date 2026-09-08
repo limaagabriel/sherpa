@@ -64,8 +64,9 @@ attacks the framing. `/shape` skeletons a direct-approach candidate and critique
 picked, it plans the steps and gets that plan attacked by `structure-reviewer` (how the steps
 relate) and `readiness-reviewer` (each step's own contract), then presents the plan and waits:
 **your approval is this run's one hard gate**. `/implement` then builds one step at a time:
-`step-builder` commits, then `acceptance-reviewer` and `quality-reviewer` check it. A `BLOCK` or a
-terminal `UNMET`/`FIX` surfaces to you verbatim; everything else continues automatically.
+`step-builder` commits, then `quality-reviewer` checks it against both quality and its acceptance
+criteria. A `BLOCK` or a terminal `UNMET`/`FIX` surfaces to you verbatim; everything else continues
+automatically.
 
 ## Project packs (optional)
 
@@ -85,14 +86,14 @@ schema and resolution rules: `packs/README.md`.
   `shape-builder` builds candidates, `shape-reviewer` critiques the pool,
   `structure-reviewer`/`readiness-reviewer` critique the plan.
 - **`/implement`** (build) — runs approved steps; `step-builder` builds and commits each one,
-  `acceptance-reviewer`/`quality-reviewer` check it.
+  `quality-reviewer` checks it.
 - **`/scout`** / **`/persist`** — cross-cutting: codebase discovery, and opt-in disk persistence.
 
 ## Layout
 
 ```
 skills/        /frame, /shape, /implement, /scout, /persist, using-sherpa
-agents/        scout, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, acceptance-reviewer, quality-reviewer
+agents/        scout, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, quality-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

@@ -30,7 +30,6 @@ here are picked up with no install.
 | structure-reviewer | shape layer | deep (opus) | `gpt-5.6-terra` | `high` | read-only |
 | readiness-reviewer | shape layer | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 | step-builder | build layer | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
-| acceptance-reviewer | build layer | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 | quality-reviewer | build layer | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 | scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 

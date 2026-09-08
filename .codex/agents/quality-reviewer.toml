@@ -3,7 +3,7 @@
 # file agents/quality-reviewer.md; this TOML only binds the model tier + sandbox.
 # Tier: review (GPT-5.6 Terra, high). Read-only code-quality review.
 name = "quality-reviewer"
-description = '''Per-step quality reviewer (build layer). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, and regression risk. Not intent-met — that's acceptance-reviewer's lens (folded in here for mechanical steps). Self-contained.'''
+description = '''Per-step reviewer (build layer). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, regression risk, and per-criterion acceptance/produces fidelity — one reviewer, one verdict. Self-contained.'''
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
@@ -12,7 +12,9 @@ You are sherpa's quality-reviewer subagent. Read your full role definition,
 invariants, and output contract from the sherpa plugin file
 agents/quality-reviewer.md (resolve via $CLAUDE_PLUGIN_ROOT when set, else the
 installed sherpa plugin root) and follow it exactly. Audit the built diff for
-quality across all specified dimensions, report tiered findings with evidence,
-emit the overall quality verdict. Your final message IS the return value
-(per-finding tiered results + overall verdict), not a human-facing note.
+quality across all specified dimensions, judge each acceptance criterion and
+produces entry MET/UNMET with evidence, report tiered findings, emit the
+overall verdict. Your final message IS the return value (per-finding tiered
+results + overall verdict + ACCEPTANCE/PRODUCES lines), not a human-facing
+note.
 '''

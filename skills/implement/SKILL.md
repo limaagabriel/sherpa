@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build layer. Builds an approved plan from /shape (or the task arg as one implicit step) one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape.
+description: Build layer. Builds an approved plan from /shape (or a bare task arg drafted into one step and gated on human approval) one step at a time, step-builder plus a quality-reviewer per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape.
 ---
 <!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
   shows everything else.
@@ -23,40 +23,40 @@ Build to completion. Match the layer to how clear the task is — for a one-obvi
 start here directly. Pressure lives per step (acceptance + quality), not in a final gate.
 
 ## Operating rules
-- **Never push.** Commit only when the human asks. The step-builder owns one commit per step — never
-  add a manual commit on top.
+- **Never push.** The step-builder makes exactly one commit per step; the driver adds none.
 
 ## Steps
-1. **Get context.** Plan in context → build its steps. **No plan** → treat the `<task>` arg as one
-   implicit step; if it's large enough to want a plan, offer `/shape` first in one declinable line.
-   **A persisted plan file path given as the arg** — read it back and consume it exactly as an
-   in-context artifact. Track one step `in_progress` at a time (TaskCreate/TaskUpdate when
-   available, else a plain in-message checklist); flip a step done only when its commit lands.
+1. **Get context.** Plan in context → build its steps. **A persisted plan file path given as the
+   arg** — read it back and consume it exactly as an in-context artifact (already approved
+   elsewhere, no gate needed here). **No plan, bare `<task>` arg** — this is /implement's own human
+   gate: draft ONE step (`Goal` + `Acceptance criteria`, the same shape a `/shape`-produced step
+   would have — see `/shape`'s own `## Human gates`), present it, and wait for explicit approval
+   before dispatching `step-builder`. If it's large enough to want a plan instead, offer `/shape` in
+   one declinable line before drafting. Once approved, proceed exactly as step 2 below. Track one
+   step `in_progress` at a time (TaskCreate/TaskUpdate when available, else a plain in-message
+   checklist); flip a step done only when its commit lands.
 2. **Per step.**
    - Ask any step-scoped question first, per Operating rules — the step-builder never asks the user.
    - Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
      + `UNCOMMITTED BEFORE STEP` (`git status --short` run before this step's dispatch) + `configPath`
-     when announced.
-   - **Mechanical step** — its Change is entirely one of: pure codegen (a mechanical transform, no
-     design judgment), docs-only (prose/comments, no behavior change), config-only (a
-     config/manifest value, no code-path change), or pure wiring (connecting two already-built
-     pieces, no new logic). Any non-trivial logic, even small, makes it normal — when in doubt,
-     normal. A mechanical step dispatches `step-builder` at model haiku and, on `BUILT`,
-     `quality-reviewer` alone — briefed also with the step's `Acceptance criteria` and `Interfaces`,
-     and asked to append one `ACCEPTANCE: MET | UNMET <criterion> — <evidence>` line per acceptance
-     criterion and one `PRODUCES: MET | UNMET <entry> — <evidence>` line per declared `produces`
-     entry.
-   - **Normal step** — on `BUILT`, dispatch `acceptance-reviewer` and `quality-reviewer` in parallel
-     over the step's commit range; `quality-reviewer` also gets the current step index and the
-     remaining steps' goals, so it can tell whether a failure is covered by a later step.
+     when announced. A **mechanical step** — its Change is entirely one of: pure codegen (a
+     mechanical transform, no design judgment), docs-only (prose/comments, no behavior change),
+     config-only (a config/manifest value, no code-path change), or pure wiring (connecting two
+     already-built pieces, no new logic) — dispatches `step-builder` at model haiku; any non-trivial
+     logic, even small, makes it normal and dispatches at the default model. When in doubt, normal.
+   - On `BUILT`, dispatch `quality-reviewer` over the step's commit range for every step alike
+     (mechanical and normal), briefed with the step's `Acceptance criteria` and `Interfaces`, the
+     current step index, and the remaining steps' goals (so it can tell whether a failure is covered
+     by a later step). Its output always carries `PASS|FIX|BLOCK` plus one `ACCEPTANCE: MET|UNMET`
+     line per acceptance criterion and one `PRODUCES: MET|UNMET` line per declared `produces` entry.
 3. **Verdicts.**
-   - `UNMET`, or a quality `FIX` → relay to the step-builder to fold into its commit; re-check once.
-     Still failing after that → stop: one framing line naming what it blocks, then the finding
-     quoted exactly.
-   - `BLOCK` → stop the same way: one framing line, then the finding quoted exactly.
-   - `MET` + `PASS` → next step.
-   - Any reviewer output containing `recommend /shape revisit` → stop, surface the same way, offer
-     `/shape` in one declinable line.
+   a. An `ACCEPTANCE: UNMET` line, or a quality `FIX` → relay to the step-builder to fold into its
+      commit; re-check once. Still failing after that → stop: one framing line naming what it
+      blocks, then the finding quoted exactly.
+   b. `BLOCK` → stop the same way: one framing line, then the finding quoted exactly.
+   c. Every `ACCEPTANCE: MET` + `PASS` → next step.
+   d. Any reviewer output containing `recommend /shape revisit` → stop, surface the same way, offer
+      `/shape` in one declinable line.
 4. **Verify.** Once every step is committed with no open `BLOCK`, run the plan's Block 3 "how it's
    verified" once — execute whatever part of the test plan is re-runnable as-is; treat anything that
    needs a human to observe the end state as a manual checklist item. Never fabricate a pass for
