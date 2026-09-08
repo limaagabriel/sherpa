@@ -37,6 +37,14 @@ start here directly. Pressure lives per step (acceptance + quality), not in a fi
    checklist); flip a step done only when its commit lands.
 2. **Per step.**
    - Ask any step-scoped question first, per Operating rules — the step-builder never asks the user.
+   - **Pre-flight STALE check.** For each of the step's `consumes` entries: if the entry does not
+     start with a `<path>` in anchor form (i.e. it's `none`, or predates this format), print
+     `UNANCHORED <entry>` and continue treating it as before (no gate). Otherwise run
+     `git cat-file -e HEAD:<path>` to confirm the path exists; when the anchor carries a
+     `::literal`, also run `git grep -q -F -e "<literal>" HEAD -- "<path>"` (pass the literal as a
+     `-e` argument, never interpolated inside a quoted string, so a literal containing an
+     apostrophe or shell metacharacter doesn't break the check or become an injection vector). Any
+     miss — path absent, or literal absent when required — makes the anchor stale; see verdict e.
    - Dispatch `step-builder` with the step's `task` + `Goal` + `Interfaces` + `Acceptance criteria`
      + `UNCOMMITTED BEFORE STEP` (`git status --short` run before this step's dispatch) + `configPath`
      when announced. A **mechanical step** — its Change is entirely one of: pure codegen (a
@@ -57,6 +65,9 @@ start here directly. Pressure lives per step (acceptance + quality), not in a fi
    c. Every `ACCEPTANCE: MET` + `PASS` → next step.
    d. Any reviewer output containing `recommend /shape revisit` → stop, surface the same way, offer
       `/shape` in one declinable line.
+   e. `STALE <anchor>` (a pre-dispatch miss from the pre-flight check above) → stop the same way:
+      one framing line naming what it blocks, then the finding quoted exactly; no `step-builder`
+      dispatch happens for that step.
 4. **Verify.** Once every step is committed with no open `BLOCK`, run the plan's Block 3 "how it's
    verified" once — execute whatever part of the test plan is re-runnable as-is; treat anything that
    needs a human to observe the end state as a manual checklist item. Never fabricate a pass for
@@ -64,5 +75,5 @@ start here directly. Pressure lives per step (acceptance + quality), not in a fi
    entirely when no plan was in context.
 
 ## Done when
-Every step committed, no open `BLOCK`, plan-level verification run when applicable. Present the
+Every step committed, no open `BLOCK` or `STALE`, plan-level verification run when applicable. Present the
 per-step results; offer `/persist` if wanted.
