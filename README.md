@@ -39,7 +39,7 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 |---|---|---|
 | `/frame <task>` | Scout, bind a problem statement, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
 | `/shape <task>` | Skeleton + critique a direct-approach candidate; fans out to a full candidate pool only when that critique returns `EXPAND`. Presents a proposal — step budget stated up front in it — and waits for your pick; once picked, plans ordered, traceable steps, critiques the plan, and waits for your one approval. | the problem's framed (or clear enough) |
-| `/implement <task>` | Build each step (step-builder + acceptance + quality reviewers), with pressure per step. | it's one obvious change |
+| `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/scout <task>` | Standalone codebase scout; also called by `/frame` and `/shape`. | you just want a lay of the land |
 | `/persist` | Write the in-context frame, proposal, or plan to disk so a later session can resume. | you want to save or resume |
 
@@ -60,10 +60,12 @@ does the minimum to proceed — never re-running the layer above.
 
 `/frame` scouts, binds a problem statement, and asks questions as they arise; `frame-reviewer`
 attacks the framing. `/shape` skeletons a direct-approach candidate and critiques it via
-`shape-reviewer`; only an `EXPAND` verdict pays for the full pooled fan-out. Once a candidate's
-picked, it plans the steps and gets that plan attacked by `structure-reviewer` (how the steps
-relate) and `readiness-reviewer` (each step's own contract), then presents the plan and waits:
-**your approval is this run's one hard gate**. `/implement` then builds one step at a time:
+`shape-reviewer`; only an `EXPAND` verdict pays for the full pooled fan-out. A tied pick waits on
+you (human gate 1); otherwise `/shape` auto-picks, and the pick stays rejectable later. It then
+plans the steps and gets that plan attacked, in parallel, by `structure-reviewer` (how the steps
+relate) and `readiness-reviewer` (each step's own contract) — a gap only you can close waits on
+you (human gate 2) — before presenting the plan and waiting for **your explicit approval (human
+gate 3)**, the one gate every run hits. `/implement` then builds one step at a time:
 `step-builder` commits, then `quality-reviewer` checks it against both quality and its acceptance
 criteria. A `BLOCK` or a terminal `UNMET`/`FIX` surfaces to you verbatim; everything else continues
 automatically.
