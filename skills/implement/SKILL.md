@@ -71,9 +71,17 @@ start here directly. Pressure lives per step (acceptance + quality), not in a fi
 4. **Verify.** Once every step is committed with no open `BLOCK`, run the plan's Block 3 "how it's
    verified" once — execute whatever part of the test plan is re-runnable as-is; treat anything that
    needs a human to observe the end state as a manual checklist item. Never fabricate a pass for
-   something you didn't actually check. A failure here is terminal, same handling as `BLOCK`. Skip
-   entirely when no plan was in context.
+   something you didn't actually check. Then also run the plan goal statement's own `done when`
+   check (the goal statement has the shape `<Outcome> for <consumers> because <motivation>; done
+   when <verification>` per `/shape`). If that check is textually the same command/check as one
+   already run for Block 3, don't run it twice — run it once and print a note saying so, e.g. "same
+   check as Block 3, ran once." A `done when` check that is manual (per `/shape`'s own "manual only
+   with a stated reason" allowance) routes to the same manual-checklist-item handling used above.
+   Print the goal check's result as `GOAL: <check> → pass|fail`. A failure here — whether from
+   Block 3's check or the goal's `done when` check — is terminal, same handling as `BLOCK`. Skip
+   entirely when no plan was in context (a bare-task /implement run has no plan goal statement to
+   check).
 
 ## Done when
-Every step committed, no open `BLOCK` or `STALE`, plan-level verification run when applicable. Present the
-per-step results; offer `/persist` if wanted.
+Every step committed, no open `BLOCK` or `STALE`, plan-level verification run when applicable, goal
+done-when run. Present the per-step results; offer `/persist` if wanted.
