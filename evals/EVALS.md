@@ -32,6 +32,7 @@ No CI wiring. These run by hand when you're validating a reviewer prompt change,
 | `frame-mechanism-leakage` | `frame-reviewer` | Mechanism leakage |
 | `plan-interface-mismatch-no-go` | `structure-reviewer` | Interface mismatch + No-go violation |
 | `step-diff-planted-bug` | `quality-reviewer` | Correctness |
+| `quality-smell-baseline` | `quality-reviewer` | Smell baseline |
 
 ## Pass criterion
 The fixture PASSES (the reviewer caught it) when the reviewer's output contains a HOLES/FIX entry
