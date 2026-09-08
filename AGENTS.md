@@ -31,8 +31,15 @@ identical, only the mechanism differs.
 Read every Claude-specific tool mention through the equivalence table in
 **`protocols/harness/pi.md`**; pi gets a working bridge from `.pi/extensions/sherpa.ts`.
 
-## Editing `agents/*.md`
+## Editing agents
 
-Any edit to an `agents/*.md` role file must be followed by
-`bash scripts/generate-agent-twins.sh` and the regenerated `.codex/agents`/`.pi/agents` twins
-committed alongside it.
+Rule text shared across skills or agents (Authority, Questions, the read-only Bash allowlist, the
+reviewer verdict shape, etc.) lives once in **`protocols/shared-rules.md`**, stamped into each
+target file between `<!-- shared:<block> -->` / `<!-- /shared -->` markers. Editing shared rule
+content means editing `protocols/shared-rules.md`, then re-running
+`bash scripts/inline-shared-rules.sh`. Editing role-specific content — anything outside the marker
+regions — means editing the `agents/*.md` file directly, then running
+`bash scripts/generate-agent-twins.sh`. Run both generators after any `agents/*.md` edit, since
+either kind of change can land there: `bash scripts/inline-shared-rules.sh` first (in case a
+marker moved or content drifted), then `bash scripts/generate-agent-twins.sh` to refresh the
+`.codex/agents`/`.pi/agents` twins, and commit the regenerated twins alongside it.

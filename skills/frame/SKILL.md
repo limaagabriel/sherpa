@@ -2,25 +2,26 @@
 name: frame
 description: Frame layer. Turns a fuzzy task into the frame — scout, problem statement, open questions, no solution bound. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /implement.
 ---
+<!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
+  shows everything else.
+- **No narration between tools.** One short sentence only when the *task* changes.
+- **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
+  *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
+  description one clause naming its downstream consequence (never a restatement of the label),
+  recommended option first. A pure preference question gets no walk. Skip the introduction for a
+  surface the reader already showed they know. The test for any human-facing prose: could the
+  reader act on it without opening the code? If not, introduce or translate the term.
+- **Harness:** under Codex/pi, read Claude-specific tool mentions per
+  `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
+- **Pack:** forward `configPath` to every subagent; each resolves it itself via
+  `bash scripts/resolve-pack-value.sh <configPath> <layer>`.
+<!-- /shared -->
 
 # /frame — discover, then bind the problem
 
 Produce **the frame** for `<task>`: the right problem, well-framed, with discovery and the open
 questions named. Never binds a solution. The frame lives **in context** (printed, not on disk);
 persisting it is the opt-in `/persist` skill — never automatic.
-
-## Operating rules
-- **Authority:** the human owns every decision. You propose; they decide.
-- **No narration between tools.** One short sentence only when the *task* changes.
-- **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
-  *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
-  description one clause naming its downstream consequence, recommended option first. A pure
-  preference question gets no walk. Skip the introduction for a surface the reader already showed
-  they know. The test for any human-facing prose: could the reader act on it without opening the
-  code? If not, introduce or translate the term.
-- **Harness:** under Codex/pi, read Claude-specific tool mentions per
-  `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack:** forward `configPath` to `frame-reviewer` — it resolves it itself.
 
 ## Steps
 1. **Discover.** Dispatch the `scout` agent (task, target dir, breadth `quick`/`medium`/`very

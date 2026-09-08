@@ -2,6 +2,20 @@
 name: implement
 description: Build layer. Builds an approved plan from /shape (or the task arg as one implicit step) one step at a time, step-builder plus reviewers per step. No separate Validate phase. Triggers - "/implement", "/implement <task>", "build the plan", "implement this". Counterparts - /frame, /shape.
 ---
+<!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
+  shows everything else.
+- **No narration between tools.** One short sentence only when the *task* changes.
+- **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
+  *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
+  description one clause naming its downstream consequence (never a restatement of the label),
+  recommended option first. A pure preference question gets no walk. Skip the introduction for a
+  surface the reader already showed they know. The test for any human-facing prose: could the
+  reader act on it without opening the code? If not, introduce or translate the term.
+- **Harness:** under Codex/pi, read Claude-specific tool mentions per
+  `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
+- **Pack:** forward `configPath` to every subagent; each resolves it itself via
+  `bash scripts/resolve-pack-value.sh <configPath> <layer>`.
+<!-- /shared -->
 
 # /implement — build, with pressure per step
 
@@ -9,18 +23,6 @@ Build to completion. Match the layer to how clear the task is — for a one-obvi
 start here directly. Pressure lives per step (acceptance + quality), not in a final gate.
 
 ## Operating rules
-- **Authority:** the human owns every decision. You propose; they decide.
-- **No narration between tools.** One short sentence only when the *task* changes.
-- **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
-  *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
-  description one clause naming its downstream consequence, recommended option first. A pure
-  preference question gets no walk. Skip the introduction for a surface the reader already showed
-  they know. The test for any human-facing prose: could the reader act on it without opening the
-  code? If not, introduce or translate the term.
-- **Harness:** under Codex/pi, read Claude-specific tool mentions per
-  `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack:** forward `configPath` to `step-builder`, `acceptance-reviewer`, and `quality-reviewer`;
-  each resolves it itself via `bash scripts/resolve-pack-value.sh <configPath> implement`.
 - **Never push.** Commit only when the human asks. The step-builder owns one commit per step — never
   add a manual commit on top.
 

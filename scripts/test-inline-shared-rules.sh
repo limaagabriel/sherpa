@@ -47,13 +47,15 @@ cs=$?
 assert_eq c-no-write "$(cat "$tmp/c/target.md")" "$before_c"
 assert_contains c-stderr-mentions-close "$(cat "$tmp/c.err")" "no matching close marker"
 
-# d) same-line marker pair.
+# d) same-line marker pair -> content still inlines, but the close marker is
+# always forced onto its own line (never merged against whatever the block
+# content ends with), so " suffix" trails the close marker on the next line.
 mksrc "$tmp/d/src.md"
 mkdir -p "$tmp/d"
 printf 'prefix <!-- shared:demo --><!-- /shared --> suffix\n' >"$tmp/d/target.md"
 INLINE_SOURCE="$tmp/d/src.md" INLINE_TEST_FILES="$tmp/d/target.md" "$inliner" >/dev/null 2>"$tmp/d.err"
 assert_exit d-write-exit-0 "$?" 0
-assert_contains d-inlined-same-line "$(cat "$tmp/d/target.md")" "prefix <!-- shared:demo -->Demo content line.<!-- /shared --> suffix"
+assert_contains d-inlined-same-line "$(cat "$tmp/d/target.md")" $'prefix <!-- shared:demo -->Demo content line.\n<!-- /shared --> suffix'
 
 # e) two marker pairs on one line.
 mksrc "$tmp/e/src.md"
@@ -92,6 +94,22 @@ printf -- '---\r\nfoo: bar\r\n---\r\nBefore.\r\n<!-- shared:demo -->\r\nold\r\n<
 INLINE_SOURCE="$tmp/h/src.md" INLINE_TEST_FILES="$tmp/h/target.md" "$inliner" >/dev/null 2>"$tmp/h.err"
 assert_exit h-crlf-write-exit-0 "$?" 0
 assert_contains h-crlf-inlined "$(cat "$tmp/h/target.md")" "Demo content line."
+
+# i) shared block whose content ends in a bare ``` fence line -> the close
+# marker must land on its own line (not merge with the fence into one
+# ```<!-- /shared --> line), and that fence line must not be mistaken for a
+# real markdown fence while still inside the marker span -- so a fresh
+# --check right after inlining exits 0 instead of failing with a misleading
+# "no matching close marker" error.
+mkdir -p "$tmp/i"
+printf '## demo\nDemo content line.\n```\n' >"$tmp/i/src.md"
+printf 'Before.\n<!-- shared:demo -->\nold\n<!-- /shared -->\nAfter.\n' >"$tmp/i/target.md"
+INLINE_SOURCE="$tmp/i/src.md" INLINE_TEST_FILES="$tmp/i/target.md" "$inliner" >/dev/null 2>"$tmp/i.err"
+assert_exit i-write-exit-0 "$?" 0
+assert_contains i-close-marker-on-own-line "$(cat "$tmp/i/target.md")" $'```\n<!-- /shared -->'
+INLINE_SOURCE="$tmp/i/src.md" INLINE_TEST_FILES="$tmp/i/target.md" "$inliner" --check >/dev/null 2>"$tmp/i-check.err"
+assert_exit i-check-exit-0 "$?" 0
+assert_eq i-check-no-misleading-error "$(cat "$tmp/i-check.err")" ""
 
 # --- check-retired-terms.sh ---
 

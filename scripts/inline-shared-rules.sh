@@ -18,8 +18,17 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source_file="${INLINE_SOURCE:-$repo_root/protocols/shared-rules.md}"
 
 # Block -> file map: files to scan for <!-- shared:<block> --> markers.
-# Empty for now; later plan steps populate this as files adopt shared rules.
 BLOCK_FILE_MAP=(
+  skills/frame/SKILL.md
+  skills/shape/SKILL.md
+  skills/implement/SKILL.md
+  agents/scout.md
+  agents/shape-builder.md
+  agents/shape-reviewer.md
+  agents/frame-reviewer.md
+  agents/readiness-reviewer.md
+  agents/structure-reviewer.md
+  agents/quality-reviewer.md
 )
 
 files=("${BLOCK_FILE_MAP[@]}")
@@ -88,7 +97,7 @@ render_file() {
           fail(fname ": block '"'"'" blockname "'"'"' not found in " src)
         }
 
-        result = result prefix openm blocks[blockname] "<!-- /shared -->"
+        result = result prefix openm blocks[blockname] "\n<!-- /shared -->"
         remaining = substr(after_open, closepos + length("<!-- /shared -->"))
       }
 
@@ -132,15 +141,41 @@ render_file() {
       have_scan = 0
       scan_start = 0
       in_fence = 0
+      in_marker = 0
       seen_fm_open = 0
+    }
+
+    # Updates in_marker from the open/close shared-marker tokens found in
+    # line, in the order they appear. Previously-inlined block content can
+    # contain a bare fence line (the block source should avoid this, but a
+    # stale on-disk file may still have one); while inside an open marker
+    # span, that fence line must not toggle in_fence below, or the segment
+    # gets flushed before its close marker is ever seen, producing a
+    # misleading "no matching close marker" error.
+    function update_marker_state(line,    remaining, pos_open, pos_close) {
+      remaining = line
+      while (length(remaining) > 0) {
+        pos_open = index(remaining, "<!-- shared:")
+        pos_close = index(remaining, "<!-- /shared -->")
+        if (pos_open == 0 && pos_close == 0) break
+        if (pos_open > 0 && (pos_close == 0 || pos_open < pos_close)) {
+          match(remaining, /<!-- shared:[A-Za-z0-9_-]+ -->/)
+          in_marker = 1
+          remaining = substr(remaining, RSTART + RLENGTH)
+        } else {
+          in_marker = 0
+          remaining = substr(remaining, pos_close + length("<!-- /shared -->"))
+        }
+      }
     }
 
     {
       if (err) next
 
       gsub(/\r$/, "")
+      update_marker_state($0)
 
-      if ($0 ~ /^```/) {
+      if (!in_marker && $0 ~ /^```/) {
         if (have_scan) {
           out = out process_segment(scan_buf, scan_start) "\n"
           have_scan = 0

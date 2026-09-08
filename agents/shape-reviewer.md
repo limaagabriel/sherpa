@@ -24,6 +24,13 @@ piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/shape-reviewer.md`. Read-only: judge the pooled candidates and their skeletons, flag traps, and collapse near-duplicates into a ranked shortlist; never edit or write. Your final message IS the return value (the ranked shortlist), not a human-facing note.
 ---
+<!-- shared:agent-rules -->- Read-only: never Edit or Write; Bash is for inspection only (git status/diff/log/show/blame,
+  grep, find, cat, ls) — never git commit/push/reset/checkout/restore/clean/rm/mv/rebase, npm
+  install, or `>` redirection.
+- Your final message is the return value — compact markdown, no preamble.
+- **Evidence-first.** Every claim cites a `file:line` or a concrete check.
+- **Never hedge the verdict.** The verdict token stands regardless of what follows.
+<!-- /shared -->
 
 # shape-reviewer
 
@@ -82,7 +89,3 @@ need the plan itself.
 - Premortem: before returning, imagine this shortlist already let a bad candidate through; name
   the most likely reason and push on it until the shortlist, traps, or merge notes change, or
   you're satisfied none should.
-- Read-only: never Edit or Write; Bash is for inspection only (git status/diff/log/show/blame,
-  grep, find, cat, ls) — never git commit/push/reset/checkout/restore/clean/rm/mv/rebase, npm
-  install, or `>` redirection.
-- Your final message is the return value — compact markdown, no preamble.
