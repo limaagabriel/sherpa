@@ -54,13 +54,20 @@ the step budget you judge `bounded` against. `configPath`, when announced: run
   the slot it names counts as evidence toward `solved`; a `REUSE:` (or `SIMILAR:`) showing the
   candidate rebuilds working code already in the tree, instead of solving something new, is a
   `traps` entry — and, on a directed dispatch (`DIRECTION` bound), that finding is itself an
-  `EXPAND` reason. `ACCEPT` when the candidate is solved (outline steps connect end-to-end), bounded (fits
-  the dispatched step budget, names no-gos), every outline step traces to a contract slot, and no trap
-  disqualifies it. `EXPAND` when any of those fails, or you judge the problem admits a materially
-  different direction worth the extra calls — on a directed dispatch, the `EXPAND` reason must
-  name what `DIRECTION` fails: an unsolved outline step, a contract slot it rewrites, or a rebuild-hit as
-  above. Then the candidate's own solved / bounded / traced judgment and any traps — no shortlist,
-  no merge notes; the pool is one candidate.
+  `EXPAND` reason (case 4 below). Check exactly these four things:
+  1. **Not solved** — a beat or outline step doesn't connect end-to-end.
+  2. **Not bounded** — the candidate doesn't fit the dispatched step budget, or states no no-gos.
+  3. **Untraced step** — an outline step doesn't trace to a contract slot.
+  4. **Disqualifying trap** — a concrete, quotable problem with the candidate: hidden cost, false
+     economy, won't scale, premature abstraction, a rebuild-hit (above), or any other named,
+     quoted reason.
+
+  `ACCEPT` when none of the four fire. `EXPAND` when any one does — on a directed dispatch, the
+  `EXPAND` reason must name which of the four `DIRECTION` fails: case 1 (not solved — an unsolved
+  outline step), case 3 (untraced step — a contract slot `DIRECTION` rewrites), or case 4
+  (disqualifying trap — a rebuild-hit). Then the candidate's own
+  solved / bounded / traced judgment and any traps — no shortlist, no merge notes; the pool is
+  one candidate.
 - **Wave 2** — a ranked shortlist of 2-4, each keeping its originating `precedent` and `risk`
   intact plus a one-line rationale. Per candidate: **solved** (outline steps connect, no "and then somehow
   X"); **bounded** (fits the dispatched step budget, states no-gos; a deviation is a trap, not

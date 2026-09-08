@@ -1,6 +1,6 @@
 ---
 name: shape
-description: Shape layer. Fans out candidates only when wave 1's direct-approach candidate fails, or a materially different direction is worth it; picks one, then plans it. Frameless-tolerant. Triggers - "/shape", "/shape <problem>", "brainstorm directions".
+description: Shape layer. Fans out candidates only when wave 1's direct-approach candidate fails one of four named checks (solved, bounded, traced, trap-free); picks one, then plans it. Frameless-tolerant. Triggers - "/shape", "/shape <problem>", "brainstorm directions".
 ---
 <!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
   shows everything else.
@@ -41,21 +41,30 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
   by you, not the builder.
 
 ## Procedure
-1. **Establish `PROBLEM`.** Frame in context → read its contract as-is. No frame → run the quick
-   scout, draft the inline contract. Bind `DIRECTION` when the human has one (ask when unclear).
-   Then STATE the step budget — anchored on the discovery in hand (frame's, or the
-   frameless quick scout): name what it covers and what it leaves out; the human may change it —
-   before any builder call is spent.
+1. **Establish `PROBLEM`.**
+   1. **Frame in context** — read its contract as-is.
+   2. **No frame** — run the quick scout, draft the inline contract.
+
+   Bind `DIRECTION` when the human has one (ask when unclear). Then STATE the step budget —
+   anchored on the discovery in hand (frame's, or the frameless quick scout): name what it covers
+   and what it leaves out; the human may change it — before any builder call is spent.
 2. **Wave 1 — direct approach only.** Dispatch one `shape-builder` with `PREMISE: direct approach`, `COUNT=1`,
    `PROBLEM`, `TARGET_DIR`, step budget, plus `DIRECTION` when bound. Then one `shape-reviewer` over
-   it: it leads with `ACCEPT | EXPAND` and one line of reason. `ACCEPT` when the candidate
-   is solved (outline steps connect end to end), bounded (fits the step budget, names no-gos), every outline step
-   traces to a contract slot, and no trap disqualifies it. `EXPAND` when any of those fails, or
-   the reviewer judges the problem admits a materially different direction worth the extra calls.
-   `ACCEPT` → skip to step 4. **`EXPAND` with `DIRECTION` bound** — do not enter wave 2 yet; ask
-   the human (question shape per Operating rules) to amend `DIRECTION` and re-run wave 1 with it,
-   drop `DIRECTION` and expand undirected (step 3), or stop. **`EXPAND` with no `DIRECTION`** →
-   step 3.
+   it: it leads with `ACCEPT | EXPAND` and one line of reason, checking exactly these four things:
+   1. **Not solved** — a beat or outline step doesn't connect end to end.
+   2. **Not bounded** — the candidate doesn't fit the step budget, or states no no-gos.
+   3. **Untraced step** — an outline step doesn't trace to any problem-statement slot.
+   4. **Disqualifying trap** — a concrete, quotable problem with the candidate (hidden cost, false
+      economy, won't scale, premature abstraction, rebuild of working code, or any other named,
+      quoted reason).
+
+   `ACCEPT` when none of the four fire. `EXPAND` when any one does. Then, on `EXPAND`:
+   1. **`DIRECTION` bound** — do not enter wave 2 yet; ask the human (question shape per Operating
+      rules) to amend `DIRECTION` and re-run wave 1 with it, drop `DIRECTION` and expand undirected
+      (step 3), or stop.
+   2. **No `DIRECTION`** — go to step 3.
+
+   On `ACCEPT`, skip to step 4.
 3. **Wave 2 — full pool, only on an undirected `EXPAND`.** Dispatch three falsifying
    `shape-builder`s (premise = obstacle / capability / costs held false; `who` and done signal
    off limits to them) plus the direct approach re-dispatched fresh at `COUNT=3` — one message, concurrent,
@@ -71,12 +80,20 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
    it to a short plain-words name plus what it does, before that ID appears anywhere else. Then
    the five fields: problem, step budget, solution, rabbit holes, no-gos — carrying the picked
    skeleton, its precedent, and the rejected candidates with why they lost. The proposal's `step budget`
-   field carries the value stated in step 1, verbatim — never re-asked here. `TIE: no`, or
-   wave 1's `ACCEPT` — auto-pick, no wait. `TIE: yes` — surface the top two as ONE solution
-   open question and wait; that pick belongs to the human alone. Rejecting the proposal ends the run
-   here.
-5. **Plan.** Settle only what blocks drafting a step boundary; a problem or scope question stays
-   `/frame`'s job and is left open, not answered here. Bind the goal statement —
+   field carries the value stated in step 1, verbatim — never re-asked here. Pick the candidate:
+   1. **`TIE: no`, or wave 1's `ACCEPT`** — auto-pick, no wait.
+   2. **`TIE: yes`** — surface the top two as ONE solution open question and wait (human gate 1);
+      that pick belongs to the human alone.
+
+   An auto-pick here is not final — the proposal is still presented, and remains rejectable, at
+   plan approval (human gate 3, step 6).
+5. **Plan.** Settle only what blocks drafting a step boundary. A problem or scope question:
+   1. **A frame is in context** — stays `/frame`'s job and is left open, not answered here;
+      reopening it here would re-narrow a contract already critiqued.
+   2. **Frameless** — no `/frame` exists to hand the question to, so `/shape` answers a problem
+      question needed for its own problem statement, when nothing else can answer it.
+
+   Bind the goal statement —
    `<Outcome> for <consumers> because <motivation>; done when <verification>` — from the picked
    candidate's solution field: Outcome an observable end-state, every noun bound; `for` names ≥2
    consumers or a stated concrete value; `because` must not restate the Outcome; `done when` names
@@ -95,19 +112,34 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
    premortem (imagine this plan already failed; name the most likely reason, fold it in),
    interface closure (every `consumes` produced by an earlier step, every `produces` has a
    consumer or a stated reason), risk substance (no boilerplate `none`).
-6. **Adversarial plan review, then the one approval.** Dispatch `structure-reviewer` and
+6. **Adversarial plan review, then plan approval.** Dispatch `structure-reviewer` and
    `readiness-reviewer` via Agent, in parallel, always. `structure-reviewer` gets the plan goal,
    the full step list (each Goal + Interfaces), the problem statement, the proposal's
    no-gos/rabbit holes, and `configPath`. `readiness-reviewer` gets the full step list (each
    step's Goal, Interfaces, Acceptance criteria, Risk) and `configPath`. Both `OK` → present.
-   Either `GAPS` → fix what you can; a hole only the human can close → one framing line naming
-   what it blocks, then the finding quoted exactly, and wait. Present the plan, then wait for
-   **explicit** approval — "approved", "go", "lgtm"; a question or critique is not approval.
+   Either `GAPS` → fix what you can; a hole only the human can close (human gate 2) → one
+   framing line naming what it blocks, then the finding quoted exactly, and wait. Present the
+   plan (proposal included), then wait for **explicit** approval (human gate 3) — "approved",
+   "go", "lgtm"; a question or critique is not approval. Rejecting here ends the run, even when
+   the proposal was auto-picked in step 4.
+
+## Human gates
+Exactly three points wait on the human; everything else is the driver deciding and showing its
+work (see `Authority` above).
+1. **Tie pick** (step 4) — `shape-reviewer` returns `TIE: yes`; only the human picks between the
+   top two.
+2. **Plan-review GAPS only the human can close** (step 6) — a `structure-reviewer` or
+   `readiness-reviewer` finding the driver can't fix on its own.
+3. **Plan approval** (step 6) — explicit "approved"/"go"/"lgtm"; the proposal stays rejectable
+   here even after an earlier auto-pick.
+
+The step budget (step 1) is stated up front, and the human may change it at any point — but that
+is not a fourth gate; there's no formal wait on it.
 
 ## Output
-The candidate roster, then the proposal, then — once approved — the plan. Nothing on disk;
-persisting either artifact is `/persist`'s job.
+The candidate roster, then the proposal and plan together, presented once at plan approval. Nothing
+on disk; persisting either artifact is `/persist`'s job.
 
 ## Done when
-An approved plan exists in context, or the human rejected the proposal before one was drafted. Hand
-off to `/implement`, or offer `/persist`.
+An approved plan exists in context, or the human rejected at any human gate before a plan was
+approved. Hand off to `/implement`, or offer `/persist`.
