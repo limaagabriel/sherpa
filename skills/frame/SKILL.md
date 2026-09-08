@@ -6,47 +6,69 @@ description: Macro layer (L1). Turns a fuzzy task into the frame — scout, prob
 # /frame — discover, then bind the problem
 
 Produce **the frame** for `<task>`: the right problem, well-framed, with discovery and the open
-questions named. The top of the ceremony gradient — use it when the task is fuzzy. A task whose
-problem and solution are both already clear may skip straight to `/implement`; a clear problem
-that still needs a direction picked or turned into a plan goes to `/shape` instead
-(`${CLAUDE_PLUGIN_ROOT}/protocols/layers.md` § A ceremony gradient).
-
-The frame lives **in context** (printed, not on disk). Persisting it is the opt-in `/persist`
-skill — never automatic.
+questions named. Never binds a solution. The frame lives **in context** (printed, not on disk);
+persisting it is the opt-in `/persist` skill — never automatic.
 
 ## Operating rules
 - **Authority:** the human owns every decision. You propose; they decide.
-- **Stance:** feedback-first — open with a brief take when the human floats an approach.
 - **No narration between tools.** One short sentence only when the *task* changes.
-- **Conventions:** conform to the project's own style — the surrounding code; evidence-only (quote file:line). The pack's `codeStyle` (when present) is resolved by the subagent via resolve-pack-value.sh.
-- **Harness:** under Codex/pi, read Claude-specific tool mentions per `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
-- **Pack forwarding:** when a `configPath` is announced, forward it directly to `frame-reviewer`. The subagent resolves its own `context` (cross-cutting) and `frame.context` (frame-layer, additive) via resolve-pack-value.sh, per its own agent doc.
+- **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
+  *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
+  description one clause naming its downstream consequence, recommended option first.
+- **Harness:** under Codex/pi, read Claude-specific tool mentions per
+  `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
+- **Pack:** forward `configPath` to `frame-reviewer` — it resolves it itself.
 
 ## Steps
-1. **Discover.** Follow `${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/discover.md`: `/scout`
-   first, before any framing exists; bind discoverable slots evidence-first; **ask
-   preference/framing questions the moment they arise** (one at a time, brainstorming-style),
-   shaped per `${CLAUDE_PLUGIN_ROOT}/protocols/questions.md` — don't defer.
-   **Pitch in context?** Its `solution` field's precedent citations are already-bound discovery and
-   its `rabbit holes` are a known constraint — scout only the surface it doesn't cover.
-2. **Compose the frame** = *problem contract + discovery + open questions + Vantage seeds*
-   (`${CLAUDE_PLUGIN_ROOT}/protocols/workflow/phases/frame.md` § Problem contract). Apply
-   § Vocabulary test to the solved-signal before presenting. Classify each residual question per
-   § Vantage test: problem/scope stays in open questions; solution-shaped becomes one line in
-   **Vantage seeds** instead. Open questions hold only what the user left open or a tradeoff not
-   yet resolvable — most were settled live in step 1; Vantage seeds hold the solution-shaped
-   residue, left for `/shape` to pick up.
-3. **Premortem (silent)** (Klein 2007). Imagine this frame already caused a failure; name the
-   most likely reason. Fold the answer into discovery or open questions, or Vantage seeds when
-   the answer is solution-shaped (§ Vantage test); don't present it as an inline hedge.
-4. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
-   The open questions section presented here never includes a solution-shaped question — that
-   material lives in Vantage seeds instead.
-5. **Critique.** Dispatch `frame-reviewer` (one shot) over the composed frame, forwarding the
-   verbatim task-initiating request alongside it — the request the reviewer needs to judge
-   fidelity, not just form. `HOLES` → name what it blocks, in the reader's terms, then surface
-   verbatim (`${CLAUDE_PLUGIN_ROOT}/protocols/prose.md` § Verbatim is a quote, not a frame) and
-   fix what you can; a hole only the human can close → wait.
+1. **Discover.** Dispatch the `scout` agent (task, target dir, breadth `quick`/`medium`/`very
+   thorough` scaled to surface) before asking the user anything. A `/shape` pitch already in
+   context counts as bound discovery — its `solution` field's precedent citations and its
+   `rabbit holes` are a known constraint; scout only the surface the pitch doesn't cover.
+2. **Draft the problem contract** — one sentence, five bound slots:
+   > `<who>` cannot `<capability>` because `<obstacle>`; costs `<consequence>`; solved-signal is
+   > `<observable>`.
+
+   | Slot | Rule |
+   |---|---|
+   | Who | A concrete named party, never "the user". |
+   | Capability | Their goal, never the feature that grants it. |
+   | Obstacle | The present-tense root cause, not the absence of a fix. |
+   | Costs | What breaks if unsolved, not a restatement of the obstacle. |
+   | Solved-signal | What an observer sees flip, never the mechanism producing it. |
+
+   Bind each unbound slot evidence-first from the scout. A slot that needs a preference is asked
+   right then, one at a time, never assumed.
+3. **Compose the frame** — contract, discovery (file:line landmarks, precedent, constraints),
+   open questions (problem/scope residue only), Vantage seeds (solution-shaped residue, one line
+   each, for `/shape`).
+
+   **Vocabulary test.** Apply it to the solved-signal before presenting: every noun and verb in
+   it must already appear in who/capability/obstacle, or be observable before any change is made.
+   A noun that exists only once a particular solution is built, or a verb naming HOW the change
+   happens (self-heals, auto-retries, caches, migrates), is mechanism leakage — rewrite the slot.
+   > Fail: "no tracked file references the old skill name" — "old skill name" presumes the rename.
+   > Pass: "a macro-layer run produces discovery that still supports more than one direction".
+
+   **Vantage test.** Classify each candidate open question: one about who/capability/obstacle/
+   costs/solved-signal, or the task's boundary, stays an open question. One whose answer picks a
+   mechanism, a technology, or an implementation angle becomes one line in **Vantage seeds**
+   instead — resolving it would bind a solution, `/shape`'s job, not frame's.
+   > Problem/scope: "which system is the source of truth for X?" stays an open question.
+   > Solution-shaped: "should X be cached or recomputed?" routes to Vantage seeds.
+4. **Premortem (silent).** Imagine this frame already caused a failure; name the most likely
+   reason. Fold the answer into discovery, open questions, or Vantage seeds — never an inline
+   hedge.
+5. **Present** the frame in sections scaled to complexity; confirm after each; revise on feedback.
+6. **Critique.** Dispatch `frame-reviewer` (one shot) with the frame, the verbatim
+   task-initiating request, and `configPath`. `HOLES` → one framing line naming what it blocks in
+   the reader's terms, then the finding quoted exactly; fix what you can; a hole only the human can
+   close → wait.
+
+## Don't
+- Bind an `Outcome` — that's `/shape`'s job, once a candidate is picked.
+- Name a mechanism — noun or verb — in any slot, including the solved-signal.
+- Defer a problem question to `/shape`. If it's about the problem, resolve it here.
+- Put a solution-shaped question in open questions — route it to Vantage seeds instead.
 
 ## Done when
 The frame is composed, presented, and critiqued. Hand off to `/shape` (it reads the frame from
