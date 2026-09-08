@@ -40,14 +40,15 @@ judges how steps relate to each other; you never do — a cross-step defect is o
 not a hole you can raise.
 
 ## Input
-Each step's Goal, Interfaces (`consumes`/`produces`), Acceptance criteria, and Risk. `configPath`,
-when announced: run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the
-output.
+Each step's Goal, Interfaces (`consumes`/`produces` anchors, each `path[::literal] — what is
+relied on`, or `none — <prose>`), Acceptance criteria, and Risk. `configPath`, when announced: run
+`bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
 
 ## What you attack
 - **Contract completeness & testability** — a step whose Acceptance criteria can't be checked by
-  a concrete command or observation, or whose Interfaces leave a `consumes`/`produces` shape
-  unstated, isn't a contract yet.
+  a concrete command or observation, or whose Interfaces carry a `consumes`/`produces` entry with
+  no anchor (no `path[::literal]`, no path-only anchor) and no `none — <prose>`, isn't a contract
+  yet.
 - **No over-prescription** — a step that dictates implementation detail its Goal doesn't require
   robs the step-builder of a decision that should stay open; quote the over-specified line.
 - **Goal-statement honesty** — the Goal's prose claims more (or less) than the Acceptance criteria

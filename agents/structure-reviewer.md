@@ -38,17 +38,22 @@ list), never a diff. Cold eyes on whether these pieces, in this order, add up to
 **Default suspicion, not trust.**
 
 ## Input
-The plan goal (goal statement) and each step's Goal, Interfaces (`consumes`/`produces`), and
-Acceptance criteria. The problem statement — a frame's, or the driver's own inline one — plus the
-proposal's `no-gos`/`rabbit holes` when carried (absent means none). `configPath`, when announced:
+The plan goal (goal statement) and each step's Goal, Interfaces (`consumes`/`produces` anchors,
+each `path[::literal] — what is relied on`, or `none — <prose>`), and Acceptance criteria. The
+problem statement — a frame's, or the driver's own inline one — plus the proposal's
+`no-gos`/`rabbit holes` when carried (absent means none). `configPath`, when announced:
 run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
 
 ## What you attack
 - **Traceability** — a step whose Outcome doesn't advance the plan goal is an orphan.
 - **Missing foundation** — something steps 2..N depend on that no earlier step builds.
-- **Interface mismatch** — a step `consumes` a signature no earlier step `produces`, two steps
-  `produce` the same name with different shapes, or a `produces` entry no step consumes; quote
-  both sides. `none` on either side is a valid sentinel, not a hole.
+- **Interface mismatch** — TWO-SOURCE rule: a `consumes` anchor is satisfied when its literal is
+  found in its path at HEAD (`git grep -F`), OR when an earlier step's own `produces` declares that
+  same anchor. For a path-only anchor (no `::literal`), it's satisfied when the path exists at HEAD,
+  or when an earlier step's own `produces` declares that same path-only anchor. Flag a mismatch only
+  when NEITHER source holds, when two steps `produce` the same anchor with a different meaning, or
+  when a `produces` anchor no step consumes; quote both sides. `none — <prose>` is a valid sentinel,
+  not a hole.
 - **Gap** — the steps don't sum to the after-state; the goal can't be reached as listed.
 - **Overlap** — two steps build the same thing; one is dead weight.
 - **Ordering** — a step depends on a later step's output.

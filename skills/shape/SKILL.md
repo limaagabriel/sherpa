@@ -108,8 +108,13 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
      dispatched step budget to the plan's final step count.
    - **Block 2** — one block per step: **Goal** (a step goal statement, traces to the plan goal);
      **Change** (the concrete delta, this step only); **Interfaces** —
-     `consumes: <exact signatures relied on>; produces: <exact names/types later steps rely on>`,
-     `none` on either side when it doesn't apply; **Acceptance criteria** —
+     `consumes: <path[::literal] — what is relied on>; produces: <path[::literal] — what later
+     steps rely on>`. Anchor grammar: `<literal>` must occur verbatim in `<path>` at HEAD
+     (checkable with `git grep -F`), OR be created by an earlier step's own `produces` entry (not
+     yet at HEAD, but will be by the time this step runs). Multi-file work: list one anchor per
+     file (`path1::lit1`, `path2::lit2`, ...), or use a path-only anchor (`path` with no
+     `::literal`) when no single literal captures it. No file behind the entry at all (a
+     convention, a decision, a design constraint): `none — <prose>`. **Acceptance criteria** —
      `done = <X>, confirmed by <re-runnable check>`, manual only with a stated reason; **Risk** —
      the one real risk that would sink this step, or `none — <why>`.
    - **Block 3** — why this approach (the next-best alternative and why it lost), how it's

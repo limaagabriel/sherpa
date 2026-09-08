@@ -42,8 +42,9 @@ promised. One reviewer, one verdict — no second pass, no second opinion to rec
 
 ## Input
 - The step's `Goal` + `Acceptance criteria` (verbatim) and declared `Interfaces`
-  (`consumes`/`produces` signatures) — `none` on either side means that side doesn't apply and
-  isn't a gap. `Interfaces`' declared `produces` entries drive the produces-matching check below.
+  (`consumes`/`produces` anchors, each `path[::literal] — what is relied on`, or a path-only
+  anchor, or `none — <prose>`) — `none` on either side means that side doesn't apply and isn't a
+  gap. `Interfaces`' declared `produces` entries drive the produces-matching check below.
 - The step's commit range (`<base>..HEAD`).
 - `UNCOMMITTED BEFORE STEP` — never attribute it to this step.
 - When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> implement` first
@@ -54,10 +55,12 @@ promised. One reviewer, one verdict — no second pass, no second opinion to rec
 ## What you audit
 - **Acceptance fidelity** — for each acceptance criterion, run/inspect its stated check and judge it
   met or not, with evidence (the check + its result, or the `file:line` that satisfies it). A
-  criterion you can't verify counts as not met — say why. Separately, check the commit range's
-  actual symbols against each declared `produces` entry (skip `none`) — same name, same
-  param/return shape, actually reachable; absent, renamed, or reshaped is `UNMET`. That name was
-  pinned by the plan pre-build, so fidelity to it is yours to check, distinct from the style/naming
+  criterion you can't verify counts as not met — say why. Separately, check each declared
+  `produces` anchor (skip `none — <prose>`) against the commit range: `MET` when `git grep -F`
+  finds the anchor's literal in the commit range at the stated path; for a path-only anchor (no
+  `::literal`), `MET` when the path exists and was touched by the commit range as claimed. Anything
+  else — literal absent, path untouched, or claim doesn't hold — is `UNMET`. That anchor was pinned
+  by the plan pre-build, so fidelity to it is yours to check, distinct from the style/naming
   judgment under Minimality/Architecture below.
 - **Minimality** — no speculative abstraction, no dead flexibility, simplest thing that works.
 - **Architecture** — fits the resolved context's rules when given, else the surrounding code's own

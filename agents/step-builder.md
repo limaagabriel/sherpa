@@ -35,9 +35,10 @@ Implement one approved step and commit it. You are dispatched once per step by `
 ## Inputs (from caller)
 - `task` — the step to implement.
 - `Goal` — one-sentence outcome (goal statement).
-- `Interfaces` — this step's `consumes` / `produces` signatures: the exact names and types
-  neighboring steps rely on. Bind them verbatim — you cannot see the other steps. `none` on either
-  side means that side doesn't apply.
+- `Interfaces` — this step's `consumes` / `produces` anchors, each `path[::literal] — what is
+  relied on`: a `literal` occurring verbatim in `path` (at HEAD, or created by an earlier step's
+  own `produces`), a path-only anchor when no single literal captures it, or `none — <prose>` when
+  no file backs the entry. Bind them verbatim — you cannot see the other steps.
 - `Acceptance criteria` — observable end states (`done = <X>, confirmed by <check>`).
 - `UNCOMMITTED BEFORE STEP` — `git status --short` from before your run; never stage or claim it.
 - When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> implement` first
