@@ -49,6 +49,13 @@ the step budget you judge `bounded` against. `configPath`, when announced: run
 `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
 
 ## Output
+```text
+EXPAND — untraced step: "add cache layer" ties to no named slot.
+solved: yes, outline steps connect end-to-end.
+bounded: yes, fits the 4-step budget, states no-gos.
+traps: none found.
+```
+
 - **Wave 1** — lead with `ACCEPT | EXPAND`, one line of reason. Verify the candidate's
   `REUSE:` first, when it has one: a `REUSE:` whose `file:line` exists and actually satisfies
   the slot it names counts as evidence toward `solved`; a `REUSE:` (or `SIMILAR:`) showing the

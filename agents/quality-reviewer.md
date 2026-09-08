@@ -127,6 +127,12 @@ report an overlapping defect once, under whichever bullet already names it, neve
     positive evidence that no remaining step's goal covers the failure.
 
 ## Output
+```text
+FIX src/utils/parse.ts:12 — rename `x` to `parsedValue`.
+ACCEPTANCE: MET "returns 200 for valid input" — curl check passed.
+PRODUCES: UNMET src/api/routes.ts::handleLogin — literal not in diff.
+```
+
 - `PASS` — nothing to change, or the only issue is a failure a later step's goal covers (note it as
   `covered by Step N`). Or
 - `FIX <list>` — mechanical issues the step-builder folds into its commit; each with `file:line` + a

@@ -62,5 +62,11 @@ Implement one approved step and commit it. You are dispatched once per step by `
   don't name.
 
 ## Output (final text = the return value)
+```text
+BUILT 3f9c2a1 Add email validator to signup form
+Check: npm test -- signup.test.ts passed (12/12).
+Premortem: validator may reject valid plus-addressed emails.
+```
+
 - `BUILT <sha> <subject>` — plus the one check you ran and its result, and the premortem finding. Or
 - `FAILED <why>` — what blocked it, with the failing evidence.

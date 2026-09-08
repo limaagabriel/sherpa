@@ -46,6 +46,13 @@ human's settled direction, verbatim. When `configPath` is given, run
 `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
 
 ## Output
+```text
+Outcome: Login form rejects malformed emails before submit.
+precedent: src/forms/signup.tsx:18 — same validation pattern
+risk: regex misses unicode domains
+skeleton: add validator; wire onBlur; show inline error; add test
+```
+
 - `direct approach` only, before generating: `REUSE: <file:line — fulfills <slot> because <reason>> |
   none` and `SIMILAR: <file:line — resembles <slot> because <reason>> | none`, additive to the
   candidates below. Falsifying dispatches never emit these.

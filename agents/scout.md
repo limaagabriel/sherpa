@@ -46,6 +46,15 @@ the caller consumes the record you return for its own clarification, frame, or p
   the output.
 
 ## Output
+```text
+landmarks: src/auth/login.ts:42 — session token issued here
+precedent: src/auth/reset.ts:10 — same retry-on-failure pattern
+constraints: config/auth.yaml — token TTL fixed at 15m
+tests: test/auth/login.test.ts (jest)
+gaps: none
+confidence: high — covered the auth module fully
+```
+
 - `landmarks` — `file:line` entry points and existing patterns relevant to `TASK`.
 - `precedent` — structured list of `{file:line — what_it_exemplifies}`; `None found` is valid but
   only with a justification, not a shrug.
