@@ -24,6 +24,12 @@ jobs:
           bash scripts/generate-agent-twins.sh
           git diff --exit-code .codex/agents .pi/agents
 
+      - name: Retired terms
+        run: bash scripts/check-retired-terms.sh
+
+      - name: Shared rules inlined
+        run: bash scripts/inline-shared-rules.sh --check
+
       - name: Description word budget
         run: |
           set -e
@@ -53,3 +59,6 @@ jobs:
 
       - name: Resolver test
         run: bash scripts/test-resolve-project-pack.sh
+
+      - name: Inline shared rules / retired terms test
+        run: bash scripts/test-inline-shared-rules.sh
