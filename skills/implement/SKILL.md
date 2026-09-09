@@ -62,14 +62,19 @@ start here directly. Pressure lives per step (acceptance + quality), not in a fi
 3. **Verdicts.**
    a. An `ACCEPTANCE: UNMET` line, or a quality `FIX` → relay to the step-builder to fold into its
       commit; re-check once. Still failing after that → stop: one framing line naming what it
-      blocks, then the finding quoted exactly.
-   b. `BLOCK` → stop the same way: one framing line, then the finding quoted exactly.
+      blocks, then the finding quoted exactly; offer `/shape` in one declinable line, passing the
+      framing line, the quoted finding, and the step's Goal as `REVISIT`.
+   b. `BLOCK` → stop the same way: one framing line, then the finding quoted exactly; offer `/shape`
+      in one declinable line, passing the framing line, the quoted finding, and the step's Goal
+      as `REVISIT`.
    c. Every `ACCEPTANCE: MET` + `PASS` → next step.
    d. Any reviewer output containing `recommend /shape revisit` → stop, surface the same way, offer
-      `/shape` in one declinable line.
+      `/shape` in one declinable line, passing the framing line, the quoted finding, and the step's
+      Goal as `REVISIT`.
    e. `STALE <anchor>` (a pre-dispatch miss from the pre-flight check above) → stop the same way:
       one framing line naming what it blocks, then the finding quoted exactly; no `step-builder`
-      dispatch happens for that step.
+      dispatch happens for that step; offer `/shape` in one declinable line, passing the framing
+      line, the quoted finding, and the step's Goal as `REVISIT`.
 4. **Verify.** Once every step is committed with no open `BLOCK`, run the plan's Block 3 "how it's
    verified" once — execute whatever part of the test plan is re-runnable as-is; treat anything that
    needs a human to observe the end state as a manual checklist item. Never fabricate a pass for

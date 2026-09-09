@@ -36,6 +36,10 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
 - `DIRECTION` — optional; the human's own settled solution direction, carried verbatim. Bound only
   from the human's own words marking it settled — ask when unclear, never inferred. Forwarded to
   the direct approach only; never rewrites a contract slot.
+- `REVISIT` — optional; the framing line, the finding quoted exactly, and the stopped step's Goal
+  that an `/implement` run emitted when it stopped, carried verbatim. Forwarded to every builder in
+  both waves and to `structure-reviewer` as a trap to avoid, never as direction; never rewrites a
+  contract slot.
 
 ## Operating rules
 - **Isolation:** builders never see another builder's output, or the driver's own scout — enforced
@@ -52,11 +56,19 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
       `GAPS` only the human can close (e.g. a genuine missing question) → one framing line
       naming what it blocks, then the finding quoted exactly, and wait.
 
+   **Re-verify `REVISIT`** when bound. Check each `file:line` or `path::literal` the finding cites
+   against HEAD — `git cat-file -e HEAD:<path>`, and `git grep -q -F -e "<literal>" HEAD -- "<path>"`
+   when a literal is cited (pass the literal as a `-e` argument, never interpolated inside a quoted
+   string) — the same shape as `/implement`'s pre-flight STALE check. All cited anchors hold → print
+   `REVISIT HOLDS` and carry it. Any miss → print `STALE REVISIT <finding>` in one line and continue
+   as an un-revisited run. No checkable anchor at all → print `UNANCHORED REVISIT` and carry it
+   marked as an unverified claim.
+
    Bind `DIRECTION` when the human has one (ask when unclear). Then STATE the step budget —
    anchored on the discovery in hand (frame's, or the frameless quick scout): name what it covers
    and what it leaves out; the human may change it — before any builder call is spent.
 2. **Wave 1 — direct approach only.** Dispatch one `shape-builder` with `PREMISE: direct approach`, `COUNT=1`,
-   `PROBLEM`, `TARGET_DIR`, step budget, plus `DIRECTION` when bound. Then one `shape-reviewer` over
+   `PROBLEM`, `TARGET_DIR`, step budget, plus `DIRECTION` when bound, plus `REVISIT` when carried. Then one `shape-reviewer` over
    it: it closes with `ACCEPT | EXPAND` and one line of reason, checking exactly these four things:
    1. **Not solved** — a beat or outline step doesn't connect end to end.
    2. **Not bounded** — the candidate doesn't fit the step budget, or states no no-gos.
@@ -76,7 +88,7 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
    `shape-builder`s (premise = obstacle / capability / costs held false; `who` and done signal
    off limits to them) plus the direct approach re-dispatched fresh at `COUNT=3` — one message, concurrent,
    four calls, each briefed with only its own premise, `PROBLEM`, `TARGET_DIR`, `COUNT`, step budget,
-   never a sibling's output or wave 1's own. When the frame carries `## design questions (for /shape)` (one-line
+   plus `REVISIT` when carried, never a sibling's output or wave 1's own. When the frame carries `## design questions (for /shape)` (one-line
    solution-shaped tradeoffs it left open), brief each falsifying builder with them too — design questions
    inform what a builder explores, they never add a fifth dispatch. Assign each pooled candidate a
    stable ID. One `shape-reviewer` call over the full pool, reusing those IDs, never told wave 1's
@@ -127,7 +139,7 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
 6. **Adversarial plan review, then plan approval.** Dispatch `structure-reviewer` and
    `readiness-reviewer` via Agent, in parallel, always. `structure-reviewer` gets the plan goal,
    the full step list (each Goal + Interfaces), the problem statement, the proposal's
-   no-gos/rabbit holes, and `configPath`. `readiness-reviewer` gets the full step list (each
+   no-gos/rabbit holes, and `configPath`, plus `REVISIT` when carried. `readiness-reviewer` gets the full step list (each
    step's Goal, Interfaces, Acceptance criteria, Risk) and `configPath`. Both `OK` → present.
    Either `GAPS` → fix what you can; a hole only the human can close (human gate 2) → one
    framing line naming what it blocks, then the finding quoted exactly, and wait. Present the

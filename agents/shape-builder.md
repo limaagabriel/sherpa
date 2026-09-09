@@ -42,7 +42,8 @@ dispatched N times in parallel, one per premise; a separate critic judges what y
 `who`/done signal. `direct approach` holds every slot TRUE, generating the direct-solve a falsifying
 builder is barred from. `TARGET_DIR`. `COUNT` (default 3; wave-1 `direct approach` is `COUNT=1`).
 `Step budget` — the ceiling each skeleton's step count must fit within. `DIRECTION` — optional, `direct approach` only, the
-human's settled direction, verbatim. When `configPath` is given, run
+human's settled direction, verbatim. `REVISIT` — optional, any premise; a stop finding from a prior
+`/implement` run. A trap your candidate must not reproduce; cite how it avoids it. When `configPath` is given, run
 `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
 
 ## Output
