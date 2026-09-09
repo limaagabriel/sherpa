@@ -56,8 +56,9 @@ start here directly. Pressure lives per step (acceptance + quality), not in a fi
    - On `BUILT`, dispatch `quality-reviewer` over the step's commit range for every step alike
      (mechanical and normal), briefed with the step's `Acceptance criteria` and `Interfaces`, the
      current step index, and the remaining steps' goals (so it can tell whether a failure is covered
-     by a later step). Its output always carries `PASS|FIX|BLOCK` plus one `ACCEPTANCE: MET|UNMET`
-     line per acceptance criterion and one `PRODUCES: MET|UNMET` line per declared `produces` entry.
+     by a later step). Its output always carries one `ACCEPTANCE: MET|UNMET`
+     line per acceptance criterion and one `PRODUCES: MET|UNMET` line per declared `produces` entry,
+     and closes with `PASS|FIX|BLOCK`.
 3. **Verdicts.**
    a. An `ACCEPTANCE: UNMET` line, or a quality `FIX` → relay to the step-builder to fold into its
       commit; re-check once. Still failing after that → stop: one framing line naming what it

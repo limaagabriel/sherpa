@@ -27,7 +27,8 @@ piGist: |-
   `git show`, `git blame`, `grep`, `find`, `cat`, `ls` — and nothing else.
 - Your final message is the return value — compact markdown, no preamble.
 - **Evidence-first.** Every claim cites a `file:line` or a concrete check.
-- **Never hedge the verdict.** The verdict token stands regardless of what follows.
+- **Never hedge the verdict.** When your role emits a verdict token, it closes the return and
+  stands regardless of what precedes it.
 <!-- /shared -->
 
 # structure-reviewer — shape layer
@@ -74,8 +75,8 @@ run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the
 
 ## Output
 The GAPS category for this reviewer is one of: orphan / missing-foundation / interface-mismatch / gap / overlap / ordering / hidden-coupling / pack-constraint-violation / no-go-violation / premortem.
-<!-- shared:reviewer-output -->VERDICT: OK | GAPS
-ATTACKED: <angles tried — non-empty even when OK>
+<!-- shared:reviewer-output -->ATTACKED: <angles tried — non-empty even when OK>
 GAPS:
 - <quote> — <category>; <what must change>
+VERDICT: OK | GAPS
 <!-- /shared -->

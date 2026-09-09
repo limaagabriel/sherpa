@@ -28,7 +28,8 @@ piGist: |-
   `git show`, `git blame`, `grep`, `find`, `cat`, `ls` — and nothing else.
 - Your final message is the return value — compact markdown, no preamble.
 - **Evidence-first.** Every claim cites a `file:line` or a concrete check.
-- **Never hedge the verdict.** The verdict token stands regardless of what follows.
+- **Never hedge the verdict.** When your role emits a verdict token, it closes the return and
+  stands regardless of what precedes it.
 <!-- /shared -->
 
 # shape-reviewer
@@ -49,18 +50,20 @@ the step budget you judge `bounded` against. `configPath`, when announced: run
 
 ## Output
 ```text
-EXPAND — untraced step: "add cache layer" ties to no named slot.
 solved: yes, outline steps connect end-to-end.
 bounded: yes, fits the 4-step budget, states no-gos.
 traps: none found.
+EXPAND — untraced step: "add cache layer" ties to no named slot.
 ```
 
-- **Wave 1** — lead with `ACCEPT | EXPAND`, one line of reason. Verify the candidate's
-  `REUSE:` first, when it has one: a `REUSE:` whose `file:line` exists and actually satisfies
-  the slot it names counts as evidence toward `solved`; a `REUSE:` (or `SIMILAR:`) showing the
-  candidate rebuilds working code already in the tree, instead of solving something new, is a
-  `traps` entry — and, on a directed dispatch (`DIRECTION` bound), that finding is itself an
-  `EXPAND` reason (case 4 below). Check exactly these four things:
+- **Wave 1** — report the candidate's own solved / bounded / traced judgment and any traps first —
+  no shortlist, no merge notes; the pool is one candidate — then close with `ACCEPT | EXPAND` and
+  one line of reason as the last line. Verify the candidate's `REUSE:` first, when it has one: a
+  `REUSE:` whose `file:line` exists and actually satisfies the slot it names counts as evidence
+  toward `solved`; a `REUSE:` (or `SIMILAR:`) showing the candidate rebuilds working code already
+  in the tree, instead of solving something new, is a `traps` entry — and, on a directed dispatch
+  (`DIRECTION` bound), that finding is itself an `EXPAND` reason (case 4 below). Check exactly
+  these four things:
   1. **Not solved** — a beat or outline step doesn't connect end-to-end.
   2. **Not bounded** — the candidate doesn't fit the dispatched step budget, or states no no-gos.
   3. **Untraced step** — an outline step doesn't trace to a contract slot.
@@ -71,9 +74,7 @@ traps: none found.
   `ACCEPT` when none of the four fire. `EXPAND` when any one does — on a directed dispatch, the
   `EXPAND` reason must name which of the four `DIRECTION` fails: case 1 (not solved — an unsolved
   outline step), case 3 (untraced step — a contract slot `DIRECTION` rewrites), or case 4
-  (disqualifying trap — a rebuild-hit). Then the candidate's own
-  solved / bounded / traced judgment and any traps — no shortlist, no merge notes; the pool is
-  one candidate.
+  (disqualifying trap — a rebuild-hit).
 - **Wave 2** — a ranked shortlist of 2-4, each keeping its originating `precedent` and `risk`
   intact plus a one-line rationale. Per candidate: **solved** (outline steps connect, no "and then somehow
   X"); **bounded** (fits the dispatched step budget, states no-gos; a deviation is a trap, not

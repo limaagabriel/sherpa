@@ -57,7 +57,7 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
    and what it leaves out; the human may change it — before any builder call is spent.
 2. **Wave 1 — direct approach only.** Dispatch one `shape-builder` with `PREMISE: direct approach`, `COUNT=1`,
    `PROBLEM`, `TARGET_DIR`, step budget, plus `DIRECTION` when bound. Then one `shape-reviewer` over
-   it: it leads with `ACCEPT | EXPAND` and one line of reason, checking exactly these four things:
+   it: it closes with `ACCEPT | EXPAND` and one line of reason, checking exactly these four things:
    1. **Not solved** — a beat or outline step doesn't connect end to end.
    2. **Not bounded** — the candidate doesn't fit the step budget, or states no no-gos.
    3. **Untraced step** — an outline step doesn't trace to any problem-statement slot.

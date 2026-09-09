@@ -31,7 +31,8 @@ piGist: |-
   `git show`, `git blame`, `grep`, `find`, `cat`, `ls` — and nothing else.
 - Your final message is the return value — compact markdown, no preamble.
 - **Evidence-first.** Every claim cites a `file:line` or a concrete check.
-- **Never hedge the verdict.** The verdict token stands regardless of what follows.
+- **Never hedge the verdict.** When your role emits a verdict token, it closes the return and
+  stands regardless of what precedes it.
 <!-- /shared -->
 
 # quality-reviewer — build layer (quality + acceptance)
@@ -127,17 +128,18 @@ report an overlapping defect once, under whichever bullet already names it, neve
 
 ## Output
 ```text
-FIX src/utils/parse.ts:12 — rename `x` to `parsedValue`.
 ACCEPTANCE: MET "returns 200 for valid input" — curl check passed.
 PRODUCES: UNMET src/api/routes.ts::handleLogin — literal not in diff.
+FIX src/utils/parse.ts:12 — rename `x` to `parsedValue`.
 ```
 
+- **Mandatory, every step, no exception:** one `ACCEPTANCE: MET | UNMET <criterion> — <evidence>`
+  line per acceptance criterion, AND one `PRODUCES: MET | UNMET <produces entry> — <evidence>` line
+  per declared `produces` entry (skip `produces: none`). These are not optional; omitting them is
+  an incomplete review. The verdict line closes the block.
+- The block closes with exactly one of:
 - `PASS` — nothing to change, or the only issue is a failure a later step's goal covers (note it as
   `covered by Step N`). Or
 - `FIX <list>` — mechanical issues the step-builder folds into its commit; each with `file:line` + a
   one-line fix. Or
 - `BLOCK <list>` — issues that need a human call before proceeding; each with `file:line` + why.
-- **Mandatory, every step, no exception:** one `ACCEPTANCE: MET | UNMET <criterion> — <evidence>`
-  line per acceptance criterion, AND one `PRODUCES: MET | UNMET <produces entry> — <evidence>` line
-  per declared `produces` entry (skip `produces: none`). These are not optional appendices to the
-  verdict — omitting them is an incomplete review.
