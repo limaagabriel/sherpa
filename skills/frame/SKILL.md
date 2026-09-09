@@ -60,6 +60,14 @@ persisting it is the opt-in `/persist` skill — never automatic.
    /shape)** instead — resolving it would bind a solution, `/shape`'s job, not frame's.
    > Problem/scope: "which system is the source of truth for X?" stays an open question.
    > Solution-shaped: "should X be cached or recomputed?" routes to design questions.
+
+   **Ordering check** (open questions only; design questions are exempt and keep their order). List
+   open questions by how many contract slots — who, capability, obstacle, costs, done signal —
+   change across the question's plausible answers, most first; ties keep discovery order. An open
+   question whose every plausible answer leaves all five slots unchanged is dropped — it is not
+   scope residue.
+   > Fail: "should the error message be capitalized?" — no plausible answer changes any slot; kept in the list anyway.
+   > Pass: "which system is the source of truth for X?" (changes obstacle and done signal) listed before "what should the log line say?" (changes none, so dropped instead of trailing).
 4. **Premortem (silent).** Imagine this frame already caused a failure; name the most likely
    reason. Fold the answer into discovery, open questions, or design questions — never an inline
    hedge.
