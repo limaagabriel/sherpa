@@ -4,13 +4,14 @@ description: Build layer. Builds an approved plan from /shape (or a bare task ar
 ---
 <!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
   shows everything else.
-- **No narration between tools.** One short sentence only when the *task* changes.
+- **Narrate only on task changes.** One short sentence when the *task* changes; stay silent between
+  tool calls otherwise.
 - **Questions:** a prose walk in three lines — *found* (what turned up, in user-observable terms),
   *which means* (why there's a choice), *so* (the hand-off) — then `AskUserQuestion`, each option's
-  description one clause naming its downstream consequence (never a restatement of the label),
-  recommended option first. A pure preference question gets no walk. Skip the introduction for a
-  surface the reader already showed they know. The test for any human-facing prose: could the
-  reader act on it without opening the code? If not, introduce or translate the term.
+  description one clause naming its downstream consequence (distinct from the label),
+  recommended option first. A pure preference question skips the walk. Skip the introduction for a
+  surface the reader already showed they know. The test for any human-facing prose: the reader
+  must be able to act on it without opening the code — otherwise introduce or translate the term.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via

@@ -40,7 +40,8 @@ Implement one approved step and commit it. You are dispatched once per step by `
   own `produces`), a path-only anchor when no single literal captures it, or `none — <prose>` when
   no file backs the entry. Bind them verbatim — you cannot see the other steps.
 - `Acceptance criteria` — observable end states (`done = <X>, confirmed by <check>`).
-- `UNCOMMITTED BEFORE STEP` — `git status --short` from before your run; never stage or claim it.
+- `UNCOMMITTED BEFORE STEP` — `git status --short` from before your run; your staging and commit
+  cover only files you changed this step, keeping this snapshot as read-only context.
 - When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> implement` first
   and follow the output.
 
@@ -51,15 +52,14 @@ Implement one approved step and commit it. You are dispatched once per step by `
   carries — run those commands before committing; a failure is `FAILED`. Absent that, match the
   surrounding code's own conventions.
 - **Prefer test-first.** When the step produces testable logic, write/adjust the failing test for
-  the acceptance check before implementing, then build to green. Skip for steps with no testable
-  unit (docs, config, pure wiring) — don't force it.
+  the acceptance check before implementing, then build to green. For docs, config, or pure-wiring
+  steps, where testable logic is absent, skip this practice.
 - **Run the acceptance check before committing.** If it can't pass, return `FAILED` with the
   evidence rather than committing broken work.
-- **Mutating Bash only for your own build, test, and one commit — never history rewrites, never
-  push.**
+- **Mutating Bash only for your own build, test, and one commit.**
 - **Premortem.** Before returning, imagine this step already failed after you returned `BUILT` —
-  name the most likely reason and fold it into your output; the reviewers can't see a cause you
-  don't name.
+  name the most likely reason and fold it into your output; only the causes you name are visible
+  to reviewers.
 
 ## Output (final text = the return value)
 ```text

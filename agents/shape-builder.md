@@ -23,9 +23,8 @@ piThinking: medium
 piGist: |-
   The canonical body lives at `<root>/agents/shape-builder.md`. Read-only exploration, never edit or write. Your final message IS the return value (the compact candidate list, each carrying a skeleton), not a human-facing note.
 ---
-<!-- shared:agent-rules -->- Read-only: never Edit or Write; Bash is for inspection only (git status/diff/log/show/blame,
-  grep, find, cat, ls) — never git commit/push/reset/checkout/restore/clean/rm/mv/rebase, npm
-  install, or `>` redirection.
+<!-- shared:agent-rules -->- **Allowed exactly:** Read, Grep, Glob, and Bash restricted to `git status`, `git diff`, `git log`,
+  `git show`, `git blame`, `grep`, `find`, `cat`, `ls` — and nothing else.
 - Your final message is the return value — compact markdown, no preamble.
 - **Evidence-first.** Every claim cites a `file:line` or a concrete check.
 - **Never hedge the verdict.** The verdict token stands regardless of what follows.
