@@ -22,11 +22,11 @@ description: Shape layer. Fans out candidates only when wave 1's direct-approach
 
 Produce **the proposal, then the plan** for the problem. **Framed:** a frame in context supplies
 `PROBLEM` as-is; `/shape` never re-narrows it — reopening it re-does work already critiqued.
-**Frameless:** run a quick `scout` agent first, then draft an INLINE problem statement from the
-task + that scout's evidence — the same five-slot sentence `who` cannot `capability` because
+**Frameless:** run a quick `codebase-explorer` agent first, then draft an INLINE problem statement from the
+task + that codebase-explorer's evidence — the same five-slot sentence `who` cannot `capability` because
 `obstacle`; costs `consequence`; done signal is `observable` — applying the no-mechanism check to
 the done signal (every noun and verb in it must already appear in who/capability/obstacle, or
-be observable before any change). That scout's output feeds the inline contract and the step budget
+be observable before any change). That codebase-explorer's output feeds the inline contract and the step budget
 anchoring ONLY — it never reaches a `shape-builder`'s brief; every builder reads the codebase
 itself, and a shared pre-run evidence base would anchor every branch to the same read.
 
@@ -42,7 +42,7 @@ itself, and a shared pre-run evidence base would anchor every branch to the same
   contract slot.
 
 ## Operating rules
-- **Isolation:** builders never see another builder's output, or the driver's own scout — enforced
+- **Isolation:** builders never see another builder's output, or the driver's own codebase-explorer — enforced
   by you, not the builder.
 
 ## Procedure

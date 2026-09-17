@@ -31,12 +31,12 @@ here are picked up with no install.
 | readiness-reviewer | shape layer | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 | step-builder | build layer | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
 | quality-reviewer | build layer | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
-| scout | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
+| codebase-explorer | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
 
 All roles use the GPT-5.6 family. Independent reviewer roles use
 `gpt-5.6-terra` with high reasoning for adversarial scrutiny. The `sandbox` column carries the
 write distinction: the sole `workspace-write` role, step-builder, uses `gpt-5.6-luna` with high
-reasoning for implementation; the `read-only` roles — scout and shape-builder among them — keep
+reasoning for implementation; the `read-only` roles — codebase-explorer and shape-builder among them — keep
 their efficient discovery posture on `gpt-5.6-luna` with medium reasoning. A role with `model`
 omitted inherits the parent session model —
 Codex fixes a subagent's model in its role file (no dispatch-time override),

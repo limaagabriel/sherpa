@@ -2,7 +2,7 @@
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
 **composable skills**, one per layer of altitude — `/frame` (frame), `/shape` (shape),
-`/implement` (build) — with bundled scout, shape-builder, step-builder, and reviewer subagents
+`/implement` (build) — with bundled codebase-explorer, shape-builder, step-builder, and reviewer subagents
 that rope up and check the rope at every stage.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until you
@@ -40,7 +40,6 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | `/frame <task>` | Scout, bind a problem statement, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
 | `/shape <task>` | Skeleton + critique a direct-approach candidate; fans out to a full candidate pool only when that critique returns `EXPAND`. Presents a proposal — step budget stated up front in it — and waits for your pick; once picked, plans ordered, traceable steps, critiques the plan, and waits for your one approval. | the problem's framed (or clear enough) |
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
-| `/scout <task>` | Standalone codebase scout; also called by `/frame` and `/shape`. | you just want a lay of the land |
 | `/persist` | Write the in-context frame, proposal, or plan to disk so a later session can resume. | you want to save or resume |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context, else
@@ -89,13 +88,14 @@ schema and resolution rules: `packs/README.md`.
   `structure-reviewer`/`readiness-reviewer` critique the plan.
 - **`/implement`** (build) — runs approved steps; `step-builder` builds and commits each one,
   `quality-reviewer` checks it.
-- **`/scout`** / **`/persist`** — cross-cutting: codebase discovery, and opt-in disk persistence.
+- **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
+  `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
 
 ## Layout
 
 ```
-skills/        /frame, /shape, /implement, /scout, /persist, using-sherpa
-agents/        scout, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, quality-reviewer
+skills/        /frame, /shape, /implement, /persist, using-sherpa
+agents/        codebase-explorer, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, quality-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

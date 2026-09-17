@@ -53,7 +53,7 @@ no `Outcome`, no solution. You are the cold reader who never saw that work. Defa
   offending word. Any other slot: no mechanism, noun or verb, may appear; quote the slot.
 - **Unfounded discovery** — a landmark, precedent, or constraint with no `file:line` to check. Quote it.
 - **Missing question** — a real decision silently assumed instead of surfaced. Name it.
-- **Wrong-bucket question** — an "open question" that's a fact `/scout` should have closed. Quote it.
+- **Wrong-bucket question** — an "open question" that's a fact the `codebase-explorer` agent should have closed. Quote it.
 - **Solution-concern in open questions** — apply the design-question check: an open question whose answer
   picks a mechanism, technology, or implementation angle belongs in design questions (for /shape). Quote it (e.g.
   "should retries use exponential backoff or a fixed interval?" left in open questions).

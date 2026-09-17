@@ -25,7 +25,7 @@ questions named. Never binds a solution. The frame lives **in context** (printed
 persisting it is the opt-in `/persist` skill — never automatic.
 
 ## Steps
-1. **Discover.** Dispatch the `scout` agent (task, target dir, breadth `quick`/`medium`/`very
+1. **Discover.** Dispatch the `codebase-explorer` agent (task, target dir, breadth `quick`/`medium`/`very
    thorough` scaled to surface) before asking the user anything. A `/shape` proposal already in
    context counts as bound discovery — its `solution` field's precedent citations and its
    `rabbit holes` are a known constraint; scout only the surface the proposal doesn't cover.
@@ -41,7 +41,7 @@ persisting it is the opt-in `/persist` skill — never automatic.
    | Costs | What breaks if unsolved, not a restatement of the obstacle. |
    | Done signal | What an observer sees flip, never the mechanism producing it. |
 
-   Bind each unbound slot evidence-first from the scout. A slot that needs a preference is asked
+   Bind each unbound slot evidence-first from the codebase-explorer. A slot that needs a preference is asked
    right then, one at a time, never assumed.
 3. **Compose the frame** — contract, discovery (file:line landmarks, precedent, constraints),
    open questions (problem/scope residue only), design questions (for /shape) (solution-shaped

@@ -30,10 +30,10 @@ role's own `piThinking` frontmatter field, so this table always mirrors it.
 | readiness-reviewer | `agents/readiness-reviewer.md` | read, grep, find, ls, bash | high |
 | step-builder | `agents/step-builder.md` | read, grep, find, ls, bash, edit, write | high |
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | high |
-| scout | `agents/scout.md` | read, grep, find, ls, bash | medium |
+| codebase-explorer | `agents/codebase-explorer.md` | read, grep, find, ls, bash | medium |
 
 The `tools` column carries the write distinction: `step-builder` holds `edit, write`; no other
-role does. Among the read-only roles, `scout` and `shape-builder` are workers; the rest are
+role does. Among the read-only roles, `codebase-explorer` and `shape-builder` are workers; the rest are
 reviewers. Each shim resolves
 the package root via `$SHERPA_PLUGIN_ROOT` (exported
 by `.pi/extensions/sherpa.ts`), else the concrete pi install roots

@@ -32,4 +32,4 @@ identical; only the mechanism differs.
   root via `$SHERPA_PLUGIN_ROOT` first, else the concrete pi install roots
   (`~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`).
   step-builder is the only writer; the other eight roles (six reviewers plus
-  scout and shape-builder) are read-only.
+  codebase-explorer and shape-builder) are read-only.
