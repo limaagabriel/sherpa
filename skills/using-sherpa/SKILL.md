@@ -14,3 +14,5 @@ Match the layer to how clear the task is.
 Before taking free-form action, check whether one of these fits. Skip sherpa only when none of them apply.
 
 Before acting on any task-initiating prompt — not a reply, confirmation, or answer to your own question — also check: does it admit multiple substantively different reasonable interpretations of what to build? If yes, say so and offer /frame or /shape, whichever fits, as one line before proceeding. Required, not optional — even deep into a long session.
+
+Separately from this layer-selection logic, `/review`, `/triage`, and `/restory` are independent capabilities — invoke any of them directly whenever wanted, with no layer to pick first.

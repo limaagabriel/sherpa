@@ -1,6 +1,6 @@
 # sherpa — agent instructions
 
-sherpa is the plugin behind this repo: three composable, opt-in skills, authored in Claude
+sherpa is the plugin behind this repo: composable, opt-in skills, authored in Claude
 Code's vocabulary but run under **Claude Code, Codex CLI, and pi**. The user composes the
 workflow; sherpa offers the tools.
 
@@ -11,6 +11,11 @@ workflow; sherpa offers the tools.
   reviewed step at a time.
 - **Nothing persists unless asked** — `/persist` writes the in-context frame, proposal, or plan to
   disk; there is no automatic run-state.
+- **`/review <branch or PR>`** — multi-perspective, read-only review of changes; reports findings
+  plus a verdict.
+- **`/triage <PR>`** — categorizes unresolved GitHub PR review comments and flags lessons for
+  AGENTS.md.
+- **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
 
 ## Versioning
 

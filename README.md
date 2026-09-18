@@ -1,9 +1,10 @@
 # Sherpa
 
-A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin: three
-**composable skills**, one per layer of altitude — `/frame` (frame), `/shape` (shape),
-`/implement` (build) — with bundled codebase-explorer, shape-builder, step-builder, and reviewer subagents
-that rope up and check the rope at every stage.
+A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin:
+**composable skills** — one per layer of altitude, `/frame` (frame), `/shape` (shape),
+`/implement` (build) — plus `/persist` and the independently invokable `/review`, `/triage`, and
+`/restory` — with bundled codebase-explorer, shape-builder, step-builder, code-reviewer, and
+reviewer subagents that rope up and check the rope at every stage.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until you
 call a skill), **lean** (nothing persists unless you call `/persist`), and **project-agnostic** —
@@ -41,6 +42,9 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | `/shape <task>` | Skeleton + critique a direct-approach candidate; fans out to a full candidate pool only when that critique returns `EXPAND`. Presents a proposal — step budget stated up front in it — and waits for your pick; once picked, plans ordered, traceable steps, critiques the plan, and waits for your one approval. | the problem's framed (or clear enough) |
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/persist` | Write the in-context frame, proposal, or plan to disk so a later session can resume. | you want to save or resume |
+| `/review` | Multi-perspective, read-only review of a branch's changes or a GitHub PR; reports findings plus a verdict. | you want a pre-PR or pre-merge second opinion |
+| `/triage` | Categorize unresolved GitHub PR review comments (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. | you got PR feedback and want to sort it before acting |
+| `/restory` | Rewrite the current branch's messy commits into a clean, logical sequence; same end tree, fewer/better commits. | your branch history needs tidying before a PR |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context, else
 does the minimum to proceed — never re-running the layer above.
@@ -76,7 +80,7 @@ The engine ships generic. To layer in your project's conventions, commit
 workspace dir. `project.yaml` carries metadata only (`name`, `detect`); every content-bearing
 value — `session.md` (injected at session start), `context.md` (forwarded to every subagent, at
 the root and per layer) — is a fixed convention path next to it, resolved by one call:
-`bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement]`. Sherpa's single
+`bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|review]`. Sherpa's single
 `SessionStart` hook scans for a matching config and announces the active pack automatically. Full
 schema and resolution rules: `packs/README.md`.
 
@@ -90,12 +94,18 @@ schema and resolution rules: `packs/README.md`.
   `quality-reviewer` checks it.
 - **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
   `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
+- **`/review`** — multi-perspective, read-only review of a branch's changes or a GitHub PR;
+  `code-reviewer` does the independent, isolated look and reports a verdict.
+- **`/triage`** — categorizes unresolved GitHub PR review comments and flags lessons for AGENTS.md;
+  strictly analytical, never edits code or replies on the PR.
+- **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence; pure
+  git, never pushes.
 
 ## Layout
 
 ```
-skills/        /frame, /shape, /implement, /persist, using-sherpa
-agents/        codebase-explorer, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, quality-reviewer
+skills/        /frame, /shape, /implement, /persist, /review, /triage, /restory, using-sherpa
+agents/        codebase-explorer, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, quality-reviewer, code-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

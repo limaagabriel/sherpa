@@ -32,6 +32,7 @@ here are picked up with no install.
 | step-builder | build layer | standard (sonnet) | `gpt-5.6-luna` | `high` | workspace-write |
 | quality-reviewer | build layer | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 | codebase-explorer | cross-cutting | standard (sonnet) | `gpt-5.6-luna` | `medium` | read-only |
+| code-reviewer | review | standard (sonnet) | `gpt-5.6-terra` | `high` | read-only |
 
 All roles use the GPT-5.6 family. Independent reviewer roles use
 `gpt-5.6-terra` with high reasoning for adversarial scrutiny. The `sandbox` column carries the
