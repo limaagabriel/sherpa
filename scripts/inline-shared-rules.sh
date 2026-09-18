@@ -29,6 +29,7 @@ BLOCK_FILE_MAP=(
   agents/readiness-reviewer.md
   agents/structure-reviewer.md
   agents/quality-reviewer.md
+  agents/code-reviewer.md
 )
 
 files=("${BLOCK_FILE_MAP[@]}")
