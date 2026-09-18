@@ -1,6 +1,6 @@
 ---
 name: triage
-description: Triage unresolved GitHub PR review comments by categorizing each (makes sense / questionable / push back / needs clarification) and flagging lessons for AGENTS.md. Needs PR URL or number; GitHub-only, orchestrator-only.
+description: Triage unresolved GitHub PR review comments — categorize each (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. Needs PR URL/number; GitHub-only.
 ---
 
 # PR Reason

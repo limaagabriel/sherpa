@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Independent read-only reviewer. Audits a passed diff against an injected reviewing brief; returns findings plus a verdict. Self-contained.
+description: Independent read-only reviewer. Audits a diff against an injected brief, returns findings and a verdict.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: high

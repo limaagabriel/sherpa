@@ -1,6 +1,6 @@
 ---
 name: restory
-description: Clean up messy experimental commits on a feature branch by rewriting local history into logical, focused commits with clear commit messages. Drops noise automatically. Requires approval before rewrite. Pure git, never pushes, never force-pushes.
+description: Clean up messy experimental commits into logical, focused commits, dropping noise. Requires approval; pure git, never pushes.
 ---
 
 # Restory

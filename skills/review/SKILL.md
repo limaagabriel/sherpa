@@ -1,6 +1,6 @@
 ---
 name: review
-description: Multi-perspective code review. Default - reviews LOCAL current-branch changes. Pass a GitHub PR URL or PR# to review a REMOTE PR instead. Read-only, report-only - returns findings plus a verdict, never applies fixes or posts comments. Triggers - "review my branch", "code review this", "pre-PR review", "review PR <url/number>".
+description: Multi-perspective review of local branch changes or a given GitHub PR. Read-only, report-only.
 ---
 
 # Code Review
