@@ -28,6 +28,7 @@ BLOCK_FILE_MAP=(
   agents/frame-reviewer.md
   agents/readiness-reviewer.md
   agents/structure-reviewer.md
+  agents/engineering-reviewer.md
   agents/quality-reviewer.md
   agents/code-reviewer.md
 )
