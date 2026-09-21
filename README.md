@@ -3,7 +3,7 @@
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin:
 **composable skills** — one per layer of altitude, `/frame` (frame), `/shape` (shape),
 `/implement` (build) — plus `/persist` and the independently invokable `/review`, `/triage`, and
-`/restory` — with bundled codebase-explorer, shape-builder, step-builder, code-reviewer, and
+`/restory` — with bundled codebase-explorer, step-builder, code-reviewer, engineering-reviewer, and
 reviewer subagents that rope up and check the rope at every stage.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until you
@@ -39,7 +39,7 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | Skill | Does | Start here when |
 |---|---|---|
 | `/frame <task>` | Scout, bind a problem statement, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
-| `/shape <task>` | Skeleton + critique a direct-approach candidate; fans out to a full candidate pool only when that critique returns `EXPAND`. Presents a proposal — step budget stated up front in it — and waits for your pick; once picked, plans ordered, traceable steps, critiques the plan, and waits for your one approval. | the problem's framed (or clear enough) |
+| `/shape <task>` | Drafts the plan directly — step budget stated up front — then gets it critiqued three ways (structure, readiness, engineering) in parallel, and waits for your one approval. | the problem's framed (or clear enough) |
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/persist` | Write the in-context frame or plan to disk so a later session can resume. | you want to save or resume |
 | `/review` | Multi-perspective, read-only review of a branch's changes or a GitHub PR; reports findings plus a verdict. | you want a pre-PR or pre-merge second opinion |
@@ -52,8 +52,8 @@ does the minimum to proceed — never re-running the layer above.
 ```
 /frame add rate limiting to the public API   # fuzzy → frame it first
    → scouts, asks a few questions, presents a frame
-/shape                                       # skeleton the direct approach, fan out only if it fails
-   → presents a proposal, waits for your pick, then presents the plan, waits for your approval
+/shape                                       # draft the plan directly
+   → critiques it three ways, then presents the plan, waits for your approval
 /implement                                   # build them, reviewed per step
 ```
 
@@ -62,13 +62,11 @@ does the minimum to proceed — never re-running the layer above.
 ## How it works
 
 `/frame` scouts, binds a problem statement, and asks questions as they arise; `frame-reviewer`
-attacks the framing. `/shape` skeletons a direct-approach candidate and critiques it via
-`shape-reviewer`; only an `EXPAND` verdict pays for the full pooled fan-out. A tied pick waits on
-you (human gate 1); otherwise `/shape` auto-picks, and the pick stays rejectable later. It then
-plans the steps and gets that plan attacked, in parallel, by `structure-reviewer` (how the steps
-relate) and `readiness-reviewer` (each step's own contract) — a gap only you can close waits on
-you (human gate 2) — before presenting the plan and waiting for **your explicit approval (human
-gate 3)**, the one gate every run hits. `/implement` then builds one step at a time:
+attacks the framing. `/shape` drafts the plan directly, then gets it attacked in parallel by
+`structure-reviewer` (how the steps relate), `readiness-reviewer` (each step's own contract), and
+`engineering-reviewer` (plan-level engineering quality) — a gap only you can close waits on you
+(human gate 1) — before presenting the plan and waiting for **your explicit approval (human
+gate 2)**, the one gate every run hits. `/implement` then builds one step at a time:
 `step-builder` commits, then `quality-reviewer` checks it against both quality and its acceptance
 criteria. A `BLOCK` or a terminal `UNMET`/`FIX` surfaces to you verbatim; everything else continues
 automatically.
@@ -87,9 +85,8 @@ schema and resolution rules: `packs/README.md`.
 ## Components
 
 - **`/frame`** (frame) — scout + bind a problem statement; `frame-reviewer` gives it cold eyes.
-- **`/shape`** (shape) — skeletons + critiques a candidate, plans the approved one;
-  `shape-builder` builds candidates, `shape-reviewer` critiques the pool,
-  `structure-reviewer`/`readiness-reviewer` critique the plan.
+- **`/shape`** (shape) — drafts the plan directly; `structure-reviewer`, `readiness-reviewer`,
+  and `engineering-reviewer` critique it in parallel.
 - **`/implement`** (build) — runs approved steps; `step-builder` builds and commits each one,
   `quality-reviewer` checks it.
 - **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
@@ -105,7 +102,7 @@ schema and resolution rules: `packs/README.md`.
 
 ```
 skills/        /frame, /shape, /implement, /persist, /review, /triage, /restory, using-sherpa
-agents/        codebase-explorer, frame-reviewer, shape-builder, shape-reviewer, structure-reviewer, readiness-reviewer, step-builder, quality-reviewer, code-reviewer
+agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

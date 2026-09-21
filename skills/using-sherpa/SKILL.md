@@ -8,7 +8,7 @@ description: Sherpa's layer-selection nudge — check /frame, /shape, /implement
 Match the layer to how clear the task is.
 
 - **Fuzzy task, unclear scope or open design questions** → `/frame` — scout the code, bind a problem statement, surface open questions.
-- **Problem clear with a settled direction, or clear needing one picked** → `/shape` — pass your settled direction as `DIRECTION` to skip exploring alternatives (the reviewer still checks the direction is buildable), or let `/shape` scout, fan out, critique, pick one, and plan.
+- **Problem clear with a settled direction, or clear enough to draft directly** → `/shape` — pass your settled direction as `DIRECTION` to skip exploring alternatives (the reviewer still checks the direction is buildable), or let `/shape` scout, draft, and critique.
 - **One obvious change** → `/implement` — build it with per-step review.
 
 Before taking free-form action, check whether one of these fits. Skip sherpa only when none of them apply.
