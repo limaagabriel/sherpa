@@ -9,7 +9,7 @@ workflow; sherpa offers the tools.
   the approved one.
 - **`/implement <task>`** (build) — build the plan (or the task as one implicit step), one
   reviewed step at a time.
-- **Nothing persists unless asked** — `/persist` writes the in-context frame, proposal, or plan to
+- **Nothing persists unless asked** — `/persist` writes the in-context frame or plan to
   disk; there is no automatic run-state.
 - **`/review <branch or PR>`** — multi-perspective, read-only review of changes; reports findings
   plus a verdict.

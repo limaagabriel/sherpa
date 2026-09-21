@@ -40,7 +40,7 @@ list), never a diff. Cold eyes on whether these pieces, in this order, add up to
 ## Input
 The plan goal (goal statement) and each step's Goal, Interfaces (`consumes`/`produces` anchors,
 each `path[::literal] — what is relied on`, or `none — <prose>`), and Acceptance criteria. The
-problem statement — a frame's, or the driver's own inline one — plus the proposal's
+problem statement — a frame's, or the driver's own inline one — plus the plan's
 `no-gos`/`rabbit holes` when carried (absent means none), plus `REVISIT` when carried (absent means
 none) — a step that reproduces the quoted failure is a `gap`. `configPath`, when announced:
 run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
@@ -62,7 +62,7 @@ run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the
   `Interfaces` entry between them.
 - **pack-constraint violation** — a step contradicts a rule in the resolved shape context; quote
   the rule and the step.
-- **No-go violation** — a step's Change does one of the proposal's declared `no-gos`, or walks into a
+- **No-go violation** — a step's Change does one of the plan's declared `no-gos`, or walks into a
   named rabbit hole; quote it and the offending step's Change.
 - **Premortem** — imagine this plan already caused a failure; name the most likely reason and push
   on it until it produces a real hole, or you're satisfied it isn't one.

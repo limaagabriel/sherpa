@@ -26,9 +26,9 @@ persisting it is the opt-in `/persist` skill — never automatic.
 
 ## Steps
 1. **Discover.** Dispatch the `codebase-explorer` agent (task, target dir, breadth `quick`/`medium`/`very
-   thorough` scaled to surface) before asking the user anything. A `/shape` proposal already in
-   context counts as bound discovery — its `solution` field's precedent citations and its
-   `rabbit holes` are a known constraint; scout only the surface the proposal doesn't cover.
+   thorough` scaled to surface) before asking the user anything. A `/shape` plan already in
+   context counts as bound discovery — its Block 3 precedent citations and its Block 1
+   rabbit holes are a known constraint; scout only the surface the plan doesn't cover.
 2. **Draft the problem statement** — one sentence, five bound slots:
    > `<who>` cannot `<capability>` because `<obstacle>`; costs `<consequence>`; done signal is
    > `<observable>`.
@@ -81,7 +81,7 @@ persisting it is the opt-in `/persist` skill — never automatic.
    per-section during composition. Revise on feedback.
 
 ## Don't
-- Bind an `Outcome` — that's `/shape`'s job, once a candidate is picked.
+- Bind an `Outcome` — that's `/shape`'s job, once the plan is drafted.
 - Name a mechanism — noun or verb — in any slot, including the done signal.
 - Defer a problem question to `/shape`. If it's about the problem, resolve it here.
 - Put a solution-shaped question in open questions — route it to design questions instead.
