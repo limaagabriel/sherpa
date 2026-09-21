@@ -23,8 +23,6 @@ BLOCK_FILE_MAP=(
   skills/shape/SKILL.md
   skills/implement/SKILL.md
   agents/codebase-explorer.md
-  agents/shape-builder.md
-  agents/shape-reviewer.md
   agents/frame-reviewer.md
   agents/readiness-reviewer.md
   agents/structure-reviewer.md
