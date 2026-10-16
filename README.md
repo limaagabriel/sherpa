@@ -42,7 +42,7 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | `/shape <task>` | Drafts the plan directly — step budget stated up front — then gets it critiqued three ways (structure, readiness, engineering) in parallel, and waits for your one approval. | the problem's framed (or clear enough) |
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/persist` | Write the in-context frame or plan to disk so a later session can resume. | you want to save or resume |
-| `/analyze` | Pre-review analysis of a branch's changes or a GitHub PR; reports findings plus a verdict. | you want a pre-PR or pre-merge second opinion |
+| `/analyze` | Pre-review analysis of a branch's changes or a GitHub PR; opens with a short context briefing, then lens findings checked by `analysis-reviewer`, plus a verdict. | you want a pre-PR or pre-merge second opinion |
 | `/triage` | Categorize all PR review feedback (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. | you got PR feedback and want to sort it before acting |
 | `/restory` | Rewrite the current branch's messy commits into a clean, logical sequence; same end tree, fewer/better commits. | your branch history needs tidying before a PR |
 
@@ -92,7 +92,7 @@ schema and resolution rules: `packs/README.md`.
 - **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
   `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
 - **`/analyze`** — Pre-review analysis of a branch's changes or a GitHub PR;
-  `code-reviewer` does the independent, isolated look, `analysis-reviewer` checks each finding, and a verdict is reported.
+  `code-reviewer` does the independent, isolated look, `analysis-reviewer` checks each finding; the report opens with a short context briefing and ends with a verdict.
 - **`/triage`** — categorizes all PR review feedback and flags lessons for AGENTS.md;
   strictly analytical, never edits code or replies on the PR.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence; pure

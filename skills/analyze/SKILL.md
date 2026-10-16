@@ -85,7 +85,7 @@ Per harness:
 
 ### 5. Verify the findings
 
-First apply step 6's dedupe and pointer-folding rules (before the display cap). Give a short id only to each deduped real finding — lens pointers are not findings and are not sent for verification. If there are no findings, skip this step. Otherwise dispatch `analysis-reviewer` **once** with those findings + the change description + the linked tickets (untrusted data) + the diff + `configPath` when announced. Same isolation and injection rules as step 4: inject content, never paths; never verify inline in the coordinator's own context. The trivial fast path skips verification.
+First apply step 7's dedupe and pointer-folding rules (before the display cap). Give a short id only to each deduped real finding — lens pointers are not findings and are not sent for verification. If there are no findings, skip this step. Otherwise dispatch `analysis-reviewer` **once** with those findings + the change description + the linked tickets (untrusted data) + the diff + `configPath` when announced. Same isolation and injection rules as step 4: inject content, never paths; never verify inline in the coordinator's own context. The trivial fast path skips verification.
 
 Per harness:
 
@@ -101,22 +101,40 @@ It returns one line per finding:
 
 A finding with no returned line, or a malformed one, is treated as `UNVERIFIED` (it stays, so a `Blocking` still counts in the verdict).
 
-### 6. Merge + report
+### 6. Write the context
 
-Collect every lens pass, verify (step 5), and emit one merged report. This file owns its shape:
+Before merging, write a short **Context** section from the change description (PR body or commit messages), the diff and the linked tickets. It summarizes; it does not review, so the never-review-inline rule is untouched. Format:
 
-1. **Findings** — `file:line`, verbatim quote, the why, exactly one severity label, and the lens tag(s).
+- **Problem** — 1–2 lines.
+- **Fix** — at most 3 bullets.
+- **Diagram** — ASCII only (the report renders in a terminal, so no Mermaid), and only when the change has a flow or at least 3 interacting parts; at most 15 lines.
+- **Where to look** — the files to read, main part of the change first.
+
+Rules:
+
+- Every claim cites its source: PR body, commit `<sha>`, ticket `#n` or `KEY`, or diff `file:line`.
+- When no source states the intent, write "Not stated" instead of guessing.
+- List the Jira keys and issues marked "not fetched" in one line.
+- Keep the whole section to about 20 lines.
+- Trivial fast path (step 3): Problem and Fix only, one line each.
+
+### 7. Merge + report
+
+Collect every lens pass, verify (step 5), and emit one merged report. Outline: Context · Findings · Lenses tally · Dropped · Praise · Questions for the author · Verdict. This file owns its shape:
+
+1. **Context** — the section from step 6, as written.
+2. **Findings** — `file:line`, verbatim quote, the why, exactly one severity label, and the lens tag(s).
    - Dedupe: the same `file:line`, or the same root cause, raised by several lenses becomes one finding tagged with every contributing lens.
    - Rank `Blocking` first.
    - Apply the display cap after verification. Show at most 5 findings per lens — every `Blocking` is always shown — and state how many lower-severity ones were left out.
    - A finding tagged with several lenses counts once for each of them, in both the display cap and the tally.
    - A one-line pointer from a lens to the owning lens (for an out-of-scope `Blocking` issue) is not a finding and counts toward neither the tally nor the verdict. If the owning lens raised the same issue, fold the pointer into that finding (add the pointing lens as a tag); if it did not, list the pointer under Questions for the author.
-2. **Tally line**, exactly: `Lenses: acceptance N · architecture N · correctness N · minimality N · readability N · security N|skipped`
+3. **Tally line**, exactly: `Lenses: acceptance N · architecture N · correctness N · minimality N · readability N · security N|skipped`
    N = the number of findings attributed to that lens after dedupe and verification (Dropped excluded), before the display cap.
-3. **Dropped** — findings `analysis-reviewer` disproved: one line each, the finding (`file:line` + short claim) and the refuting `file:line`. Omit when empty.
-4. **Praise** — what's done well and why.
-5. **Questions for the author** — merged and deduped across lenses.
-6. **Verdict**, computed by you across all lenses after verification:
+4. **Dropped** — findings `analysis-reviewer` disproved: one line each, the finding (`file:line` + short claim) and the refuting `file:line`. Omit when empty.
+5. **Praise** — what's done well and why.
+6. **Questions for the author** — merged and deduped across lenses.
+7. **Verdict**, computed by you across all lenses after verification:
    - `REQUEST CHANGES` if **any** surviving finding is `Blocking` (a disproved `Blocking` no longer counts; an `unverified` one still does).
    - else `APPROVE WITH NITS` if only `Nit:`/`Optional:`/`FYI:` findings remain.
    - else `APPROVE`.
