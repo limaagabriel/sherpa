@@ -1,0 +1,16 @@
+# sherpa analysis-reviewer subagent — Codex role binding.
+# Full role in plugin file agents/analysis-reviewer.md; this TOML binds the
+# model tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
+name = "analysis-reviewer"
+description = '''Read-only analyze-layer adversary. Checks each /analyze finding against the code; confirms, disproves, or marks unverified.'''
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+developer_instructions = '''
+You are sherpa's analysis-reviewer subagent. Read your full role definition,
+invariants, and output contract from the sherpa plugin file
+agents/analysis-reviewer.md (resolve via $CLAUDE_PLUGIN_ROOT when set, else the
+installed sherpa plugin root) and follow it exactly. Read-only: try to refute each
+finding with evidence; never edit. Your final message IS the return value
+(one verdict line per finding), not a human-facing note.
+'''

@@ -1,11 +1,11 @@
 ---
 name: triage
-description: Triage unresolved GitHub PR review comments — categorize each (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. Needs PR URL/number; GitHub-only.
+description: Triage all GitHub PR review feedback — categorize each item (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. Needs PR URL/number; GitHub-only.
 ---
 
 # PR Reason
 
-Reasons over the *unresolved* review comments on a GitHub PR and tells you which to act on, which to push back on, and which lessons are worth writing into AGENTS.md. Strictly analytical — never edits code or replies on the PR.
+Reasons over all review feedback on a GitHub PR (unresolved inline threads, conversation comments, review-summary bodies) and tells you which to act on, which to push back on, and which lessons are worth writing into AGENTS.md. Strictly analytical — never edits code or replies on the PR.
 
 ## When to use
 
@@ -25,28 +25,29 @@ Not for: writing the PR description or applying the changes (this skill only rea
 ### 1. Resolve target + drift check
 
 ```bash
-gh pr view <pr> --json number,headRefName,headRefOid,headRepository
+gh pr view <pr> --json number,headRefName,headRefOid,headRepository,author,commits
 git rev-parse HEAD && git branch --show-current
 ```
 
-Compare the PR's `headRefName`/`headRefOid` to the local branch and HEAD.
+Compare the PR's `headRefName`/`headRefOid` to the local branch and HEAD. Keep `author` (to skip the author's own root comments) and `commits` (for the "possibly addressed" hint).
 
 - **Match** → local checkout reflects the PR; file-context reasoning is trustworthy.
 - **Drift** (different branch, or HEAD behind/ahead) → **say so loudly** and ask whether to continue. Reasoning over line numbers against a drifted tree produces wrong conclusions. Don't silently proceed.
 
-### 2. Fetch unresolved threads
+### 2. Fetch all review feedback
 
-GraphQL — keep only threads where `isResolved == false`:
+**(a) Unresolved inline threads** — GraphQL, paged; keep only threads where `isResolved == false`:
 
 ```bash
-gh api graphql -f query='
-query($owner:String!,$repo:String!,$pr:Int!){
+gh api graphql --paginate -f query='
+query($owner:String!,$repo:String!,$pr:Int!,$endCursor:String){
   repository(owner:$owner,name:$repo){
     pullRequest(number:$pr){
-      reviewThreads(first:100){
+      reviewThreads(first:100, after:$endCursor){
+        pageInfo{ hasNextPage endCursor }
         nodes{
           isResolved isOutdated path line
-          comments(first:20){ nodes{ author{login} body createdAt } }
+          comments(first:100){ nodes{ author{login} body createdAt } }
         }
       }
     }
@@ -54,23 +55,55 @@ query($owner:String!,$repo:String!,$pr:Int!){
 }' -f owner=<owner> -f repo=<repo> -F pr=<pr>
 ```
 
+`gh --paginate` needs the variable named `$endCursor` and a `pageInfo{hasNextPage endCursor}` on the paged connection. It pages only one connection per query, so a thread keeps at most 100 comments.
+
 For each unresolved thread keep: latest reviewer comment, `path`, `line`, `isOutdated`.
 
-### 3. Reason over each comment
+**(b) Conversation comments:**
 
-Read the file around `line` (skip file-context reasoning if drift was detected — note it instead). Judge on three axes:
+```bash
+gh api --paginate repos/<owner>/<repo>/issues/<pr>/comments \
+  --jq '.[] | {author: .user.login, type: .user.type, body, created_at, url: .html_url}'
+```
+
+**(c) Review-summary bodies:**
+
+```bash
+gh api --paginate repos/<owner>/<repo>/pulls/<pr>/reviews \
+  --jq '.[] | {author: .user.login, type: .user.type, state, body, submitted_at, url: .html_url}'
+```
+
+Per-element `--jq` keeps multi-page output as JSON lines.
+
+**Filter root items** (b, c) — skip:
+
+- the PR author's own comments;
+- bot status reports (CI, coverage, deploy, changelog) — keep bot posts that critique the code (AI review bots);
+- empty review bodies, and bodies that only approve or only restate/point to their own inline comments.
+
+### 3. Reason over each item
+
+Label each item with a **kind**: `request` (a question counts as a request), `complaint`, or `suggestion`. "Needs clarification" stays a verdict, not a kind.
+
+For threads, read the file around `line` (skip file-context reasoning if drift was detected — note it instead). Root items have no `path:line` — reason against the PR diff and any files they name. A complaint with no proposed change is judged on whether it is fair, using the same four verdicts.
+
+Add a **possibly addressed** hint when fetched data shows a later reply by the PR author or a later commit message that answers the item. Hint only — never drop the item.
+
+Judge on three axes:
 
 1. **Makes sense in *this* codebase?** — Does the suggested API/util/symbol actually exist here? Does it fit the module's established patterns? (verify, don't assume)
 2. **Good engineering practice generally?** — Sound regardless of this repo: correctness, safety, readability, performance.
 3. **Worth an AGENTS.md instruction?** — Only if the lesson is *general and recurring*, not a one-off. A repeated "use guard clauses" → yes. A typo fix → no.
 
-Reason inline. Each comment is a small, independent file peek — subagent isolation buys nothing and scatters redundant reads. If a single comment needs codebase-wide verification (does this symbol/API exist anywhere), dispatch one focused agent for *that* check only.
+Reason inline. Each item is a small, independent file peek — subagent isolation buys nothing and scatters redundant reads. If a single comment needs codebase-wide verification (does this symbol/API exist anywhere), dispatch one focused agent for *that* check only.
 
 ### 4. Report
 
 **Executive summary:** one line on overall feedback quality + drift status.
 
-**Per comment** — `path:line` · category · one-line rationale (cite the code/standard for any "push back"):
+**Per item** — locator · kind · verdict · one-line rationale (cite the code/standard for any "push back"). Locator is `path:line` for threads, `@author · comment|review(<state>) · <date> · <url>` for root items. Threads first, then root items.
+
+Verdicts:
 
 | Category | Meaning |
 |---|---|

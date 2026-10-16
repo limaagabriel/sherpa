@@ -11,9 +11,9 @@ workflow; sherpa offers the tools.
   reviewed step at a time.
 - **Nothing persists unless asked** — `/persist` writes the in-context frame or plan to
   disk; there is no automatic run-state.
-- **`/review <branch or PR>`** — multi-perspective, read-only review of changes; reports findings
-  plus a verdict.
-- **`/triage <PR>`** — categorizes unresolved GitHub PR review comments and flags lessons for
+- **`/analyze <branch or PR>`** — Pre-review analysis of changes; the report opens with a short
+  context briefing, then lens findings checked by `analysis-reviewer`, plus a verdict.
+- **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
   AGENTS.md.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prints a project pack's context for a subagent, in one call.
 #
-# Usage: resolve-pack-value.sh <configPath> [frame|shape|implement|review]
+# Usage: resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]
 #
 # Base dir = dirname(configPath). Prints <basedir>/context.md if present,
 # then <basedir>/<layer>/context.md if a layer was given and present, with
@@ -15,7 +15,7 @@ config="${1:-}"
 layer="${2:-}"
 extra="${3:-}"
 if [ -z "$config" ]; then
-  echo "usage: resolve-pack-value.sh <configPath> [frame|shape|implement|review]" >&2
+  echo "usage: resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]" >&2
   exit 1
 fi
 
@@ -25,9 +25,9 @@ if [ -n "$extra" ]; then
 fi
 
 case "$layer" in
-  ""|frame|shape|implement|review) ;;
+  ""|frame|shape|implement|analyze) ;;
   *)
-    echo "resolve-pack-value.sh: unrecognized layer: $layer (expected one of: frame, shape, implement, review)" >&2
+    echo "resolve-pack-value.sh: unrecognized layer: $layer (expected one of: frame, shape, implement, analyze)" >&2
     exit 1
     ;;
 esac

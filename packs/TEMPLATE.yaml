@@ -23,5 +23,5 @@ name: my-project
 #   frame/context.md        additive to context.md, for the frame layer only
 #   shape/context.md        additive to context.md, for the shape layer only
 #   implement/context.md    additive to context.md, for the implement layer only
-#   review/context.md       additive to context.md, for the review layer only
+#   analyze/context.md      additive to context.md, for the analyze layer only
 # Full rules: packs/README.md.

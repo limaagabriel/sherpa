@@ -1,7 +1,7 @@
 {
   "name": "sherpa",
-  "version": "0.34.0",
-  "description": "Composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /review, /triage, and /restory skills for reviewing, triaging, and reconstructing story context, with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
+  "version": "0.35.0",
+  "description": "Composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, and /restory skills for analyzing, triaging, and reconstructing story context, with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
   "author": {
     "name": "Gabriel Lima",
     "url": "https://github.com/limaagabriel"
@@ -20,8 +20,8 @@
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Sherpa",
-    "shortDescription": "Composable frame, shape, implement, review, triage, and restory layers",
-    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /review (adversarial code review), /triage (reason about and route unresolved PR review comments), /restory (reconstruct story context) — that the user composes into a workflow. Nothing persists unless you call /persist.",
+    "shortDescription": "Composable frame, shape, implement, analyze, triage, and restory layers",
+    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /analyze (pre-review analysis), /triage (reason about and route all PR review feedback), /restory (reconstruct story context) — that the user composes into a workflow. Nothing persists unless you call /persist.",
     "developerName": "Gabriel Lima",
     "category": "Productivity",
     "capabilities": [
@@ -33,8 +33,8 @@
       "Use /frame to shape this fuzzy task.",
       "Use /shape to draft and critique the plan.",
       "Use /implement to build the approved plan.",
-      "Use /review for an adversarial code review.",
-      "Use /triage to reason about and route unresolved PR review comments.",
+      "Use /analyze for a pre-review analysis.",
+      "Use /triage to reason about and route all PR review feedback.",
       "Use /restory to reconstruct story context."
     ],
     "brandColor": "#2F6F6B"

@@ -28,19 +28,19 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 - `session.md` — bootstrap rules, injected at session start under a
   `PROJECT SESSION RULES` line. Soft-capped at 4 KB — keep it short.
 - `context.md` — forwarded to every subagent.
-- `frame/context.md`, `shape/context.md`, `implement/context.md`, `review/context.md` — appended
+- `frame/context.md`, `shape/context.md`, `implement/context.md`, `analyze/context.md` — appended
   for that layer's subagents only.
 
 Any `context.md` may just tell the reader to Read another file.
 
 ## How subagents get it
 
-One resolver call: `bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|review]`
+One resolver call: `bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`
 prints whatever of the above exists.
 
 > **Breaking change note:** `shape/architecture.md`, `implement/codeStyle.md`, `implement/validate.md`, `implement/review.md`, and directory-of-files stems are retired — move their content, or a "Read `<path>`" pointer, into the matching `context.md`. The old lazy `session` fetch is gone; the `SessionStart` hook now injects `session.md` directly.
 >
-> **Note on `review/` layer:** The new `review/` directory (a pack layer like `frame/`, `shape/`, and `implement/`) is distinct from the retired `implement/review.md` file mentioned above — they share a name but serve different purposes. Use `review/context.md` as the layer-specific context for review subagents.
+> **Breaking change note:** the `review/` layer is renamed to `analyze/` (the `/review` skill is now `/analyze`) — move `review/context.md` to `analyze/context.md`.
 
 ## Make a pack
 

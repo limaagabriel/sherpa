@@ -5,7 +5,7 @@
 # Schema: project.yaml/.yml carries only `name` and optional `detect`. Local
 # candidate: $cwd/.sherpa/project.yaml|.yml (detect optional). Workspace
 # candidates: <packs dir>/*/project.yaml|.yml (detect required). Content is
-# fetched lazily via `resolve-pack-value.sh <configPath> [frame|shape|implement|review]`.
+# fetched lazily via `resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`.
 set -u
 unset SHERPA_CONFIG_DIR
 
@@ -127,11 +127,11 @@ echo -n "ROOT" >"$tmp/vv/context.md"
 echo -n "LAYER" >"$tmp/vv/shape/context.md"
 assert_eq v-root-plus-layer "$("$value_script" "$tmp/vv/project.yaml" shape)" "$(printf 'ROOT\n\nLAYER')"
 
-# v-review) root + layer with review, exactly one blank line between.
-mkdir -p "$tmp/vv-review/review"
-echo -n "ROOT" >"$tmp/vv-review/context.md"
-echo -n "LAYER" >"$tmp/vv-review/review/context.md"
-assert_eq v-review-root-plus-layer "$("$value_script" "$tmp/vv-review/project.yaml" review)" "$(printf 'ROOT\n\nLAYER')"
+# v-analyze) root + layer with analyze, exactly one blank line between.
+mkdir -p "$tmp/vv-analyze/analyze"
+echo -n "ROOT" >"$tmp/vv-analyze/context.md"
+echo -n "LAYER" >"$tmp/vv-analyze/analyze/context.md"
+assert_eq v-analyze-root-plus-layer "$("$value_script" "$tmp/vv-analyze/project.yaml" analyze)" "$(printf 'ROOT\n\nLAYER')"
 
 # w) layer present, root absent -> prints layer only, no stderr.
 mkdir -p "$tmp/vw/implement"
