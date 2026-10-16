@@ -25,3 +25,5 @@ FAN-OUT
 CONTESTED
 shape-builder
 shape-reviewer
+sherpa:review
+/review

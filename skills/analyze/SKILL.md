@@ -1,6 +1,6 @@
 ---
-name: review
-description: Multi-perspective review of local branch changes or a given GitHub PR. Read-only, report-only.
+name: analyze
+description: Pre-review analysis of local branch changes or a GitHub PR. Read-only, report-only.
 ---
 
 # Code Review
@@ -60,7 +60,7 @@ If the change is unambiguously trivial — a typo/copy fix, a tiny no-behavior-c
 
 ### 4. Dispatch the reviewer in isolation
 
-The single source of truth for reviewing doctrine is `references/reviewer.md`, resolved relative to this skill's own directory. **Portability rule: read that file's content yourself and inject it into the dispatched reviewer's prompt — never tell the subagent to open the path itself.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to the dispatched subagent whichever harness dispatches it — it resolves the pack itself via `bash scripts/resolve-pack-value.sh <configPath> review`.
+The single source of truth for reviewing doctrine is `references/reviewer.md`, resolved relative to this skill's own directory. **Portability rule: read that file's content yourself and inject it into the dispatched reviewer's prompt — never tell the subagent to open the path itself.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to the dispatched subagent whichever harness dispatches it — it resolves the pack itself via `bash scripts/resolve-pack-value.sh <configPath> analyze`.
 
 - **Claude Code (has subagents):** dispatch the Agent tool with `subagent_type: "code-reviewer"`, prompt = full contents of `references/reviewer.md` + the change description + the diff (+ any triggered specialist file contents from step 5, each clearly labeled) + `configPath` when announced.
 - **Codex CLI (has subagents):** invoke the Codex agent role `code-reviewer` (from sherpa's own `.codex/agents/code-reviewer.toml`; install per `.codex/agents/README.md`) with the same prompt, including `configPath` when announced. The role is read-only via `sandbox_mode`; spawn a fresh role each pass, never resume one.

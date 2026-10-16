@@ -2,7 +2,7 @@
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin:
 **composable skills** — one per layer of altitude, `/frame` (frame), `/shape` (shape),
-`/implement` (build) — plus `/persist` and the independently invokable `/review`, `/triage`, and
+`/implement` (build) — plus `/persist` and the independently invokable `/analyze`, `/triage`, and
 `/restory` — with bundled codebase-explorer, step-builder, code-reviewer, engineering-reviewer, and
 reviewer subagents that rope up and check the rope at every stage.
 
@@ -42,7 +42,7 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | `/shape <task>` | Drafts the plan directly — step budget stated up front — then gets it critiqued three ways (structure, readiness, engineering) in parallel, and waits for your one approval. | the problem's framed (or clear enough) |
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/persist` | Write the in-context frame or plan to disk so a later session can resume. | you want to save or resume |
-| `/review` | Multi-perspective, read-only review of a branch's changes or a GitHub PR; reports findings plus a verdict. | you want a pre-PR or pre-merge second opinion |
+| `/analyze` | Pre-review analysis of a branch's changes or a GitHub PR; reports findings plus a verdict. | you want a pre-PR or pre-merge second opinion |
 | `/triage` | Categorize all PR review feedback (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. | you got PR feedback and want to sort it before acting |
 | `/restory` | Rewrite the current branch's messy commits into a clean, logical sequence; same end tree, fewer/better commits. | your branch history needs tidying before a PR |
 
@@ -78,7 +78,7 @@ The engine ships generic. To layer in your project's conventions, commit
 workspace dir. `project.yaml` carries metadata only (`name`, `detect`); every content-bearing
 value — `session.md` (injected at session start), `context.md` (forwarded to every subagent, at
 the root and per layer) — is a fixed convention path next to it, resolved by one call:
-`bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|review]`. Sherpa's single
+`bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`. Sherpa's single
 `SessionStart` hook scans for a matching config and announces the active pack automatically. Full
 schema and resolution rules: `packs/README.md`.
 
@@ -91,7 +91,7 @@ schema and resolution rules: `packs/README.md`.
   `quality-reviewer` checks it.
 - **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
   `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
-- **`/review`** — multi-perspective, read-only review of a branch's changes or a GitHub PR;
+- **`/analyze`** — Pre-review analysis of a branch's changes or a GitHub PR;
   `code-reviewer` does the independent, isolated look and reports a verdict.
 - **`/triage`** — categorizes all PR review feedback and flags lessons for AGENTS.md;
   strictly analytical, never edits code or replies on the PR.
@@ -101,7 +101,7 @@ schema and resolution rules: `packs/README.md`.
 ## Layout
 
 ```
-skills/        /frame, /shape, /implement, /persist, /review, /triage, /restory, using-sherpa
+skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, using-sherpa
 agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs

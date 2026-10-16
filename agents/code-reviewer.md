@@ -38,7 +38,7 @@ piGist: |-
 Your prompt contains a complete reviewing brief — role, navigate order, dimensions to check, comment style, severity labels, and the output contract — plus a change description and a diff. Follow that brief exactly. Review only the passed diff; use your read tools to open surrounding context in the files under review whenever the diff alone doesn't tell you enough.
 
 ## Input
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> review` first and
+- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> analyze` first and
   follow the output.
 
 ## Anti-patterns in your own behavior

@@ -11,7 +11,7 @@ workflow; sherpa offers the tools.
   reviewed step at a time.
 - **Nothing persists unless asked** — `/persist` writes the in-context frame or plan to
   disk; there is no automatic run-state.
-- **`/review <branch or PR>`** — multi-perspective, read-only review of changes; reports findings
+- **`/analyze <branch or PR>`** — Pre-review analysis of changes; reports findings
   plus a verdict.
 - **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
   AGENTS.md.
