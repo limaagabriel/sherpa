@@ -5,7 +5,7 @@ description: Pre-review analysis of local branch changes or a GitHub PR. Read-on
 
 # Code Review
 
-Coordinates an independent, isolated review of a diff and reports findings plus a verdict. This file is the orchestration layer; the reviewing doctrine itself lives in `references/reviewer.md` and `references/specialists/*.md`.
+Coordinates an independent, isolated review of a diff and reports findings plus a verdict. This file is the orchestration layer; the reviewing doctrine lives in `references/reviewer.md` (shared brief) and `references/lenses/*.md` (one brief per lens).
 
 ## When to use / not
 
@@ -56,41 +56,44 @@ The reviewer itself owns the read order (description first, then the main part o
 
 ### 3. Trivial fast path (GitLab)
 
-If the change is unambiguously trivial — a typo/copy fix, a tiny no-behavior-change refactor, removing dead code, or a well-understood logic change under ~5 lines — dispatch through the same isolated mechanism as step 4, just a single lightweight pass with no specialist fan-out (skip step 5 entirely). Otherwise proceed to full dispatch (step 4) followed by specialists (step 5). Either way, the reviewer always runs in its own isolated dispatch — the trivial path is a lighter pass, never an excuse to review inline.
+If the change is unambiguously trivial — a typo/copy fix, a tiny no-behavior-change refactor, removing dead code, or a well-understood logic change under ~5 lines — dispatch one pass with `references/lenses/correctness.md` and no other lenses, through the same isolated mechanism as step 4. Otherwise proceed to step 4. Either way, the reviewer always runs in its own isolated dispatch — the trivial path is a lighter pass, never an excuse to review inline.
 
-### 4. Dispatch the reviewer in isolation
+### 4. Dispatch the lenses
 
-The single source of truth for reviewing doctrine is `references/reviewer.md`, resolved relative to this skill's own directory. **Portability rule: read that file's content yourself and inject it into the dispatched reviewer's prompt — never tell the subagent to open the path itself.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to the dispatched subagent whichever harness dispatches it — it resolves the pack itself via `bash scripts/resolve-pack-value.sh <configPath> analyze`.
+Doctrine lives in `references/reviewer.md` (shared) and one file per lens in `references/lenses/`, resolved relative to this skill's own directory. The **Lens dispatch prompt** = full contents of `references/reviewer.md` + one lens file's contents + the change description + the diff + `configPath` when announced.
 
-- **Claude Code (has subagents):** dispatch the Agent tool with `subagent_type: "code-reviewer"`, prompt = full contents of `references/reviewer.md` + the change description + the diff (+ any triggered specialist file contents from step 5, each clearly labeled) + `configPath` when announced.
-- **Codex CLI (has subagents):** invoke the Codex agent role `code-reviewer` (from sherpa's own `.codex/agents/code-reviewer.toml`; install per `.codex/agents/README.md`) with the same prompt, including `configPath` when announced. The role is read-only via `sandbox_mode`; spawn a fresh role each pass, never resume one.
-- **pi (has pi-subagents):** dispatch the registered `code-reviewer` role through pi-subagents (the `subagent` tool or `/run code-reviewer`, registered from `.pi/agents/code-reviewer.md`; see `.pi/agents/README.md` and `protocols/harness/pi.md`), with the same prompt including `configPath` when announced — never fall back to a generic unregistered process for this agent.
+**Portability rule: read those files' content yourself and inject it into the prompt — never tell the subagent to open a path.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to every dispatched subagent; each resolves the pack itself via `bash scripts/resolve-pack-value.sh <configPath> analyze`.
+
+Dispatch these lenses **in parallel**, each in its own isolated `code-reviewer` dispatch, with its own Lens dispatch prompt:
+
+- `acceptance`, `architecture`, `correctness`, `minimality`, `readability` — always.
+- `security` — only when the diff touches credentials/tokens/secrets, authn/authz, trust-boundary input handling, or new/changed dependencies (lockfiles). Decide by diff content only. Otherwise report it as `skipped`.
+
+Per harness:
+
+- **Claude Code (has subagents):** dispatch the Agent tool with `subagent_type: "code-reviewer"` once per lens, with that lens's Lens dispatch prompt.
+- **Codex CLI (has subagents):** invoke the Codex agent role `code-reviewer` (from sherpa's own `.codex/agents/code-reviewer.toml`; install per `.codex/agents/README.md`) once per lens with the same prompt. The role is read-only via `sandbox_mode`; spawn a fresh role each pass, never resume one.
+- **pi (has pi-subagents):** dispatch the registered `code-reviewer` role through pi-subagents (the `subagent` tool or `/run code-reviewer`, registered from `.pi/agents/code-reviewer.md`; see `.pi/agents/README.md` and `protocols/harness/pi.md`) once per lens with the same prompt — never fall back to a generic unregistered process for this agent.
 - **Never review inline in the coordinator's own context.** A reviewer that shares the builder's context isn't independent — that independence is the entire point of this skill.
 
-### 5. Conditional specialists
+### 5. Merge + report
 
-Specialists run strictly **after** the primary pass completes, never alongside it — a specialist needs the primary reviewer's actual findings for context (see below), which don't exist until that pass finishes. Once the primary pass is in, inspect the diff for these trigger domains — by diff content only, never by asking the primary reviewer to decide:
+Collect every lens pass and emit one merged report. This file owns its shape:
 
-- Touches DB migrations, schema, raw SQL, or expensive-query-shaped patterns → also dispatch the `database` specialist.
-- Touches credentials/tokens/secrets, authn/authz, trust-boundary input handling, or new/changed dependencies (lockfiles) → also dispatch the `security` specialist.
-- Touches user-facing templates, DOM, CSS, or UI components → also dispatch the `frontend-ux` specialist.
-
-Each specialist pass is its own isolated dispatch (same mechanism as step 4), with prompt = `references/reviewer.md` + that specialist's `references/specialists/<name>.md` + the change description + the diff + the primary reviewer's findings. A trivial-fast-path change (step 3) runs no specialists, regardless of what it touches.
-
-### 6. Merge + report
-
-Collect the primary pass and every specialist pass. Dedup overlapping findings (same `file:line` raised by more than one pass), rank remaining findings by severity with `Blocking` first. Emit one merged report in the exact output-contract shape from `references/reviewer.md`:
-
-1. **Summary** — one line, overall code-health impact.
-2. **Findings** — `file:line`, verbatim quote, the why, exactly one severity label.
+1. **Findings** — `file:line`, verbatim quote, the why, exactly one severity label, and the lens tag(s).
+   - Dedupe: the same `file:line`, or the same root cause, raised by several lenses becomes one finding tagged with every contributing lens.
+   - Rank `Blocking` first.
+   - Show at most 5 findings per lens — every `Blocking` is always shown — and state how many lower-severity ones were left out.
+   - A finding tagged with several lenses counts once for each of them, in both the display cap and the tally.
+   - A one-line pointer from a lens to the owning lens (for an out-of-scope `Blocking` issue) is not a finding and counts toward neither the tally nor the verdict. If the owning lens raised the same issue, fold the pointer into that finding (add the pointing lens as a tag); if it did not, list the pointer under Questions for the author.
+2. **Tally line**, exactly: `Lenses: acceptance N · architecture N · correctness N · minimality N · readability N · security N|skipped`
+   N = the number of findings attributed to that lens after dedupe and before the display cap.
 3. **Praise** — what's done well and why.
-4. **Verdict.**
-
-Recompute the final Verdict yourself across all passes — don't just take the primary reviewer's verdict at face value:
-
-- `REQUEST CHANGES` if **any** pass (primary or specialist) produced a `Blocking` finding.
-- else `APPROVE WITH NITS` if only `Nit:`/`Optional:`/`FYI:` findings remain anywhere.
-- else `APPROVE`.
+4. **Questions for the author** — merged and deduped across lenses.
+5. **Verdict**, computed by you across all lenses:
+   - `REQUEST CHANGES` if **any** lens produced a `Blocking` finding.
+   - else `APPROVE WITH NITS` if only `Nit:`/`Optional:`/`FYI:` findings remain.
+   - else `APPROVE`.
 
 ## Out of scope
 
