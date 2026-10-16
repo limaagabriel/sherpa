@@ -3,7 +3,7 @@
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin:
 **composable skills** — one per layer of altitude, `/frame` (frame), `/shape` (shape),
 `/implement` (build) — plus `/persist` and the independently invokable `/analyze`, `/triage`, and
-`/restory` — with bundled codebase-explorer, step-builder, code-reviewer, engineering-reviewer, and
+`/restory` — with bundled codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and
 reviewer subagents that rope up and check the rope at every stage.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until you
@@ -92,7 +92,7 @@ schema and resolution rules: `packs/README.md`.
 - **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
   `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
 - **`/analyze`** — Pre-review analysis of a branch's changes or a GitHub PR;
-  `code-reviewer` does the independent, isolated look and reports a verdict.
+  `code-reviewer` does the independent, isolated look, `analysis-reviewer` checks each finding, and a verdict is reported.
 - **`/triage`** — categorizes all PR review feedback and flags lessons for AGENTS.md;
   strictly analytical, never edits code or replies on the PR.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence; pure
@@ -102,7 +102,7 @@ schema and resolution rules: `packs/README.md`.
 
 ```
 skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, using-sherpa
-agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer
+agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver

@@ -76,22 +76,41 @@ Per harness:
 - **pi (has pi-subagents):** dispatch the registered `code-reviewer` role through pi-subagents (the `subagent` tool or `/run code-reviewer`, registered from `.pi/agents/code-reviewer.md`; see `.pi/agents/README.md` and `protocols/harness/pi.md`) once per lens with the same prompt — never fall back to a generic unregistered process for this agent.
 - **Never review inline in the coordinator's own context.** A reviewer that shares the builder's context isn't independent — that independence is the entire point of this skill.
 
-### 5. Merge + report
+### 5. Verify the findings
 
-Collect every lens pass and emit one merged report. This file owns its shape:
+First apply step 6's dedupe and pointer-folding rules (before the display cap). Give a short id only to each deduped real finding — lens pointers are not findings and are not sent for verification. If there are no findings, skip this step. Otherwise dispatch `analysis-reviewer` **once** with those findings + the change description + the diff + `configPath` when announced. Same isolation and injection rules as step 4: inject content, never paths; never verify inline in the coordinator's own context. The trivial fast path skips verification.
+
+Per harness:
+
+- **Claude Code:** Agent tool with `subagent_type: "analysis-reviewer"`.
+- **Codex CLI:** Codex agent role `analysis-reviewer` (from `.codex/agents/analysis-reviewer.toml`), a fresh role each pass.
+- **pi:** the registered `analysis-reviewer` role from `.pi/agents/analysis-reviewer.md`, through pi-subagents.
+
+It returns one line per finding:
+
+- `CONFIRMED` — the finding stays, marked verified.
+- `UNVERIFIED` — the finding stays, tagged `unverified`.
+- `DISPROVED` — the finding leaves Findings and goes to the **Dropped** section: one line each, the finding (`file:line` + short claim) and the refuting `file:line`.
+
+A finding with no returned line, or a malformed one, is treated as `UNVERIFIED` (it stays, so a `Blocking` still counts in the verdict).
+
+### 6. Merge + report
+
+Collect every lens pass, verify (step 5), and emit one merged report. This file owns its shape:
 
 1. **Findings** — `file:line`, verbatim quote, the why, exactly one severity label, and the lens tag(s).
    - Dedupe: the same `file:line`, or the same root cause, raised by several lenses becomes one finding tagged with every contributing lens.
    - Rank `Blocking` first.
-   - Show at most 5 findings per lens — every `Blocking` is always shown — and state how many lower-severity ones were left out.
+   - Apply the display cap after verification. Show at most 5 findings per lens — every `Blocking` is always shown — and state how many lower-severity ones were left out.
    - A finding tagged with several lenses counts once for each of them, in both the display cap and the tally.
    - A one-line pointer from a lens to the owning lens (for an out-of-scope `Blocking` issue) is not a finding and counts toward neither the tally nor the verdict. If the owning lens raised the same issue, fold the pointer into that finding (add the pointing lens as a tag); if it did not, list the pointer under Questions for the author.
 2. **Tally line**, exactly: `Lenses: acceptance N · architecture N · correctness N · minimality N · readability N · security N|skipped`
-   N = the number of findings attributed to that lens after dedupe and before the display cap.
-3. **Praise** — what's done well and why.
-4. **Questions for the author** — merged and deduped across lenses.
-5. **Verdict**, computed by you across all lenses:
-   - `REQUEST CHANGES` if **any** lens produced a `Blocking` finding.
+   N = the number of findings attributed to that lens after dedupe and verification (Dropped excluded), before the display cap.
+3. **Dropped** — findings `analysis-reviewer` disproved: one line each, the finding (`file:line` + short claim) and the refuting `file:line`. Omit when empty.
+4. **Praise** — what's done well and why.
+5. **Questions for the author** — merged and deduped across lenses.
+6. **Verdict**, computed by you across all lenses after verification:
+   - `REQUEST CHANGES` if **any** surviving finding is `Blocking` (a disproved `Blocking` no longer counts; an `unverified` one still does).
    - else `APPROVE WITH NITS` if only `Nit:`/`Optional:`/`FYI:` findings remain.
    - else `APPROVE`.
 

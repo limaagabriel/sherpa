@@ -1,6 +1,6 @@
 # pi subagent roles
 
-These eight `*.md` files are sherpa's roles as **pi-subagents agents**. The
+These nine `*.md` files are sherpa's roles as **pi-subagents agents**. The
 package manifest declares `pi.subagents.agents: ["./.pi/agents"]`, so
 pi-subagents **auto-registers** them on load — no manual copy or symlink. Each
 shim is a thin pointer: its body resolves the sherpa package root and reads the
@@ -31,6 +31,7 @@ role's own `piThinking` frontmatter field, so this table always mirrors it.
 | quality-reviewer | `agents/quality-reviewer.md` | read, grep, find, ls, bash | high |
 | codebase-explorer | `agents/codebase-explorer.md` | read, grep, find, ls, bash | medium |
 | code-reviewer | `agents/code-reviewer.md` | read, grep, find, ls, bash | high |
+| analysis-reviewer | `agents/analysis-reviewer.md` | read, grep, find, ls, bash | high |
 
 The `tools` column carries the write distinction: `step-builder` holds `edit, write`; no other
 role does. Among the read-only roles, `codebase-explorer` is the sole worker; the rest are
