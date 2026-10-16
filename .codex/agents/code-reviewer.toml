@@ -3,7 +3,7 @@
 # file agents/code-reviewer.md; this TOML only binds the model tier + sandbox.
 # Tier: review (GPT-5.6 Terra, high). Read-only code review.
 name = "code-reviewer"
-description = '''Independent read-only reviewer. Audits a diff against an injected brief, returns findings and a verdict.'''
+description = '''Independent read-only reviewer. Audits a diff through an injected lens brief; returns findings.'''
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
@@ -12,7 +12,6 @@ You are sherpa's code-reviewer subagent. Read your full role definition,
 invariants, and output contract from the sherpa plugin file
 agents/code-reviewer.md (resolve via $CLAUDE_PLUGIN_ROOT when set, else the
 installed sherpa plugin root) and follow it exactly. Review the passed diff
-against the injected reviewing brief, report findings, emit the overall
-verdict. Your final message IS the return value (the findings + verdict),
-not a human-facing note.
+through the injected lens brief and report findings. Your final message IS
+the return value (the findings), not a human-facing note.
 '''
