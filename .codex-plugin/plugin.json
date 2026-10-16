@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Sherpa",
     "shortDescription": "Composable frame, shape, implement, review, triage, and restory layers",
-    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /review (adversarial code review), /triage (reason about and route unresolved PR review comments), /restory (reconstruct story context) — that the user composes into a workflow. Nothing persists unless you call /persist.",
+    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /review (adversarial code review), /triage (reason about and route all PR review feedback), /restory (reconstruct story context) — that the user composes into a workflow. Nothing persists unless you call /persist.",
     "developerName": "Gabriel Lima",
     "category": "Productivity",
     "capabilities": [
@@ -34,7 +34,7 @@
       "Use /shape to draft and critique the plan.",
       "Use /implement to build the approved plan.",
       "Use /review for an adversarial code review.",
-      "Use /triage to reason about and route unresolved PR review comments.",
+      "Use /triage to reason about and route all PR review feedback.",
       "Use /restory to reconstruct story context."
     ],
     "brandColor": "#2F6F6B"

@@ -43,7 +43,7 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/persist` | Write the in-context frame or plan to disk so a later session can resume. | you want to save or resume |
 | `/review` | Multi-perspective, read-only review of a branch's changes or a GitHub PR; reports findings plus a verdict. | you want a pre-PR or pre-merge second opinion |
-| `/triage` | Categorize unresolved GitHub PR review comments (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. | you got PR feedback and want to sort it before acting |
+| `/triage` | Categorize all PR review feedback (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. | you got PR feedback and want to sort it before acting |
 | `/restory` | Rewrite the current branch's messy commits into a clean, logical sequence; same end tree, fewer/better commits. | your branch history needs tidying before a PR |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context, else
@@ -93,7 +93,7 @@ schema and resolution rules: `packs/README.md`.
   `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
 - **`/review`** — multi-perspective, read-only review of a branch's changes or a GitHub PR;
   `code-reviewer` does the independent, isolated look and reports a verdict.
-- **`/triage`** — categorizes unresolved GitHub PR review comments and flags lessons for AGENTS.md;
+- **`/triage`** — categorizes all PR review feedback and flags lessons for AGENTS.md;
   strictly analytical, never edits code or replies on the PR.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence; pure
   git, never pushes.

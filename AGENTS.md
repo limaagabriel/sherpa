@@ -13,7 +13,7 @@ workflow; sherpa offers the tools.
   disk; there is no automatic run-state.
 - **`/review <branch or PR>`** — multi-perspective, read-only review of changes; reports findings
   plus a verdict.
-- **`/triage <PR>`** — categorizes unresolved GitHub PR review comments and flags lessons for
+- **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
   AGENTS.md.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
 
