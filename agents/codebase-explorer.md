@@ -4,7 +4,7 @@ description: Read-only codebase scout that explores per the caller's task/target
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: medium
-codexModel: gpt-5.6-luna
+codexModel: gpt-6-luna
 codexReasoningEffort: medium
 codexSandbox: read-only
 codexHeaderComment: |-

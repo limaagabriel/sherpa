@@ -4,14 +4,14 @@ description: Per-step reviewer (build layer). Read-only. Audits a built step's d
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: high
-codexModel: gpt-5.6-terra
+codexModel: gpt-6.1-sol
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa quality-reviewer subagent — Codex role binding.
   # The full role (invariants, output contract) lives in the plugin
   # file agents/quality-reviewer.md; this TOML only binds the model tier + sandbox.
-  # Tier: review (GPT-5.6 Terra, high). Read-only code-quality review.
+  # Tier: review (GPT-6.1 Sol, high). Read-only code-quality review.
 codexBody: |-
   You are sherpa's quality-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file

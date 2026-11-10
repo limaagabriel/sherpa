@@ -4,13 +4,13 @@ description: Read-only shape-layer adversary. Attacks the whole plan's step stru
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: high
-codexModel: gpt-5.6-terra
+codexModel: gpt-6-astra
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa structure-reviewer subagent — Codex role binding.
   # Full role in plugin file agents/structure-reviewer.md; this TOML binds the model
-  # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
+  # tier + sandbox. Tier: adversarial review (GPT-6 Astra, high). Read-only.
 codexBody: |-
   You are sherpa's structure-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file
