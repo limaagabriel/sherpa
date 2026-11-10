@@ -26,6 +26,7 @@ name: my-project
 #   analyze/context.md      additive to context.md, for the analyze layer only
 #   guardrails.yaml         checks run per phase (step|end|both); example:
 #     guardrails:
-#       - {name: lint, run: "npx eslint .", when: step}   # check only, never --fix
+#       - {name: lint, run: "npx eslint --fix .", when: step}  # may rewrite the step's own files
+#       - {name: tests, run: "npm test", when: end}            # end/both: check only, never --fix
 #       - {name: review, skill: analyze, when: end}       # report-only, non-interactive
 # Full rules: packs/README.md.

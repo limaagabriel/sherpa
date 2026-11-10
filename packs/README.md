@@ -50,8 +50,10 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
   `1` (runner only) a guardrail failed; `2` cannot run (usage error, unknown phase,
   `yq` missing while the file exists, malformed YAML, an entry without `name`, or
   with both or neither of `run`/`skill`). Multi-line values are rejected (exit 2).
-  - A `run` command must only check, never modify files (`eslint`, not `eslint --fix`).
-    It runs with your permissions and is not sandboxed — same trust as `detect`.
+  - A `run` command in an `end` or `both` guardrail must only check, never modify files
+    (`eslint`, not `eslint --fix`). A `when: step` guardrail may rewrite the step's own
+    uncommitted files (e.g. a formatter, `eslint --fix`); those edits are committed with the step.
+    A `run` command runs with your permissions and is not sandboxed — same trust as `detect`.
   - A `skill` guardrail must be report-only and non-interactive. The driver judges it
     from the skill's report, so it is not deterministic.
 

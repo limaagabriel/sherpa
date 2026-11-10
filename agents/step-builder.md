@@ -57,7 +57,9 @@ Implement one approved step and commit it. You are dispatched once per step by `
   setup error: still commit, and report `Guardrails: setup error <exit> <stderr line>`. If no
   plugin root resolves, or `run.sh` is missing, that is a setup error too: report
   `Guardrails: setup error unresolved <what>` and still commit. Never drop the `Guardrails:` line
-  silently. The runner skips `skill` guardrails — the driver runs those.
+  silently. Files a `step` guardrail changes in the step's own files are
+  part of the step's commit — stage them with your own; leave files from `UNCOMMITTED BEFORE STEP`
+  unstaged. The runner skips `skill` guardrails — the driver runs those.
 - **Prefer test-first.** When the step produces testable logic, write/adjust the failing test for
   the acceptance check before implementing, then build to green. For docs, config, or pure-wiring
   steps, where testable logic is absent, skip this practice.
