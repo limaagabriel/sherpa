@@ -80,3 +80,6 @@ Premortem: validator may reject valid plus-addressed emails.
   (`pass`, `none` when no `configPath` or no guardrails ran, or `setup error <exit> <stderr line>`),
   and the premortem finding. Or
 - `FAILED <why>` — what blocked it, with the failing evidence.
+- `REBUTTED <finding> — <file:line evidence>` — on a fold-in, one line per reviewer lens item you
+  disagree with, instead of changing code. Only lens items can be rebutted; a failed skill
+  guardrail cannot.

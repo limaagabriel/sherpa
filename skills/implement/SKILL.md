@@ -68,11 +68,30 @@ start here directly. Pressure lives per step (acceptance + quality); a Validate 
      by a later step). Its output always carries one `ACCEPTANCE: MET|UNMET`
      line per acceptance criterion and one `PRODUCES: MET|UNMET` line per declared `produces` entry,
      and closes with `PASS|FIX|BLOCK`.
+   - **Risk-scaled lenses** (non-mechanical steps only). On `BUILT`, read the `## Deep-pass triggers`
+     section of `skills/analyze/references/lenses/correctness.md` and `acceptance.md`, plus the
+     "Runs only when the diff touches" list in `security.md`, and check them against the step's own
+     range, `git diff <pre>..HEAD` (`pre` from the run ledger). For each lens that hits, dispatch
+     `code-reviewer` in parallel with `quality-reviewer`, using /analyze's **Lens dispatch prompt**
+     shape (step 4 there, same per-harness dispatch): you read `skills/analyze/references/reviewer.md`
+     and the lens file and inject their content — never paths — plus the step's `Goal` as the change
+     description, the step's diff, and `configPath` when announced. Lens findings labelled `Blocking`
+     join the quality `FIX` items in one fold-in brief, deduped by `file:line`, each item naming its
+     source. Non-`Blocking` lens findings are printed, not acted on. The ledger records the lenses run.
+   - **Skill guardrails** (every step, mechanical ones too — a guardrail is the user's rule, not a risk
+     call). On `BUILT`, when `configPath` is announced, invoke each `skill` entry from
+     `guardrails/list.sh <configPath> step skill` with its `args` and the step's range. A skill that
+     fails (its report names any failure or blocking finding) joins the fold-in brief as a `Blocking`
+     item that cannot be rebutted. The ledger records `GUARDRAIL <name>: pass|fail`.
 3. **Verdicts.**
-   a. An `ACCEPTANCE: UNMET` line, or a quality `FIX` → relay to the step-builder to fold into its
-      commit; re-check once. Still failing after that → stop: one framing line naming what it
-      blocks, then the finding quoted exactly; offer `/shape` in one declinable line, passing the
-      framing line, the quoted finding, and the step's Goal as `REVISIT`.
+   a. An `ACCEPTANCE: UNMET` line, a quality `FIX`, a `Blocking` lens finding, or a failed skill
+      guardrail → relay to the step-builder to fold into its commit; re-check once. The step-builder
+      may answer a lens item with `REBUTTED <finding> — <file:line evidence>` instead of changing
+      code; the re-check re-dispatches the same lenses with the rebuttals, and re-invokes each skill
+      guardrail that failed, updating its ledger `GUARDRAIL` line. Still failing after that (a lens
+      that still holds its finding counts) → stop: one framing line naming what it blocks, then
+      the finding quoted exactly; offer `/shape` in one declinable line, passing the framing line,
+      the quoted finding, and the step's Goal as `REVISIT`.
    b. `BLOCK` → stop the same way: one framing line, then the finding quoted exactly; offer `/shape`
       in one declinable line, passing the framing line, the quoted finding, and the step's Goal
       as `REVISIT`.

@@ -24,6 +24,12 @@ Owns whether the code is right and whether its tests prove it.
 - Names, comments, style, docs → readability.
 - Vulnerabilities, trust-boundary input, dependencies → security.
 
+## Deep-pass triggers
+
+/implement runs this lens on a step when the step's diff touches: migrations, schema, raw SQL,
+ORM or query-builder changes, or concurrency primitives and shared mutable state. (Used by /implement to decide whether to run this
+lens; ignore when reviewing.)
+
 ## Severity
 
 - `Blocking`: a real defect, a test that cannot fail, or an irreversible migration.
