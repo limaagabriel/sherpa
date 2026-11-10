@@ -1,10 +1,10 @@
 # sherpa code-reviewer subagent — Codex role binding.
 # The full role (invariants, output contract) lives in the plugin
 # file agents/code-reviewer.md; this TOML only binds the model tier + sandbox.
-# Tier: review (GPT-5.6 Terra, high). Read-only code review.
+# Tier: review (GPT-6.1 Sol, high). Read-only code review.
 name = "code-reviewer"
 description = '''Independent read-only reviewer. Audits a diff through an injected lens brief; returns findings.'''
-model = "gpt-5.6-terra"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = '''

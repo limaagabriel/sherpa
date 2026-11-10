@@ -1,10 +1,10 @@
 # sherpa step-builder subagent — Codex role binding.
 # The full role (invariants, output contract) lives in the plugin
 # file agents/step-builder.md; this TOML only binds the model tier + sandbox.
-# Tier: implementation (GPT-5.6 Luna, high reasoning).
+# Tier: implementation (GPT-6.1 Sol, high reasoning).
 name = "step-builder"
 description = '''Sherpa's step-builder (build layer). Implements one plan step, lands one commit. Returns BUILT <sha> or FAILED <why>, inline. Never pushes.'''
-model = "gpt-5.6-luna"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = '''
