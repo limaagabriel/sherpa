@@ -1,121 +1,17 @@
 #!/usr/bin/env bash
+# Usage: build-twins.sh
+# Input:  agents/*.md frontmatter (needs yq).
+# Output: rewrites .codex/agents/<name>.toml and .pi/agents/<name>.md for every agent.
+#   Test-mode env overrides (fixture tests only): TWINS_AGENTS_DIR, TWINS_CODEX_DIR, TWINS_PI_DIR.
+# Exit:   0 on success; 1 when a required frontmatter field is missing or a guard rejects a value.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-agents_dir="$repo_root/agents"
-codex_dir="$repo_root/.codex/agents"
-pi_dir="$repo_root/.pi/agents"
-
-extract_frontmatter() {
-  awk '/^---$/{c++; next} c==1' "$1"
-}
-
-fm_get() {
-  local role="$1" fm="$2" field="$3" value
-  value="$(printf '%s\n' "$fm" | yq eval ".$field" -)"
-  if [[ "$value" == "null" ]]; then
-    echo "build-twins: $role is missing required frontmatter field '$field'" >&2
-    exit 1
-  fi
-  printf '%s\n' "$value"
-}
-
-guard_no_triple_quote() {
-  local role="$1" field="$2" value="$3"
-
-  [[ "$value" == *"'''"* ]] || return 0
-
-  echo "build-twins: $role.$field contains ''' which would break the TOML '''...''' block" >&2
-  exit 1
-}
-
-guard_yaml_plain_scalar() {
-  local role="$1" field="$2" value="$3"
-
-  if [[ "$value" == *$'\n'* || "$value" == *": "* || "$value" == *" #"* ]]; then
-    echo "build-twins: $role.$field is unsafe as a YAML plain scalar (newline, ': ', or ' #')" >&2
-    exit 1
-  fi
-
-  case "$value" in
-    -*|\?*|:*|\#*|\&*|\**|\!*|\|*|\>*|\'*|\"*|%*|@*|\`*)
-      echo "build-twins: $role.$field starts with a YAML indicator character unsafe as a plain scalar" >&2
-      exit 1
-      ;;
-  esac
-}
-
-write_codex_twin() {
-  local name="$1" fm="$2"
-  local description model effort sandbox header body
-
-  description="$(fm_get "$name" "$fm" description)"
-  model="$(fm_get "$name" "$fm" codexModel)"
-  effort="$(fm_get "$name" "$fm" codexReasoningEffort)"
-  sandbox="$(fm_get "$name" "$fm" codexSandbox)"
-  header="$(fm_get "$name" "$fm" codexHeaderComment)"
-  body="$(fm_get "$name" "$fm" codexBody)"
-
-  guard_no_triple_quote "$name" description "$description"
-  guard_no_triple_quote "$name" codexBody "$body"
-
-  {
-    printf '%s\n' "$header"
-    printf 'name = "%s"\n' "$name"
-    printf "description = '''%s'''\n" "$description"
-    printf 'model = "%s"\n' "$model"
-    printf 'model_reasoning_effort = "%s"\n' "$effort"
-    printf 'sandbox_mode = "%s"\n' "$sandbox"
-    printf "developer_instructions = '''\n"
-    printf '%s\n' "$body"
-    printf "'''\n"
-  } > "$codex_dir/$name.toml"
-}
-
-write_pi_twin() {
-  local name="$1" fm="$2"
-  local description tools thinking gist
-
-  description="$(fm_get "$name" "$fm" description)"
-  tools="$(fm_get "$name" "$fm" piTools)"
-  thinking="$(fm_get "$name" "$fm" piThinking)"
-  gist="$(fm_get "$name" "$fm" piGist)"
-
-  guard_yaml_plain_scalar "$name" description "$description"
-  guard_yaml_plain_scalar "$name" piTools "$tools"
-
-  {
-    printf '%s\n' "---"
-    printf 'name: %s\n' "$name"
-    printf 'package: sherpa\n'
-    printf 'description: %s\n' "$description"
-    printf 'tools: %s\n' "$tools"
-    printf 'thinking: %s\n' "$thinking"
-    printf 'systemPromptMode: replace\n'
-    printf 'inheritProjectContext: true\n'
-    printf 'inheritSkills: false\n'
-    printf '%s\n' "---"
-    printf '\n'
-    printf "You are sherpa's %s. Read your full role definition, invariants, and output contract from the canonical sherpa package file \`agents/%s.md\` and follow it exactly.\n" "$name" "$name"
-    printf '\n'
-    printf 'Resolve the sherpa package root (the dir containing `agents/`) in this order:\n'
-    printf '1. `$SHERPA_PLUGIN_ROOT` (exported by the pi extension) when set.\n'
-    printf '2. Else `~/.pi/agent/npm/node_modules/sherpa`.\n'
-    printf '3. Else `~/.pi/agent/git/*/*/sherpa`.\n'
-    printf '\n'
-    printf '%s\n' "$gist"
-  } > "$pi_dir/$name.md"
-}
-
-generate_twin() {
-  local file="$1" name fm
-
-  name="$(basename "$file" .md)"
-
-  fm="$(extract_frontmatter "$file")"
-  write_codex_twin "$name" "$fm"
-  write_pi_twin "$name" "$fm"
-}
+agents_dir="${TWINS_AGENTS_DIR:-$repo_root/agents}"
+codex_dir="${TWINS_CODEX_DIR:-$repo_root/.codex/agents}"
+pi_dir="${TWINS_PI_DIR:-$repo_root/.pi/agents}"
+source "$repo_root/scripts/lib/frontmatter.sh"
+source "$repo_root/scripts/lib/twins.sh"
 
 for file in "$agents_dir"/*.md; do
   generate_twin "$file"

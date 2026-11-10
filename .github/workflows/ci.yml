@@ -80,3 +80,6 @@ jobs:
 
       - name: Inline shared rules / retired terms test
         run: bash scripts/agents/test-build-rules.sh
+
+      - name: Twin generator test
+        run: bash scripts/agents/test-build-twins.sh
