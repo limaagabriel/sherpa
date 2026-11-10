@@ -7,7 +7,8 @@ Owns whether the code is right and whether its tests prove it.
 - Bugs and logic errors.
 - **Edge cases:** empty, missing, duplicate, malformed input; boundaries; error paths and what the caller sees.
 - **Parallel code:** reason through races and deadlocks; running the code will not show them.
-- **Tests.** Are appropriate unit/integration/e2e tests present? Will each test fail if the code it covers breaks? Watch for tests that only assert against their own mocks, or would pass with wrong logic. Needless test complexity counts too.
+- **Tests.** Are appropriate unit/integration/e2e tests present? Needless test complexity counts too. <!-- shared:test-quality -->Tests that only assert against their own mocks, or that would pass with wrong logic, count as missing tests. Each test must fail if the code it covers breaks.
+<!-- /shared -->
 - **Regression outside the diff:** callers, public APIs, upgrade paths. Reading outside the diff is allowed here; report what you find with `file:line`.
 - **Database changes** (migrations, schema, raw SQL, ORM or query-builder changes, queries in loops):
   - Migration reversibility: an irreversible migration is `Blocking` unless the diff justifies it.

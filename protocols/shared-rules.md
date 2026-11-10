@@ -40,3 +40,9 @@ ATTACKED: <angles tried — non-empty even when OK>
 GAPS:
 - <quote> — <category>; <what must change>
 VERDICT: OK | GAPS
+
+## test-quality
+Tests that only assert against their own mocks, or that would pass with wrong logic, count as missing tests. Each test must fail if the code it covers breaks.
+
+## docs-update
+A change to how something is built, tested, invoked, or behaves needs a matching README/docs update.

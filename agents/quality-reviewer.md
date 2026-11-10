@@ -71,7 +71,10 @@ promised. One reviewer, one verdict — no second pass, no second opinion to rec
 - **Tests + regression** — covers robustness only, not the acceptance criteria themselves (that's
   Acceptance fidelity above — don't double-check the same thing under both). Non-trivial logic
   carries a runnable check; change doesn't break neighbors. A failure a later step's goal explicitly
-  covers is not a regression — don't flag it as one.
+  covers is not a regression — don't flag it as one. <!-- shared:test-quality -->Tests that only assert against their own mocks, or that would pass with wrong logic, count as missing tests. Each test must fail if the code it covers breaks.
+<!-- /shared -->
+- **Docs** — <!-- shared:docs-update -->A change to how something is built, tested, invoked, or behaves needs a matching README/docs update.
+<!-- /shared -->
 - **Smell baseline** — when a defect you've already spotted doesn't fit Minimality or Architecture
   above, check it against § Smell baseline below. The resolved context or surrounding code's
   conventions always win where they explicitly endorse what a smell flags. Skip anything the repo's
