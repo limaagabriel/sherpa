@@ -22,6 +22,7 @@ command -v jq >/dev/null 2>&1 || exit 0
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$dir/../lib/text.sh"
 source "$dir/../lib/dirs.sh"
+source "$dir/../lib/layers.sh"
 PRIMER=$(sed -n '/^---$/,/^---$/!p' "$dir/../../skills/using-sherpa/SKILL.md")
 
 emit_result() {
@@ -33,7 +34,9 @@ emit_result() {
 # Shared pack: any shared file makes the pack announced as configPath=none; session.md
 # is inlined as SHARED SESSION RULES. Reading it needs no yq.
 sdir=$(shared_dir); shared_line=""; shared_block=""
-for f in "$sdir/session.md" "$sdir/context.md" "$sdir"/{frame,shape,implement,analyze}/context.md; do
+shared_files=("$sdir/session.md" "$sdir/context.md")
+for l in "${LAYERS[@]}"; do shared_files+=("$sdir/$l/context.md"); done
+for f in "${shared_files[@]}"; do
   [ -f "$f" ] && shared_line=$'\n\n'"WORKFLOW_PACK: name=shared configPath=none"
 done
 if [ -f "$sdir/session.md" ]; then

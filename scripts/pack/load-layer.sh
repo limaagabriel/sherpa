@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: load-layer.sh <configPath|none> [frame|shape|implement|analyze]
+# Usage: load-layer.sh <configPath|none> [layer]   (layers: scripts/lib/layers.sh)
 # Input:  configPath (project.yaml) or the literal `none` (no project pack), and an
 #   optional layer.
 # Output: the shared pack first — <shared_dir>/context.md, then <shared_dir>/<layer>/context.md.
@@ -14,12 +14,13 @@ set -euo pipefail
 
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$dir/../lib/dirs.sh"
+source "$dir/../lib/layers.sh"
 
 config="${1:-}"
 layer="${2:-}"
 extra="${3:-}"
 if [ -z "$config" ]; then
-  echo "usage: load-layer.sh <configPath|none> [frame|shape|implement|analyze]" >&2
+  echo "usage: load-layer.sh <configPath|none> [$(IFS='|'; echo "${LAYERS[*]}")]" >&2
   exit 1
 fi
 
@@ -28,13 +29,11 @@ if [ -n "$extra" ]; then
   exit 1
 fi
 
-case "$layer" in
-  ""|frame|shape|implement|analyze) ;;
-  *)
-    echo "load-layer.sh: unrecognized layer: $layer (expected one of: frame, shape, implement, analyze)" >&2
-    exit 1
-    ;;
-esac
+if [ -n "$layer" ] && ! is_layer "$layer"; then
+  names="${LAYERS[*]}"
+  echo "load-layer.sh: unrecognized layer: $layer (expected one of: ${names// /, })" >&2
+  exit 1
+fi
 
 # Files that exist in <base>: context.md, then <layer>/context.md.
 files_in() {
