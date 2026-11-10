@@ -13,6 +13,7 @@ command -v jq >/dev/null 2>&1 || { echo "SKIP: jq not installed"; exit 0; }
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
+export XDG_CONFIG_HOME="$tmp/xdg"  # keeps the real ~/.config/sherpa/shared out of tests
 fail=0
 # Helpers from lib/assert.sh: assert_contains, assert_not_contains.
 source "$here/../lib/assert.sh"

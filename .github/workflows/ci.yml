@@ -66,6 +66,9 @@ jobs:
       - name: Layer loader test
         run: bash scripts/pack/test-load-layer.sh
 
+      - name: Shared pack loader test
+        run: bash scripts/pack/test-load-layer-shared.sh
+
       - name: Guardrail list test
         run: bash scripts/guardrails/test-list.sh
 

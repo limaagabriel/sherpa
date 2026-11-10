@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
-# Prints a project pack's context for a subagent, in one call.
-#
-# Usage: load-layer.sh <configPath> [frame|shape|implement|analyze]
-#
-# Base dir = dirname(configPath). Prints <basedir>/context.md if present,
-# then <basedir>/<layer>/context.md if a layer was given and present, with
-# exactly one blank line between them when both print. A missing file prints
-# nothing and warns nothing (exit 0). An unknown layer, a missing configPath,
-# or a 3rd argument is a one-line stderr usage error, exit 1.
+# Usage: load-layer.sh <configPath|none> [frame|shape|implement|analyze]
+# Input:  configPath (project.yaml) or the literal `none` (no project pack), and an
+#   optional layer.
+# Output: the shared pack first — <shared_dir>/context.md, then <shared_dir>/<layer>/context.md.
+#   Then the project pack — <basedir>/context.md, then <basedir>/<layer>/context.md, where
+#   basedir = dirname(configPath); `none` prints shared only. One blank line between
+#   files. When shared output was printed and project files follow, they are preceded by
+#   "PROJECT RULES (override shared rules above on conflict):". Missing files print
+#   nothing and warn nothing.
+# Exit:   0 ok or nothing to print; 1 usage error (unknown layer, missing configPath, or a
+#   3rd argument) with a one-line stderr message.
+set -euo pipefail
 
-set -u
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$dir/../lib/dirs.sh"
 
 config="${1:-}"
 layer="${2:-}"
 extra="${3:-}"
 if [ -z "$config" ]; then
-  echo "usage: load-layer.sh <configPath> [frame|shape|implement|analyze]" >&2
+  echo "usage: load-layer.sh <configPath|none> [frame|shape|implement|analyze]" >&2
   exit 1
 fi
 
@@ -32,29 +36,35 @@ case "$layer" in
     ;;
 esac
 
-basedir=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || basedir=$(dirname "$config")
+# Files that exist in <base>: context.md, then <layer>/context.md.
+files_in() {
+  [ ! -f "$1/context.md" ] || echo "$1/context.md"
+  [ -z "$layer" ] || [ ! -f "$1/$layer/context.md" ] || echo "$1/$layer/context.md"
+}
 
-root_file="$basedir/context.md"
-layer_file=""
-[ -n "$layer" ] && layer_file="$basedir/$layer/context.md"
+# $(cat) strips trailing newlines, so each file ends in exactly one newline and
+# files are separated by exactly one blank line.
+print_files() {
+  local first=1 f
+  for f in "$@"; do
+    [ "$first" -eq 1 ] || printf '\n'
+    printf '%s\n' "$(cat "$f")"
+    first=0
+  done
+}
 
-root_exists=0
-layer_exists=0
-[ -f "$root_file" ] && root_exists=1
-[ -n "$layer_file" ] && [ -f "$layer_file" ] && layer_exists=1
-
-# $(...) strips trailing newlines, so re-adding exactly one below guarantees
-# a single blank line between the blocks, regardless of source trailing
-# newlines.
-if [ "$root_exists" -eq 1 ]; then
-  root_content=$(cat "$root_file")
-  printf '%s\n' "$root_content"
+mapfile -t shared < <(files_in "$(shared_dir)")
+project=()
+if [ "$config" != none ]; then
+  basedir=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || basedir=$(dirname "$config")
+  mapfile -t project < <(files_in "$basedir")
 fi
 
-if [ "$layer_exists" -eq 1 ]; then
-  [ "$root_exists" -eq 1 ] && printf '\n'
-  layer_content=$(cat "$layer_file")
-  printf '%s\n' "$layer_content"
+[ "${#shared[@]}" -eq 0 ] || print_files "${shared[@]}"
+if [ "${#project[@]}" -gt 0 ]; then
+  if [ "${#shared[@]}" -gt 0 ]; then
+    printf '\nPROJECT RULES (override shared rules above on conflict):\n'
+  fi
+  print_files "${project[@]}"
 fi
-
 exit 0

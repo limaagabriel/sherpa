@@ -68,6 +68,20 @@ prints whatever of the above exists.
 >
 > **Breaking change note:** the `review/` layer is renamed to `analyze/` (the `/review` skill is now `/analyze`) — move `review/context.md` to `analyze/context.md`.
 
+## Shared pack
+
+Personal rules that apply to every project live in one shared dir:
+`${SHERPA_CONFIG_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa}/shared`. It uses the same
+convention files as a project pack — `context.md` and `<layer>/context.md` (frame, shape,
+implement, analyze) — but needs no `project.yaml` and no `detect`, so it also applies when
+no project pack matches.
+
+`bash scripts/pack/load-layer.sh <configPath|none> [layer]` prints the shared files first,
+then the project's, with the line `PROJECT RULES (override shared rules above on conflict):`
+between them. Project rules win on conflict; this is prose the model follows, not a
+guarantee. Pass `none` as `configPath` to get the shared files only. With no shared files,
+the output is the same as before.
+
 ## Make a pack
 
 ```sh
