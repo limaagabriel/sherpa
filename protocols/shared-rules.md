@@ -24,7 +24,8 @@ same opaque fence on both sides and cannot catch the drift.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via
-  `bash scripts/pack/load-layer.sh <configPath> <layer>`.
+  `bash scripts/pack/load-layer.sh <configPath> <layer>`. `configPath=none` counts as announced —
+  forward it verbatim.
 
 ## agent-rules
 - **Allowed exactly:** Read, Grep, Glob, and Bash restricted to `git status`, `git diff`, `git log`,
