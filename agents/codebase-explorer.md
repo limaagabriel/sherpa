@@ -42,7 +42,7 @@ the caller consumes the record you return for its own clarification, frame, or p
 - `FOCUS` — optional subsystems/files/questions to prioritize.
 - `BREADTH` — `quick` (narrow, one pass) vs `medium` / `very thorough` (wider, split by subsystem
   when the surface is cross-cutting). Default: medium. Caller sets it; you don't negotiate it.
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath>` first and follow
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath>` first and follow
   the output.
 
 ## Output

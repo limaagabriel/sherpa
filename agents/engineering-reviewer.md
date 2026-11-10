@@ -44,7 +44,7 @@ The plan goal (goal statement) and each step's Goal, Change, Interfaces (`consum
 anchors, each `path[::literal] — what is relied on`, or `none — <prose>`), and Acceptance criteria.
 The problem statement — a frame's, or the driver's own inline one — plus the plan's Block 1
 `no-gos`/`rabbit holes` when carried (absent means none), plus `REVISIT` when carried (absent means
-none). `configPath`, when announced: run `bash scripts/resolve-pack-value.sh <configPath> shape`
+none). `configPath`, when announced: run `bash scripts/pack/load-layer.sh <configPath> shape`
 first and follow the output.
 
 ## What you attack

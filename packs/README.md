@@ -35,7 +35,7 @@ Any `context.md` may just tell the reader to Read another file.
 
 ## How subagents get it
 
-One resolver call: `bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`
+One resolver call: `bash scripts/pack/load-layer.sh <configPath> [frame|shape|implement|analyze]`
 prints whatever of the above exists.
 
 > **Breaking change note:** `shape/architecture.md`, `implement/codeStyle.md`, `implement/validate.md`, `implement/review.md`, and directory-of-files stems are retired — move their content, or a "Read `<path>`" pointer, into the matching `context.md`. The old lazy `session` fetch is gone; the `SessionStart` hook now injects `session.md` directly.

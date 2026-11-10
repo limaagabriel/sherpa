@@ -27,3 +27,8 @@ shape-builder
 shape-reviewer
 sherpa:review
 /review
+resolve-pack-value
+resolve-project-pack
+generate-agent-twins
+inline-shared-rules
+check-retired-terms

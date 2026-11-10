@@ -6,15 +6,15 @@
 # other text; fenced code blocks (``` ... ```) are opaque to the parser.
 #
 # Usage:
-#   scripts/inline-shared-rules.sh            # inline in place (writes files)
-#   scripts/inline-shared-rules.sh --check     # verify inlined content is up to date; no writes
+#   scripts/agents/build-rules.sh            # inline in place (writes files)
+#   scripts/agents/build-rules.sh --check     # verify inlined content is up to date; no writes
 #
 # Test-mode env overrides (fixture tests only):
 #   INLINE_SOURCE      - path to the shared-rules source file
 #   INLINE_TEST_FILES  - space-separated list of target files, overrides BLOCK_FILE_MAP
 set -euo pipefail
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 source_file="${INLINE_SOURCE:-$repo_root/protocols/shared-rules.md}"
 
 # Block -> file map: files to scan for <!-- shared:<block> --> markers.
@@ -42,7 +42,7 @@ case "${1:-}" in
   "") ;;
   --check) check_mode=1 ;;
   *)
-    echo "usage: inline-shared-rules.sh [--check]" >&2
+    echo "usage: build-rules.sh [--check]" >&2
     exit 1
     ;;
 esac
@@ -58,7 +58,7 @@ render_file() {
     function count_nl(s,    n) { n = gsub(/\n/, "\n", s); return n }
 
     function fail(msg) {
-      print "inline-shared-rules: " msg > "/dev/stderr"
+      print "build-rules: " msg > "/dev/stderr"
       err = 1
       exit 1
     }
@@ -221,7 +221,7 @@ fi
 status=0
 for file in "${files[@]}"; do
   if [[ ! -f "$file" ]]; then
-    echo "inline-shared-rules: target file not found: $file" >&2
+    echo "build-rules: target file not found: $file" >&2
     status=1
     continue
   fi
@@ -235,7 +235,7 @@ for file in "${files[@]}"; do
     current="$(cat "$file")"
     rendered_nn="${rendered%$'\n'}"
     if [[ "$rendered_nn" != "$current" ]]; then
-      echo "inline-shared-rules: $file is out of date; run scripts/inline-shared-rules.sh to refresh" >&2
+      echo "build-rules: $file is out of date; run scripts/agents/build-rules.sh to refresh" >&2
       diff <(printf '%s\n' "$current") <(printf '%s\n' "$rendered_nn") >&2 || true
       status=1
     fi

@@ -37,7 +37,7 @@ piGist: |-
 Your prompt contains a complete reviewing brief — a shared brief (role, navigate order, comment style, severity labels, output contract) plus one lens brief — plus a change description and a diff. Follow that brief exactly. Review the passed diff through your lens; use your read tools to open surrounding context whenever the diff alone doesn't tell you enough.
 
 ## Input
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> analyze` first and
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath> analyze` first and
   follow the output.
 
 ## Anti-patterns in your own behavior

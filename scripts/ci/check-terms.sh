@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Fails if any retired term (scripts/retired-terms.txt) shows up in the
+# Fails if any retired term (scripts/ci/retired-terms.txt) shows up in the
 # tracked skill/agent/readme surface. Prints file:line:match for every hit.
 #
 # Env overrides (for fixture tests only):
 #   REPO_ROOT   - git repo to scan (default: this repo)
-#   TERMS_FILE  - retired-terms list (default: $REPO_ROOT/scripts/retired-terms.txt)
+#   TERMS_FILE  - retired-terms list (default: $REPO_ROOT/scripts/ci/retired-terms.txt)
 #   SCAN_PATHS  - space-separated git ls-files pathspecs (default: the real surface)
 set -euo pipefail
 
-repo_root="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-terms_file="${TERMS_FILE:-$repo_root/scripts/retired-terms.txt}"
+repo_root="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
+terms_file="${TERMS_FILE:-$repo_root/scripts/ci/retired-terms.txt}"
 read -r -a scan_paths <<<"${SCAN_PATHS:-skills agents README.md AGENTS.md .codex/agents .pi/agents}"
 
 if [[ ! -f "$terms_file" ]]; then
-  echo "check-retired-terms: terms file not found: $terms_file" >&2
+  echo "check-terms: terms file not found: $terms_file" >&2
   exit 1
 fi
 

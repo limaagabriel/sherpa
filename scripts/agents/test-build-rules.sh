@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Self-check for inline-shared-rules.sh and check-retired-terms.sh. Runs the
+# Self-check for build-rules.sh and check-terms.sh. Runs the
 # real scripts against temp fixtures and asserts their output. No framework.
 set -u
 
 here=$(cd "$(dirname "$0")" && pwd)
-inliner="$here/inline-shared-rules.sh"
-guard="$here/check-retired-terms.sh"
+inliner="$here/build-rules.sh"
+guard="$here/../ci/check-terms.sh"
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
@@ -15,7 +15,7 @@ assert_contains() { case "$2" in *"$3"*) ;; *) echo "FAIL [$1]: expected contain
 assert_eq() { [ "$2" = "$3" ] || { echo "FAIL [$1]: expected: $3 -- got: $2"; fail=1; }; }
 assert_exit() { [ "$2" -eq "$3" ] || { echo "FAIL [$1]: expected exit $3, got $2"; fail=1; }; }
 
-# --- inline-shared-rules.sh ---
+# --- build-rules.sh ---
 
 mksrc() { mkdir -p "$(dirname "$1")"; printf '## demo\nDemo content line.\n' >"$1"; }
 
@@ -111,7 +111,7 @@ INLINE_SOURCE="$tmp/i/src.md" INLINE_TEST_FILES="$tmp/i/target.md" "$inliner" --
 assert_exit i-check-exit-0 "$?" 0
 assert_eq i-check-no-misleading-error "$(cat "$tmp/i-check.err")" ""
 
-# --- check-retired-terms.sh ---
+# --- check-terms.sh ---
 
 # dirty fixture (contains "appetite") -> exit 1.
 mkdir -p "$tmp/rt-dirty/skills"
@@ -127,5 +127,5 @@ mkdir -p "$tmp/rt-clean/skills"
 REPO_ROOT="$tmp/rt-clean" TERMS_FILE="$tmp/terms.txt" SCAN_PATHS="skills" "$guard" >"$tmp/rt-clean.out" 2>&1
 assert_exit rt-clean-exit-0 "$?" 0
 
-[ "$fail" -eq 0 ] && echo "PASS: all inline-shared-rules / check-retired-terms cases" || echo "FAILED"
+[ "$fail" -eq 0 ] && echo "PASS: all build-rules / check-terms cases" || echo "FAILED"
 exit "$fail"

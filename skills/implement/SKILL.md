@@ -15,7 +15,7 @@ description: Build layer. Builds an approved plan from /shape (or a bare task ar
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via
-  `bash scripts/resolve-pack-value.sh <configPath> <layer>`.
+  `bash scripts/pack/load-layer.sh <configPath> <layer>`.
 <!-- /shared -->
 
 # /implement — build, with pressure per step

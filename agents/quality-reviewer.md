@@ -47,7 +47,7 @@ promised. One reviewer, one verdict — no second pass, no second opinion to rec
   gap. `Interfaces`' declared `produces` entries drive the produces-matching check below.
 - The step's commit range (`<base>..HEAD`).
 - `UNCOMMITTED BEFORE STEP` — never attribute it to this step.
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> implement` first
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath> implement` first
   and follow the output; cite any code-style it carries in your Architecture judgment.
 - The current step index + the goals of the remaining (later) steps — when a multi-step plan is in
   context. Lets you tell whether a failure this step leaves is covered by a later step.

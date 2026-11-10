@@ -16,7 +16,7 @@
 #   $HOME/.claude/sherpa/projects read-fallback dir).
 # `detect` is optional for project-local configs (file presence is the detection),
 # required for workspace configs. Every other content-bearing pack value is a fixed
-# convention path resolved lazily by a consuming skill via scripts/resolve-pack-value.sh
+# convention path resolved lazily by a consuming skill via scripts/pack/load-layer.sh
 # — never read or inlined here. Missing jq exits silently; missing yq still emits the
 # primer plus a warning. Never errors out. Pi's .pi/extensions/sherpa.ts forwards this.
 
@@ -27,7 +27,7 @@ cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null) || exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PRIMER=$(sed -n '/^---$/,/^---$/!p' "$dir/../skills/using-sherpa/SKILL.md")
+PRIMER=$(sed -n '/^---$/,/^---$/!p' "$dir/../../skills/using-sherpa/SKILL.md")
 
 emit_result() {
   jq -n --arg msg "$1" --arg ctx "$2" \
@@ -58,7 +58,7 @@ for config in "${candidates[@]}"; do
   [ -f "$config" ] || continue
   detect=$(yq '.detect // ""' "$config" 2>/dev/null) || continue
   # Base dir is always the config file's own directory now — local and
-  # workspace configs alike (see resolve-pack-value.sh).
+  # workspace configs alike (see load-layer.sh).
   base=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || base=$(dirname "$config")
 
   local_match=0
@@ -78,7 +78,7 @@ for config in "${candidates[@]}"; do
 
   # Matched. Build the WORKFLOW_PACK line from name + configPath only — nothing
   # from the pack map (knowledge or any other key) is eagerly inlined anymore;
-  # a consuming layer skill fetches those lazily via resolve-pack-value.sh.
+  # a consuming layer skill fetches those lazily via load-layer.sh.
   name=$(yq '.name // ""' "$config" 2>/dev/null)
   line="WORKFLOW_PACK: name=$name"
   case "$config" in

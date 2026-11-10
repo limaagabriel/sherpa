@@ -42,7 +42,7 @@ Implement one approved step and commit it. You are dispatched once per step by `
 - `Acceptance criteria` — observable end states (`done = <X>, confirmed by <check>`).
 - `UNCOMMITTED BEFORE STEP` — `git status --short` from before your run; your staging and commit
   cover only files you changed this step, keeping this snapshot as read-only context.
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> implement` first
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath> implement` first
   and follow the output.
 
 ## Rules

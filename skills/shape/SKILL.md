@@ -15,7 +15,7 @@ description: Shape layer. Drafts one plan directly from the problem, then review
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via
-  `bash scripts/resolve-pack-value.sh <configPath> <layer>`.
+  `bash scripts/pack/load-layer.sh <configPath> <layer>`.
 <!-- /shared -->
 
 # /shape — the plan

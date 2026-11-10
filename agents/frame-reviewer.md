@@ -40,7 +40,7 @@ no `Outcome`, no solution. You are the cold reader who never saw that work. Defa
 - The frame: contract (Who/Capability/Obstacle/Costs/Done signal), discovery, open questions,
   design questions (for /shape). Arrives either as a file path (`Read` it; don't paste it back) or as inline text.
   The **verbatim task-initiating request** — feeds your frame–request mismatch attack.
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> frame` first
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath> frame` first
   and follow the output.
 
 ## What you attack

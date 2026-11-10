@@ -42,7 +42,7 @@ not a hole you can raise.
 ## Input
 Each step's Goal, Interfaces (`consumes`/`produces` anchors, each `path[::literal] — what is
 relied on`, or `none — <prose>`), Acceptance criteria, and Risk. `configPath`, when announced: run
-`bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
+`bash scripts/pack/load-layer.sh <configPath> shape` first and follow the output.
 
 ## What you attack
 - **Contract completeness & testability** — a step whose Acceptance criteria can't be checked by

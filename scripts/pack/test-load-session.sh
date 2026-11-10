@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Self-check for resolve-project-pack.sh and resolve-pack-value.sh. Runs the
+# Self-check for load-session.sh and load-layer.sh. Runs the
 # real scripts against temp fixtures and asserts their output. No framework.
 #
 # Schema: project.yaml/.yml carries only `name` and optional `detect`. Local
 # candidate: $cwd/.sherpa/project.yaml|.yml (detect optional). Workspace
 # candidates: <packs dir>/*/project.yaml|.yml (detect required). Content is
-# fetched lazily via `resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`.
+# fetched lazily via `load-layer.sh <configPath> [frame|shape|implement|analyze]`.
 set -u
 unset SHERPA_CONFIG_DIR
 
 here=$(cd "$(dirname "$0")" && pwd)
-resolver="$here/resolve-project-pack.sh"
-value_script="$here/resolve-pack-value.sh"
+resolver="$here/load-session.sh"
+value_script="$here/load-layer.sh"
 
 command -v yq >/dev/null 2>&1 || { echo "SKIP: yq not installed"; exit 0; }
 command -v jq >/dev/null 2>&1 || { echo "SKIP: jq not installed"; exit 0; }
@@ -30,7 +30,7 @@ assert_not_contains() { case "$2" in *"$3"*) echo "FAIL [$1]: expected NOT conta
 assert_eq() { [ "$2" = "$3" ] || { echo "FAIL [$1]: expected: $3 -- got: $2"; fail=1; }; }
 assert_exit() { [ "$2" -eq "$3" ] || { echo "FAIL [$1]: expected exit $3, got $2"; fail=1; }; }
 
-# --- resolve-project-pack.sh ---
+# --- load-session.sh ---
 
 # a) local, no detect -> matches on presence alone.
 mkyaml "$tmp/a/.sherpa/project.yaml" proj-a
@@ -116,7 +116,7 @@ mr=$(printf '{"cwd":"%s"}' "$tmp/cwd-r" | env SHERPA_CONFIG_DIR="$tmp/cfgr" WORK
 assert_contains r-sherpa-config-dir-wins "$mr" "proj-r-win"
 assert_not_contains r-workflow-packs-dir-loses "$mr" "proj-r-lose"
 
-# --- resolve-pack-value.sh ---
+# --- load-layer.sh ---
 # u) root only.
 mkdir -p "$tmp/vu"
 echo -n "ROOT" >"$tmp/vu/context.md"

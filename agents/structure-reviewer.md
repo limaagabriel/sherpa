@@ -43,7 +43,7 @@ each `path[::literal] — what is relied on`, or `none — <prose>`), and Accept
 problem statement — a frame's, or the driver's own inline one — plus the plan's
 `no-gos`/`rabbit holes` when carried (absent means none), plus `REVISIT` when carried (absent means
 none) — a step that reproduces the quoted failure is a `gap`. `configPath`, when announced:
-run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
+run `bash scripts/pack/load-layer.sh <configPath> shape` first and follow the output.
 
 ## What you attack
 - **Traceability** — a step whose Outcome doesn't advance the plan goal is an orphan.

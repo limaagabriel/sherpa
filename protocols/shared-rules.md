@@ -1,7 +1,7 @@
 # Shared rules
 
 Source of truth for rule blocks duplicated (with drift) across skills and agents.
-`scripts/inline-shared-rules.sh` stamps each `## <block>` section below into the files mapped to
+`scripts/agents/build-rules.sh` stamps each `## <block>` section below into the files mapped to
 it in `BLOCK_FILE_MAP`, between `<!-- shared:<block> -->` / `<!-- /shared -->` markers. Edit here,
 then re-run that script — never hand-edit the marker region in a target file. The block is **not**
 fenced in target files — the inliner writes the close marker on its own line, so a block ending in
@@ -24,7 +24,7 @@ same opaque fence on both sides and cannot catch the drift.
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via
-  `bash scripts/resolve-pack-value.sh <configPath> <layer>`.
+  `bash scripts/pack/load-layer.sh <configPath> <layer>`.
 
 ## agent-rules
 - **Allowed exactly:** Read, Grep, Glob, and Bash restricted to `git status`, `git diff`, `git log`,
