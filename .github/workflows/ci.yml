@@ -60,5 +60,11 @@ jobs:
       - name: Resolver test
         run: bash scripts/pack/test-load-session.sh
 
+      - name: Resolver env test
+        run: bash scripts/pack/test-load-session-env.sh
+
+      - name: Layer loader test
+        run: bash scripts/pack/test-load-layer.sh
+
       - name: Inline shared rules / retired terms test
         run: bash scripts/agents/test-build-rules.sh
