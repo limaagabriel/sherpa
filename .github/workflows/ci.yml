@@ -66,5 +66,11 @@ jobs:
       - name: Layer loader test
         run: bash scripts/pack/test-load-layer.sh
 
+      - name: Guardrail list test
+        run: bash scripts/guardrails/test-list.sh
+
+      - name: Guardrail runner test
+        run: bash scripts/guardrails/test-run.sh
+
       - name: Inline shared rules / retired terms test
         run: bash scripts/agents/test-build-rules.sh
