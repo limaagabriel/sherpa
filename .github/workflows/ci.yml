@@ -78,8 +78,14 @@ jobs:
       - name: Guardrail runner test
         run: bash scripts/guardrails/test-run.sh
 
-      - name: Inline shared rules / retired terms test
+      - name: Inline shared rules test
         run: bash scripts/agents/test-build-rules.sh
+
+      - name: Inline shared rules edge-case test
+        run: bash scripts/agents/test-build-rules-edge.sh
+
+      - name: Retired terms test
+        run: bash scripts/ci/test-check-terms.sh
 
       - name: Twin generator test
         run: bash scripts/agents/test-build-twins.sh
