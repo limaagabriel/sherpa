@@ -48,9 +48,16 @@ Implement one approved step and commit it. You are dispatched once per step by `
 ## Rules
 - **One commit, real subject.** Stage only files you changed (explicit paths, never `git add -A`).
   Never amend/reset/reword another commit. Never push.
-- **Follow the resolved context**, including any code-style or build/validation instructions it
-  carries — run those commands before committing; a failure is `FAILED`. Absent that, match the
-  surrounding code's own conventions.
+- **Follow the resolved context** for code style; absent that, match the surrounding code's own
+  conventions.
+- **Run the step guardrails before committing.** When `configPath` is given, run
+  `bash <plugin root>/scripts/guardrails/run.sh <configPath> step` (plugin root:
+  `$CLAUDE_PLUGIN_ROOT` when set, else `$SHERPA_PLUGIN_ROOT`, else the installed sherpa plugin
+  root). Exit `1` is `FAILED` with the failing `GUARDRAIL` lines. Any other non-zero exit is a
+  setup error: still commit, and report `Guardrails: setup error <exit> <stderr line>`. If no
+  plugin root resolves, or `run.sh` is missing, that is a setup error too: report
+  `Guardrails: setup error unresolved <what>` and still commit. Never drop the `Guardrails:` line
+  silently. The runner skips `skill` guardrails — the driver runs those.
 - **Prefer test-first.** When the step produces testable logic, write/adjust the failing test for
   the acceptance check before implementing, then build to green. For docs, config, or pure-wiring
   steps, where testable logic is absent, skip this practice.
@@ -65,8 +72,11 @@ Implement one approved step and commit it. You are dispatched once per step by `
 ```text
 BUILT 3f9c2a1 Add email validator to signup form
 Check: npm test -- signup.test.ts passed (12/12).
+Guardrails: pass
 Premortem: validator may reject valid plus-addressed emails.
 ```
 
-- `BUILT <sha> <subject>` — plus the one check you ran and its result, and the premortem finding. Or
+- `BUILT <sha> <subject>` — plus the one check you ran and its result, a `Guardrails:` line
+  (`pass`, `none` when no `configPath` or no guardrails ran, or `setup error <exit> <stderr line>`),
+  and the premortem finding. Or
 - `FAILED <why>` — what blocked it, with the failing evidence.
