@@ -42,9 +42,9 @@ Rule text shared across skills or agents (Authority, Questions, the read-only Ba
 reviewer verdict shape, etc.) lives once in **`protocols/shared-rules.md`**, stamped into each
 target file between `<!-- shared:<block> -->` / `<!-- /shared -->` markers. Editing shared rule
 content means editing `protocols/shared-rules.md`, then re-running
-`bash scripts/inline-shared-rules.sh`. Editing role-specific content — anything outside the marker
+`bash scripts/agents/build-rules.sh`. Editing role-specific content — anything outside the marker
 regions — means editing the `agents/*.md` file directly, then running
-`bash scripts/generate-agent-twins.sh`. Run both generators after any `agents/*.md` edit, since
-either kind of change can land there: `bash scripts/inline-shared-rules.sh` first (in case a
-marker moved or content drifted), then `bash scripts/generate-agent-twins.sh` to refresh the
+`bash scripts/agents/build-twins.sh`. Run both generators after any `agents/*.md` edit, since
+either kind of change can land there: `bash scripts/agents/build-rules.sh` first (in case a
+marker moved or content drifted), then `bash scripts/agents/build-twins.sh` to refresh the
 `.codex/agents`/`.pi/agents` twins, and commit the regenerated twins alongside it.

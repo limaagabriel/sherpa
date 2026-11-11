@@ -8,7 +8,7 @@ const BOOTSTRAP_MARKER = "sherpa pi-harness bootstrap";
 const extensionDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(extensionDir, "../..");
 const skillsDir = resolve(packageRoot, "skills");
-const resolverPath = resolve(packageRoot, "scripts", "resolve-project-pack.sh");
+const resolverPath = resolve(packageRoot, "scripts", "pack", "load-session.sh");
 
 process.env.SHERPA_PLUGIN_ROOT = packageRoot;
 

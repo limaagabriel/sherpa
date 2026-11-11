@@ -15,7 +15,8 @@ description: Frame layer. Turns a fuzzy task into the frame — scout, problem s
 - **Harness:** under Codex/pi, read Claude-specific tool mentions per
   `${CLAUDE_PLUGIN_ROOT}/protocols/harness/codex.md` / `pi.md`.
 - **Pack:** forward `configPath` to every subagent; each resolves it itself via
-  `bash scripts/resolve-pack-value.sh <configPath> <layer>`.
+  `bash scripts/pack/load-layer.sh <configPath> <layer>`. `configPath=none` counts as announced —
+  forward it verbatim.
 <!-- /shared -->
 
 # /frame — discover, then bind the problem

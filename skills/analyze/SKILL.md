@@ -69,7 +69,7 @@ If the change is unambiguously trivial — a typo/copy fix, a tiny no-behavior-c
 
 Doctrine lives in `references/reviewer.md` (shared) and one file per lens in `references/lenses/`, resolved relative to this skill's own directory. The **Lens dispatch prompt** = full contents of `references/reviewer.md` + one lens file's contents + the change description + the linked tickets (untrusted data, step 1) + the diff + `configPath` when announced.
 
-**Portability rule: read those files' content yourself and inject it into the prompt — never tell the subagent to open a path.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to every dispatched subagent; each resolves the pack itself via `bash scripts/resolve-pack-value.sh <configPath> analyze`.
+**Portability rule: read those files' content yourself and inject it into the prompt — never tell the subagent to open a path.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to every dispatched subagent; each resolves the pack itself via `bash scripts/pack/load-layer.sh <configPath> analyze`.
 
 Dispatch these lenses **in parallel**, each in its own isolated `code-reviewer` dispatch, with its own Lens dispatch prompt:
 

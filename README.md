@@ -78,7 +78,7 @@ The engine ships generic. To layer in your project's conventions, commit
 workspace dir. `project.yaml` carries metadata only (`name`, `detect`); every content-bearing
 value — `session.md` (injected at session start), `context.md` (forwarded to every subagent, at
 the root and per layer) — is a fixed convention path next to it, resolved by one call:
-`bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`. Sherpa's single
+`bash scripts/pack/load-layer.sh <configPath> [frame|shape|implement|analyze]`. Sherpa's single
 `SessionStart` hook scans for a matching config and announces the active pack automatically. Full
 schema and resolution rules: `packs/README.md`.
 
@@ -106,7 +106,7 @@ agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
 hooks/         the single SessionStart pack resolver
-scripts/       pack resolution + CI helper scripts
+scripts/       helper scripts by group: pack, agents, ci (see scripts/README.md)
 ```
 
 ## License

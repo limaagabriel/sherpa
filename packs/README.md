@@ -31,16 +31,58 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
 - `frame/context.md`, `shape/context.md`, `implement/context.md`, `analyze/context.md` — appended
   for that layer's subagents only.
 
+- `guardrails.yaml` — checks sherpa runs for you, per phase:
+
+  ```yaml
+  guardrails:
+    - {name: lint, run: "npx eslint .", when: step}     # shell command, one line
+    - {name: review, skill: analyze, args: "--fast", when: end}
+  ```
+
+  Each entry has a `name` and exactly one of `run` (a shell command) or `skill`
+  (a skill name, optional `args`). `when` is `step` (after each step), `end` (at the
+  end of the run) or `both` (the default).
+  `bash scripts/guardrails/list.sh <configPath> <step|end> [run|skill]` prints the
+  entries as `name<TAB>kind<TAB>value`; `bash scripts/guardrails/run.sh <configPath> <step|end>`
+  runs the `run` entries via `bash -c` in the current directory and prints
+  `GUARDRAIL <name>: pass|fail` (plus the last 20 output lines on a failure). Exit
+  codes: `0` all passed or nothing to do (no file, or `configPath` is `none`);
+  `1` (runner only) a guardrail failed; `2` cannot run (usage error, unknown phase,
+  `yq` missing while the file exists, malformed YAML, an entry without `name`, or
+  with both or neither of `run`/`skill`). Multi-line values are rejected (exit 2).
+  - A `run` command in an `end` or `both` guardrail must only check, never modify files
+    (`eslint`, not `eslint --fix`). A `when: step` guardrail may rewrite the step's own
+    uncommitted files (e.g. a formatter, `eslint --fix`); those edits are committed with the step.
+    A `run` command runs with your permissions and is not sandboxed — same trust as `detect`.
+  - A `skill` guardrail must be report-only and non-interactive. The driver judges it
+    from the skill's report, so it is not deterministic.
+
 Any `context.md` may just tell the reader to Read another file.
 
 ## How subagents get it
 
-One resolver call: `bash scripts/resolve-pack-value.sh <configPath> [frame|shape|implement|analyze]`
+One resolver call: `bash scripts/pack/load-layer.sh <configPath> [frame|shape|implement|analyze]`
 prints whatever of the above exists.
 
 > **Breaking change note:** `shape/architecture.md`, `implement/codeStyle.md`, `implement/validate.md`, `implement/review.md`, and directory-of-files stems are retired — move their content, or a "Read `<path>`" pointer, into the matching `context.md`. The old lazy `session` fetch is gone; the `SessionStart` hook now injects `session.md` directly.
 >
+> **Breaking change note:** build, test and lint instructions written as prose in `implement/context.md` are no longer run by the step builder — move them to `guardrails.yaml`.
+>
 > **Breaking change note:** the `review/` layer is renamed to `analyze/` (the `/review` skill is now `/analyze`) — move `review/context.md` to `analyze/context.md`.
+
+## Shared pack
+
+Personal rules that apply to every project live in one shared dir:
+`${SHERPA_CONFIG_DIR:-${XDG_CONFIG_HOME:-~/.config}/sherpa}/shared`. It uses the same
+convention files as a project pack — `context.md` and `<layer>/context.md` (frame, shape,
+implement, analyze) — but needs no `project.yaml` and no `detect`, so it also applies when
+no project pack matches.
+
+`bash scripts/pack/load-layer.sh <configPath|none> [layer]` prints the shared files first,
+then the project's, with the line `PROJECT RULES (override shared rules above on conflict):`
+between them. Project rules win on conflict; this is prose the model follows, not a
+guarantee. Pass `none` as `configPath` to get the shared files only. With no shared files,
+the output is the same as before.
 
 ## Make a pack
 

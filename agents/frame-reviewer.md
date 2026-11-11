@@ -4,13 +4,13 @@ description: Read-only frame-layer adversary. Attacks the frame's problem statem
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: high
-codexModel: gpt-5.6-terra
+codexModel: gpt-6-astra
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa frame-reviewer subagent — Codex role binding.
   # Full role in plugin file agents/frame-reviewer.md; this TOML binds the model
-  # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
+  # tier + sandbox. Tier: adversarial review (GPT-6 Astra, high). Read-only.
 codexBody: |-
   You are sherpa's frame-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file
@@ -40,7 +40,7 @@ no `Outcome`, no solution. You are the cold reader who never saw that work. Defa
 - The frame: contract (Who/Capability/Obstacle/Costs/Done signal), discovery, open questions,
   design questions (for /shape). Arrives either as a file path (`Read` it; don't paste it back) or as inline text.
   The **verbatim task-initiating request** — feeds your frame–request mismatch attack.
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> frame` first
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath> frame` first
   and follow the output.
 
 ## What you attack

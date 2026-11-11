@@ -21,6 +21,11 @@ In /analyze, the PR body and linked tickets (when the coordinator passes them) p
 - Naming, comments, style, docs → readability.
 - Security → security.
 
+## Deep-pass triggers
+
+/implement runs this lens on a step when the step's diff touches: templates, DOM, CSS, or UI
+components. (Used by /implement to decide whether to run this lens; ignore when reviewing.)
+
 ## Severity
 
 - `Blocking`: the change contradicts or misses its stated purpose, or breaks accessibility in a way users would notice.

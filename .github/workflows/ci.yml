@@ -21,14 +21,14 @@ jobs:
 
       - name: Twin drift
         run: |
-          bash scripts/generate-agent-twins.sh
+          bash scripts/agents/build-twins.sh
           git diff --exit-code .codex/agents .pi/agents
 
       - name: Retired terms
-        run: bash scripts/check-retired-terms.sh
+        run: bash scripts/ci/check-terms.sh
 
       - name: Shared rules inlined
-        run: bash scripts/inline-shared-rules.sh --check
+        run: bash scripts/agents/build-rules.sh --check
 
       - name: Description word budget
         run: |
@@ -58,7 +58,34 @@ jobs:
           fi
 
       - name: Resolver test
-        run: bash scripts/test-resolve-project-pack.sh
+        run: bash scripts/pack/test-load-session.sh
 
-      - name: Inline shared rules / retired terms test
-        run: bash scripts/test-inline-shared-rules.sh
+      - name: Resolver env test
+        run: bash scripts/pack/test-load-session-env.sh
+
+      - name: Layer loader test
+        run: bash scripts/pack/test-load-layer.sh
+
+      - name: Shared pack loader test
+        run: bash scripts/pack/test-load-layer-shared.sh
+
+      - name: Session shared test
+        run: bash scripts/pack/test-load-session-shared.sh
+
+      - name: Guardrail list test
+        run: bash scripts/guardrails/test-list.sh
+
+      - name: Guardrail runner test
+        run: bash scripts/guardrails/test-run.sh
+
+      - name: Inline shared rules test
+        run: bash scripts/agents/test-build-rules.sh
+
+      - name: Inline shared rules edge-case test
+        run: bash scripts/agents/test-build-rules-edge.sh
+
+      - name: Retired terms test
+        run: bash scripts/ci/test-check-terms.sh
+
+      - name: Twin generator test
+        run: bash scripts/agents/test-build-twins.sh

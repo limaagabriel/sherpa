@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Sherpa — composable frame/shape/implement/analyze/triage/restory layers; the user composes the workflow",
-    "version": "0.35.0"
+    "version": "0.36.0"
   },
   "plugins": [
     {
       "name": "sherpa",
       "source": "./",
       "description": "Develop like a sherpa: composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, and /restory skills for analyzing, triaging, and reconstructing story context, with bundled codebase-explorer/review/build subagents. The user composes the workflow; nothing persists unless you call /persist. Extend via project packs.",
-      "version": "0.35.0",
+      "version": "0.36.0",
       "category": "development",
       "keywords": ["workflow", "planning", "code-review", "adversarial"]
     }

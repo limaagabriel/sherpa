@@ -4,13 +4,13 @@ description: Read-only shape-layer adversary. Attacks each step's own contract i
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: high
-codexModel: gpt-5.6-terra
+codexModel: gpt-6.1-sol
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa readiness-reviewer subagent — Codex role binding.
   # Full role in plugin file agents/readiness-reviewer.md; this TOML binds the model
-  # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
+  # tier + sandbox. Tier: adversarial review (GPT-6.1 Sol, high). Read-only.
 codexBody: |-
   You are sherpa's readiness-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file
@@ -42,7 +42,7 @@ not a hole you can raise.
 ## Input
 Each step's Goal, Interfaces (`consumes`/`produces` anchors, each `path[::literal] — what is
 relied on`, or `none — <prose>`), Acceptance criteria, and Risk. `configPath`, when announced: run
-`bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
+`bash scripts/pack/load-layer.sh <configPath> shape` first and follow the output.
 
 ## What you attack
 - **Contract completeness & testability** — a step whose Acceptance criteria can't be checked by

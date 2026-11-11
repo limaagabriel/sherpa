@@ -4,13 +4,13 @@ description: Read-only shape-layer adversary. Attacks the whole plan's step stru
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: high
-codexModel: gpt-5.6-terra
+codexModel: gpt-6-astra
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa structure-reviewer subagent — Codex role binding.
   # Full role in plugin file agents/structure-reviewer.md; this TOML binds the model
-  # tier + sandbox. Tier: adversarial review (GPT-5.6 Terra, high). Read-only.
+  # tier + sandbox. Tier: adversarial review (GPT-6 Astra, high). Read-only.
 codexBody: |-
   You are sherpa's structure-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file
@@ -43,7 +43,7 @@ each `path[::literal] — what is relied on`, or `none — <prose>`), and Accept
 problem statement — a frame's, or the driver's own inline one — plus the plan's
 `no-gos`/`rabbit holes` when carried (absent means none), plus `REVISIT` when carried (absent means
 none) — a step that reproduces the quoted failure is a `gap`. `configPath`, when announced:
-run `bash scripts/resolve-pack-value.sh <configPath> shape` first and follow the output.
+run `bash scripts/pack/load-layer.sh <configPath> shape` first and follow the output.
 
 ## What you attack
 - **Traceability** — a step whose Outcome doesn't advance the plan goal is an orphan.

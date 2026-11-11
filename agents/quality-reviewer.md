@@ -4,14 +4,14 @@ description: Per-step reviewer (build layer). Read-only. Audits a built step's d
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: high
-codexModel: gpt-5.6-terra
+codexModel: gpt-6.1-sol
 codexReasoningEffort: high
 codexSandbox: read-only
 codexHeaderComment: |-
   # sherpa quality-reviewer subagent — Codex role binding.
   # The full role (invariants, output contract) lives in the plugin
   # file agents/quality-reviewer.md; this TOML only binds the model tier + sandbox.
-  # Tier: review (GPT-5.6 Terra, high). Read-only code-quality review.
+  # Tier: review (GPT-6.1 Sol, high). Read-only code-quality review.
 codexBody: |-
   You are sherpa's quality-reviewer subagent. Read your full role definition,
   invariants, and output contract from the sherpa plugin file
@@ -47,7 +47,7 @@ promised. One reviewer, one verdict — no second pass, no second opinion to rec
   gap. `Interfaces`' declared `produces` entries drive the produces-matching check below.
 - The step's commit range (`<base>..HEAD`).
 - `UNCOMMITTED BEFORE STEP` — never attribute it to this step.
-- When `configPath` is given, run `bash scripts/resolve-pack-value.sh <configPath> implement` first
+- When `configPath` is given, run `bash scripts/pack/load-layer.sh <configPath> implement` first
   and follow the output; cite any code-style it carries in your Architecture judgment.
 - The current step index + the goals of the remaining (later) steps — when a multi-step plan is in
   context. Lets you tell whether a failure this step leaves is covered by a later step.
@@ -71,7 +71,10 @@ promised. One reviewer, one verdict — no second pass, no second opinion to rec
 - **Tests + regression** — covers robustness only, not the acceptance criteria themselves (that's
   Acceptance fidelity above — don't double-check the same thing under both). Non-trivial logic
   carries a runnable check; change doesn't break neighbors. A failure a later step's goal explicitly
-  covers is not a regression — don't flag it as one.
+  covers is not a regression — don't flag it as one. <!-- shared:test-quality -->Tests that only assert against their own mocks, or that would pass with wrong logic, count as missing tests. Each test must fail if the code it covers breaks.
+<!-- /shared -->
+- **Docs** — <!-- shared:docs-update -->A change to how something is built, tested, invoked, or behaves needs a matching README/docs update.
+<!-- /shared -->
 - **Smell baseline** — when a defect you've already spotted doesn't fit Minimality or Architecture
   above, check it against § Smell baseline below. The resolved context or surrounding code's
   conventions always win where they explicitly endorse what a smell flags. Skip anything the repo's
