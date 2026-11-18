@@ -79,15 +79,15 @@ start here directly. Pressure lives per step (acceptance + quality); a Validate 
      join the quality `FIX` items in one fold-in brief, deduped by `file:line`, each item naming its
      source. Non-`Blocking` lens findings are printed, not acted on. The ledger records the lenses run.
    - **Skill guardrails** (every step, mechanical ones too — a guardrail is the user's rule, not a risk
-     call). On `BUILT`, when `configPath` is announced, invoke each `skill` entry from
-     `guardrails/list.sh <configPath> step skill` with its `args` and the step's range. A skill that
+     call). On `BUILT`, when `configPath` is announced, run `/invoke <skill> <args>` for each `skill` entry from
+     `guardrails/list.sh <configPath> step skill`, with the step's range. A skill that
      fails (its report names any failure or blocking finding) joins the fold-in brief as a `Blocking`
      item that cannot be rebutted. The ledger records `GUARDRAIL <name>: pass|fail`.
 3. **Verdicts.**
    a. An `ACCEPTANCE: UNMET` line, a quality `FIX`, a `Blocking` lens finding, or a failed skill
       guardrail → relay to the step-builder to fold into its commit; re-check once. The step-builder
       may answer a lens item with `REBUTTED <finding> — <file:line evidence>` instead of changing
-      code; the re-check re-dispatches the same lenses with the rebuttals, and re-invokes each skill
+      code; the re-check re-dispatches the same lenses with the rebuttals, and re-runs `/invoke` for each skill
       guardrail that failed, updating its ledger `GUARDRAIL` line. Still failing after that (a lens
       that still holds its finding counts) → stop: one framing line naming what it blocks, then
       the finding quoted exactly; offer `/shape` in one declinable line, passing the framing line,
@@ -113,8 +113,8 @@ start here directly. Pressure lives per step (acceptance + quality); a Validate 
       ledger table, then `PROCESS: pass|fail <reason>`.
    2. **Guardrails**, when `configPath` is announced. Run
       `bash <plugin root>/scripts/guardrails/run.sh <configPath> end` (exit 1 and exit 2 both fail).
-      Then invoke each `skill` entry from `guardrails/list.sh <configPath> end skill` with its
-      `args`; a skill fails when its report names any failure or blocking finding. Print
+      Then run `/invoke <skill> <args>` for each `skill` entry from
+      `guardrails/list.sh <configPath> end skill`; a skill fails when its report names any failure or blocking finding. Print
       `GUARDRAIL <name>: pass|fail` per skill and `GUARDRAILS: pass|fail` overall.
    3. **Goal check.** Run the plan's Block 3 "how it's verified" once — execute whatever part of the
       test plan is re-runnable as-is; treat anything that needs a human to observe the end state as

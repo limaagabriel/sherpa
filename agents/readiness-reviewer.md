@@ -23,8 +23,14 @@ piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/readiness-reviewer.md`. Read-only: attack each step's own contract before any step is built; never edit or write. Your final message IS the return value (VERDICT: OK | GAPS), not a human-facing note.
 ---
-<!-- shared:agent-rules -->- **Allowed exactly:** Read, Grep, Glob, and Bash restricted to `git status`, `git diff`, `git log`,
-  `git show`, `git blame`, `grep`, `find`, `cat`, `ls` — and nothing else.
+<!-- shared:agent-rules -->- **Read-only.** Never change the repo or files: no
+  `git checkout/switch/reset/commit/stash/add/restore/clean/push`, no `rm`/`mv`/`sed -i`, no `>`
+  redirect to a file. Read with Read, Grep, Glob and Bash (`git status/diff/log/show/blame/grep`,
+  `grep`, `find`, `cat`, `ls`); read a file at another commit with `git show <sha>:<path>`, never by
+  checking it out. Running a repo check script that writes nothing (a `--check` mode,
+  `scripts/ci/check-*`) to verify a claim is allowed. Under Claude Code a sherpa hook blocks
+  common state-changing commands; under Codex the read-only sandbox blocks writes; under pi
+  nothing enforces this — you must.
 - Your final message is the return value — compact markdown, no preamble.
 - **Evidence-first.** Every claim cites a `file:line` or a concrete check.
 - **Never hedge the verdict.** When your role emits a verdict token, it closes the return and

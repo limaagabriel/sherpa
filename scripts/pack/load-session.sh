@@ -7,11 +7,13 @@
 #   (capped at 4 KB) as binding rules. The shared pack (`shared_dir`) adds `SHARED SESSION
 #   RULES` from its session.md before the project block; with no project match but a shared
 #   file, it announces `WORKFLOW_PACK: name=shared configPath=none`. Also a `systemMessage`
-#   naming the loaded pack, "shared pack only", or "running generic" on no match.
+#   naming the loaded pack, "shared pack only", or "running generic" on no match. A
+#   `PACK SKILLS` index (skills_index, lib/pack-skills.sh) follows on every path that emits
+#   a pack; a shared `skills/*/SKILL.md` alone also counts as the shared pack.
 # Exit:   always 0 — this hook never fails, so it does not use `set -e`. Missing jq
 #   exits silently; missing yq still emits the primer plus a warning. Pi's
 #   .pi/extensions/sherpa.ts forwards this. Other pack values are fetched lazily by
-#   skills via load-layer.sh — never read or inlined here.
+#   skills via load-layer.sh — never read or inlined here, except the skills index above.
 
 input=$(cat 2>/dev/null) || exit 0
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null) || exit 0
@@ -23,6 +25,8 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$dir/../lib/text.sh"
 source "$dir/../lib/dirs.sh"
 source "$dir/../lib/layers.sh"
+source "$dir/../lib/frontmatter.sh"
+source "$dir/../lib/pack-skills.sh"
 PRIMER=$(sed -n '/^---$/,/^---$/!p' "$dir/../../skills/using-sherpa/SKILL.md")
 
 emit_result() {
@@ -31,10 +35,12 @@ emit_result() {
   exit 0
 }
 
+index() { local s; s=$(skills_index "$1" 2>/dev/null); [ -z "$s" ] || printf '\n\n%s' "$s"; }
+
 # Shared pack: any shared file makes the pack announced as configPath=none; session.md
 # is inlined as SHARED SESSION RULES. Reading it needs no yq.
 sdir=$(shared_dir); shared_line=""; shared_block=""
-shared_files=("$sdir/session.md" "$sdir/context.md")
+shared_files=("$sdir/session.md" "$sdir/context.md" "$sdir"/skills/*/SKILL.md)
 for l in "${LAYERS[@]}"; do shared_files+=("$sdir/$l/context.md"); done
 for f in "${shared_files[@]}"; do
   [ -f "$f" ] && shared_line=$'\n\n'"WORKFLOW_PACK: name=shared configPath=none"
@@ -45,7 +51,7 @@ fi
 
 command -v yq >/dev/null 2>&1 || emit_result \
   "🏔️ sherpa: yq not found — project packs disabled (install yq v4+). Layer primer still loaded." \
-  "$PRIMER$shared_line$shared_block"
+  "$PRIMER$shared_line$shared_block$(index none)"
 
 if config=$(bash "$dir/find.sh" "$cwd" 2>/dev/null); then
   base=$(cd "$(dirname "$config")" 2>/dev/null && pwd) || base=$(dirname "$config")
@@ -64,8 +70,8 @@ if config=$(bash "$dir/find.sh" "$cwd" 2>/dev/null); then
     session=$(print_capped "$base/session.md" 4096)
     ctx="$ctx"$'\n\n'"PROJECT SESSION RULES — from $base/session.md. Follow them before any other tool, skill, or answer."$'\n'"$session"
   fi
-  emit_result "Project \"$name\" loaded into Sherpa from $config 🏔️" "$ctx"
+  emit_result "Project \"$name\" loaded into Sherpa from $config 🏔️" "$ctx$(index "$config")"
 fi
 
-[ -z "$shared_line" ] || emit_result "🏔️ sherpa: no project pack matched this repo — shared pack only." "$PRIMER$shared_line$shared_block"
+[ -z "$shared_line" ] || emit_result "🏔️ sherpa: no project pack matched this repo — shared pack only." "$PRIMER$shared_line$shared_block$(index none)"
 emit_result "🏔️ sherpa: no project pack matched this repo — running generic (no project-specific knowledge loaded)." "$PRIMER"

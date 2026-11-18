@@ -57,6 +57,22 @@ detect: case "$CWD" in */my-project*) exit 0 ;; *) exit 1 ;; esac
   - A `skill` guardrail must be report-only and non-interactive. The driver judges it
     from the skill's report, so it is not deterministic.
 
+- `skills/<name>/SKILL.md` — a pack skill, run with `/invoke <name> [args]`. Companion files
+  (scripts, templates) live in the same `skills/<name>/` folder; relative paths in the skill
+  resolve there.
+  - The `SessionStart` hook prints a `PACK SKILLS` index: one line per skill, with the
+    description cut to its first sentence (max 150 chars). Whole entries only, the block is
+    ≤ 2 KB, and any leftovers become `(N more — /invoke with no args lists all)`.
+  - Give each skill a one-line `description:` in its frontmatter. A folded or multi-line
+    value (`>`, `|`) shows an empty description; the skill is still listed by name.
+  - A project pack skill overrides a shared one with the same folder name.
+  - `/invoke` resolves the first argument in this order, first match wins: if it contains `/`
+    or ends in `.md` and the file exists, that file; else a pack skill; else a native skill;
+    else it prints the list.
+  - `allowed-tools` is advisory only; nothing enforces it.
+  - A skill runs with your permissions and is not sandboxed — same trust as `detect`.
+  - A guardrail `skill:` entry may name a pack skill.
+
 Any `context.md` may just tell the reader to Read another file.
 
 ## How subagents get it

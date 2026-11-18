@@ -29,3 +29,6 @@ identical; only the mechanism differs.
 - **Hooks need trust.** Plugin-bundled hooks are non-managed; Codex skips them
   until the user reviews and trusts the hook — the same one-time step as Claude's
   `/hooks` trust prompt.
+- **The Bash guard allows every Codex call.** Codex also loads the `PreToolUse` hook in
+  `hooks/hooks.json` (`scripts/hooks/guard-bash.sh`), but Codex payloads carry no `agent_type`, so it
+  lets every call through; Codex's own read-only sandbox does the enforcing for the read-only roles.

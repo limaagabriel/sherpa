@@ -121,9 +121,15 @@ rationale that also lands there. No frame, or a frame that carries none: no-op.
    full step list, the problem statement, the plan's no-gos/rabbit holes, `REVISIT` when carried,
    and `configPath`. All three `OK` → present. Any `GAPS` → fix what you can; a hole only the
    human can close (human gate 1) → one framing line naming what it blocks, then the finding
-   quoted exactly, and wait. Present the plan, then wait for **explicit** approval (human gate 2)
-   — "approved", "go", "lgtm"; a question or critique is not approval. Rejecting here ends the
-   run.
+   quoted exactly, and wait. Present the plan **Summary first**, then **Details** (Blocks 1–3).
+   The **Summary** for a plan carries, in plain words and about 12 lines: one line per step saying
+   what it changes, what the plan deliberately leaves alone, the one risk worth the reader's
+   attention, and that approving starts `/implement`. No sherpa-internal names in it — no slot
+   names, block numbers, anchors or verdict words. It only restates Details, never adds to it; a
+   point you can't say plainly means Details is unclear — fix Details. A finding the human chose to
+   leave open at gate 1: its framing line goes in the Summary, the quoted finding under Details.
+   Then wait for **explicit** approval (human gate 2) — "approved", "go", "lgtm"; a question or
+   critique is not approval. Rejecting here ends the run.
 
 ## Human gates
 Exactly two points wait on the human; everything else is the driver deciding and showing its
@@ -136,7 +142,8 @@ The step budget (step 1) is stated up front, and the human may change it at any 
 is not a third gate; there's no formal wait on it.
 
 ## Output
-The plan, presented once at plan approval. Nothing on disk; persisting it is `/persist`'s job.
+The plan, presented once at plan approval, Summary first, then Details. Nothing on disk;
+persisting it is `/persist`'s job.
 
 ## Done when
 An approved plan exists in context, or the human rejected at any human gate before a plan was

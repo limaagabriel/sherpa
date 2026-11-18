@@ -69,6 +69,12 @@ jobs:
       - name: Shared pack loader test
         run: bash scripts/pack/test-load-layer-shared.sh
 
+      - name: List skills test
+        run: bash scripts/pack/test-list-skills.sh
+
+      - name: Find skill test
+        run: bash scripts/pack/test-find-skill.sh
+
       - name: Session shared test
         run: bash scripts/pack/test-load-session-shared.sh
 
@@ -89,3 +95,6 @@ jobs:
 
       - name: Twin generator test
         run: bash scripts/agents/test-build-twins.sh
+
+      - name: Read-only Bash guard test
+        run: bash scripts/hooks/test-guard-bash.sh

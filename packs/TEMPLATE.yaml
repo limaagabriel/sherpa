@@ -24,6 +24,7 @@ name: my-project
 #   shape/context.md        additive to context.md, for the shape layer only
 #   implement/context.md    additive to context.md, for the implement layer only
 #   analyze/context.md      additive to context.md, for the analyze layer only
+#   skills/<name>/SKILL.md  pack skill, run with /invoke (see packs/README.md)
 #   guardrails.yaml         checks run per phase (step|end|both); example:
 #     guardrails:
 #       - {name: lint, run: "npx eslint --fix .", when: step}  # may rewrite the step's own files

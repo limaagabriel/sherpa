@@ -16,6 +16,8 @@ workflow; sherpa offers the tools.
 - **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
   AGENTS.md.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
+- **`/invoke <name|path> [args]`** — runs a pack skill or any markdown file as a skill; no args
+  lists them.
 
 ## Versioning
 
@@ -38,7 +40,7 @@ Read every Claude-specific tool mention through the equivalence table in
 
 ## Editing agents
 
-Rule text shared across skills or agents (Authority, Questions, the read-only Bash allowlist, the
+Rule text shared across skills or agents (Authority, Questions, the read-only Bash rule, the
 reviewer verdict shape, etc.) lives once in **`protocols/shared-rules.md`**, stamped into each
 target file between `<!-- shared:<block> -->` / `<!-- /shared -->` markers. Editing shared rule
 content means editing `protocols/shared-rules.md`, then re-running

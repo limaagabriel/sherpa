@@ -1,7 +1,7 @@
 {
   "name": "sherpa",
-  "version": "0.36.0",
-  "description": "Composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, and /restory skills for analyzing, triaging, and reconstructing story context, with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
+  "version": "0.38.0",
+  "description": "Composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, /restory, and /invoke skills for analyzing, triaging, reconstructing story context, and running pack skills, with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state.",
   "author": {
     "name": "Gabriel Lima",
     "url": "https://github.com/limaagabriel"
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Sherpa",
     "shortDescription": "Composable frame, shape, implement, analyze, triage, and restory layers",
-    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /analyze (pre-review analysis), /triage (reason about and route all PR review feedback), /restory (reconstruct story context) — that the user composes into a workflow. Nothing persists unless you call /persist.",
+    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /analyze (pre-review analysis), /triage (reason about and route all PR review feedback), /restory (reconstruct story context), /invoke (run a pack skill or any markdown file as a skill) — that the user composes into a workflow. Nothing persists unless you call /persist.",
     "developerName": "Gabriel Lima",
     "category": "Productivity",
     "capabilities": [

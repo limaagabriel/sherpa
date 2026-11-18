@@ -1,7 +1,7 @@
 {
   "name": "sherpa",
-  "version": "0.36.0",
-  "description": "Develop like a sherpa: composable /frame, /shape, and /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, and /restory skills for analyzing, triaging, and reconstructing story context, with bundled codebase-explorer/review/build subagents and adversarial pressure at every boundary. The user composes the workflow; sherpa offers the tools. Nothing runs unasked, nothing persists unless you call /persist. Project-agnostic; extend with project packs.",
+  "version": "0.38.0",
+  "description": "Develop like a sherpa: composable /frame, /shape, and /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, /restory, and /invoke skills for analyzing, triaging, reconstructing story context, and running pack skills, with bundled codebase-explorer/review/build subagents and adversarial pressure at every boundary. The user composes the workflow; sherpa offers the tools. Nothing runs unasked, nothing persists unless you call /persist. Project-agnostic; extend with project packs.",
   "author": {
     "name": "Gabriel Lima"
   },
