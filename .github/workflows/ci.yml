@@ -95,3 +95,6 @@ jobs:
 
       - name: Twin generator test
         run: bash scripts/agents/test-build-twins.sh
+
+      - name: Read-only Bash guard test
+        run: bash scripts/hooks/test-guard-bash.sh

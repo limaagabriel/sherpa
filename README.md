@@ -19,8 +19,9 @@ called a "pack", so the core stays general and knows nothing about your repo.
 
 ## Install
 
-Requires `jq` and `yq` (v4+) on `PATH` for the SessionStart pack resolver — without `jq` the
-hook stays silent; without `yq` it still loads but skips project packs.
+Requires `jq` and `yq` (v4+) on `PATH`. `jq` serves the SessionStart pack resolver (without it the
+hook stays silent) and the read-only Bash guard (without it, sherpa's read-only agents cannot run
+Bash); without `yq` the resolver still loads but skips project packs.
 
 Sherpa is a Claude Code plugin. From inside Claude Code:
 
@@ -37,8 +38,9 @@ git clone https://github.com/limaagabriel/sherpa.git
 /plugin install sherpa@sherpa
 ```
 
-Then open `/hooks`, review and **trust** sherpa's `SessionStart` hook (it detects your project
-pack), and start a new thread. Verify with `/frame` — if the skill shows up, you're set.
+Then open `/hooks`, review and **trust** sherpa's two hooks: `SessionStart` (it detects your
+project pack) and `PreToolUse` (it blocks state-changing Bash in the read-only agents), and start a
+new thread. Verify with `/frame` — if the skill shows up, you're set.
 
 ## Usage
 
@@ -164,7 +166,7 @@ skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory
 agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
-hooks/         the single SessionStart pack resolver
+hooks/         the SessionStart pack resolver and the read-only Bash guard (scripts/hooks/guard-bash.sh)
 scripts/       helper scripts by group: pack, agents, ci (see scripts/README.md)
 ```
 
