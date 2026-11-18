@@ -1,15 +1,21 @@
 # Sherpa
 
-A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin:
-**composable skills** — one per layer of altitude, `/frame` (frame), `/shape` (shape),
-`/implement` (build) — plus `/persist` and the independently invokable `/analyze`, `/triage`, `/restory`, and
-`/invoke` — with bundled codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and
-reviewer subagents that rope up and check the rope at every stage.
+Sherpa is a [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin made of skills.
+You call them one at a time.
 
-Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until you
-call a skill), **lean** (nothing persists unless you call `/persist`), and **project-agnostic** —
-your code style and extra reviewers plug in through a small YAML *pack*, so the engine never
-hard-codes anything about your repo.
+The three main skills work in order:
+
+- `/frame` understands the problem and states it clearly.
+- `/shape` writes a step-by-step plan and gets it reviewed.
+- `/implement` builds the plan, one reviewed step at a time.
+
+Other skills: `/persist`, `/analyze`, `/triage`, `/restory`, and `/invoke`.
+
+Sherpa also bundles helper agents: codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and the reviewers.
+
+Sherpa offers the tools. You decide the workflow. It is opt-in: nothing runs until you call a skill.
+It keeps nothing on disk unless you call `/persist`. Your project's rules go in an optional YAML file
+called a "pack", so the core stays general and knows nothing about your repo.
 
 ## Install
 
