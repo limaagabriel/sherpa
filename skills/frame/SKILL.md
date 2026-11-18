@@ -76,10 +76,16 @@ persisting it is the opt-in `/persist` skill — never automatic.
    task-initiating request, and `configPath`. Fix what `frame-reviewer` found and you can close
    yourself before the human ever sees the frame. A hole only the human can close stays open —
    don't hide it, carry it into the next step.
-6. **Present** the frame once, in sections scaled to complexity. If a `GAPS` finding is still open,
-   present it together with the frame: one framing line naming what it blocks in the reader's
-   terms, then the finding quoted exactly. Then ask for confirmation — once, after critique, not
-   per-section during composition. Revise on feedback.
+6. **Present** the frame once, in sections scaled to complexity. Present it **Summary first**,
+   then **Details** (the composed frame). The **Summary** for a frame carries, in plain words and
+   about 12 lines: the problem in one sentence (who is stuck, on what, and why), how we'll know
+   it's solved, and the open questions you need answered (not the design questions). No
+   sherpa-internal names in it — no slot names, block numbers, anchors or verdict words. It only
+   restates Details, never adds to it; a point you can't say plainly means Details is unclear —
+   fix Details. An open `GAPS` finding: its framing line goes in the Summary, the quoted finding
+   under Details; the framing line names what it blocks in the reader's terms, and the finding is
+   quoted exactly. Then ask for confirmation — once, after critique, not per-section during
+   composition. Revise on feedback.
 
 ## Don't
 - Bind an `Outcome` — that's `/shape`'s job, once the plan is drafted.
