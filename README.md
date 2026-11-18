@@ -78,6 +78,56 @@ gate 2)**, the one gate every run hits. `/implement` then builds one step at a t
 criteria. A `BLOCK` or a terminal `UNMET`/`FIX` surfaces to you verbatim; everything else continues
 automatically.
 
+## Reading a frame and a plan
+
+A printed frame or plan still uses a few sherpa terms. Here is what each one means.
+
+**Summary and Details.** A frame and a plan both open with a plain **Summary** of about 12 lines.
+The full record follows under **Details**. The Summary only restates the Details in simple words.
+
+**The problem statement** (in a frame). One sentence with five parts:
+
+| Part | Plain meaning |
+|---|---|
+| who | A named party, never just "the user". |
+| can't do what | The goal they cannot reach. |
+| why (the obstacle) | The cause that exists now. |
+| what it costs | What breaks if nobody fixes it. |
+| how we'll know (the done signal) | What an observer sees change when it is solved. |
+
+**Open questions and design questions.** Open questions are about the problem or its scope. You
+answer them in `/frame`. Design questions are choices about the solution. `/frame` leaves them for
+`/shape`, which picks an answer and records why in Block 3.
+
+**The goal statement** (in a plan). `<Outcome> for <consumers> because <motivation>; done when
+<verification>`. The outcome is the end state you can observe. The motivation says why it matters.
+The verification is a check you can run again.
+
+**The three plan blocks.**
+- **Block 1:** the goal statement, a before/after table, the step budget, and the limits (the
+  no-gos and the rabbit holes).
+- **Block 2:** the steps, one block each.
+- **Block 3:** why this approach (precedent, design-question answers) and how the result is verified.
+
+**The fields of a step.**
+- **Goal:** what this step achieves. It traces back to the plan goal.
+- **Change:** the concrete edit this step makes, and nothing more.
+- **Interfaces:** what the step relies on and what it leaves for later steps.
+  - `consumes` is what the step needs that already exists, or that an earlier step produces.
+  - `produces` is what later steps rely on.
+  - Each entry is an anchor like `path::literal`. The `literal` is text that must appear exactly
+    in that file, so it can be checked with `git grep -F`. A path with no `::literal`
+    points at the whole file. `none — <reason>` means no file backs the entry.
+- **Acceptance criteria:** `done = <X>, confirmed by <check>`. The check can be run again.
+- **Risk:** the one real risk that could sink this step, or `none` with a reason.
+
+**Reviewer verdicts.** After the draft, reviewers check it. `OK` means the draft goes on.
+`GAPS` means a reviewer found a gap. The driver fixes what it can and waits for you on the rest.
+
+**The two approval points** (called "human gates" in `/shape`). In `/shape`, only these wait for you:
+1. A gap only you can close. The driver shows the finding and waits.
+2. Plan approval. Say "approved", "go" or "lgtm". A question or a critique is not approval.
+
 ## Project packs (optional)
 
 The engine ships generic. To layer in your project's conventions, commit
