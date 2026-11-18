@@ -75,5 +75,14 @@ assert_contains h4-truncated-4kb "$(ctx "$tmp/h4")" "$exp_h4"
 mkdir -p "$tmp/nomatch"
 assert_contains i-primer-loaded "$(ctx "$tmp/nomatch")" "check whether one of these fits"
 assert_contains i-no-match-message "$(msg "$tmp/nomatch")" "no project pack matched"
+# project skills are listed with the pack; no skills -> no block.
+mkyaml "$tmp/sk/.sherpa/project.yaml" proj-sk
+assert_not_contains sk-none "$(ctx "$tmp/sk")" "PACK SKILLS"
+mkdir -p "$tmp/sk/.sherpa/skills/ship"
+printf -- '---\nname: ship\ndescription: Ship it. Extra.\n---\n' >"$tmp/sk/.sherpa/skills/ship/SKILL.md"
+osk=$(ctx "$tmp/sk")
+assert_contains sk-header "$osk" "PACK SKILLS — run one with /invoke <name> [args] when the request matches:"
+assert_contains sk-entry "$osk" "- ship: Ship it"
+assert_not_contains sk-first-sentence "$osk" "Extra"
 [ "$fail" -eq 0 ] && echo "PASS: all resolution cases" || echo "FAILED"
 exit "$fail"
