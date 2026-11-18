@@ -40,7 +40,7 @@ Read every Claude-specific tool mention through the equivalence table in
 
 ## Editing agents
 
-Rule text shared across skills or agents (Authority, Questions, the read-only Bash allowlist, the
+Rule text shared across skills or agents (Authority, Questions, the read-only Bash rule, the
 reviewer verdict shape, etc.) lives once in **`protocols/shared-rules.md`**, stamped into each
 target file between `<!-- shared:<block> -->` / `<!-- /shared -->` markers. Editing shared rule
 content means editing `protocols/shared-rules.md`, then re-running
