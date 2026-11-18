@@ -77,7 +77,7 @@ assert_contains i-primer-loaded "$(ctx "$tmp/nomatch")" "check whether one of th
 assert_contains i-no-match-message "$(msg "$tmp/nomatch")" "no project pack matched"
 # project skills are listed with the pack; no skills -> no block.
 mkyaml "$tmp/sk/.sherpa/project.yaml" proj-sk
-assert_not_contains sk-none "$(ctx "$tmp/sk")" "PACK SKILLS"
+assert_not_contains sk-none "$(ctx "$tmp/sk")" "PACK SKILLS — run one"
 mkdir -p "$tmp/sk/.sherpa/skills/ship"
 printf -- '---\nname: ship\ndescription: Ship it. Extra.\n---\n' >"$tmp/sk/.sherpa/skills/ship/SKILL.md"
 osk=$(ctx "$tmp/sk")

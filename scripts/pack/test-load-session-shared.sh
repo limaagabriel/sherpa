@@ -63,7 +63,7 @@ assert_exit noyq-exit-0 "$ry" 0
 mkskill() { mkdir -p "$1/skills/$2"; printf -- '---\nname: %s\ndescription: %s\n---\nbody\n' "$2" "$3" >"$1/skills/$2/SKILL.md"; }
 rm -rf "$sh"; mkdir -p "$sh"
 # no skills -> no block.
-assert_not_contains skills-none "$(ctx "$tmp/nomatch")" "PACK SKILLS"
+assert_not_contains skills-none "$(ctx "$tmp/nomatch")" "PACK SKILLS — run one"
 # shared skills alone make the shared pack present, with the index.
 mkskill "$sh" greet "Say hello. Then more words."
 os=$(ctx "$tmp/nomatch")
@@ -84,7 +84,7 @@ rm -rf "$tmp/proj/.sherpa/skills" "$sh/skills"
 long=$(printf 'x%.0s' $(seq 300))
 for n in $(seq 20); do mkskill "$sh" "skill-$n" "$long"; done
 ol=$(ctx "$tmp/nomatch")
-blk=${ol#*PACK SKILLS}; blk="PACK SKILLS$blk"
+blk=${ol#*"PACK SKILLS — run one"}; blk="PACK SKILLS — run one$blk"
 assert_contains skills-more-line "$blk" "more — /invoke with no args lists all)"
 assert_not_contains skills-no-truncated-entry "$blk" "$(printf 'x%.0s' $(seq 151))"
 assert_eq skills-bytes-le-2048 "$([ "$(printf '%s' "$blk" | wc -c)" -le 2048 ] && echo ok)" ok
@@ -107,7 +107,7 @@ if [ "$(id -u)" -ne 0 ]; then
   chmod 755 "$sh/skills"
   assert_exit skills-unreadable-exit "$ru" 0
   assert_eq skills-unreadable-json "$(printf '%s' "$ou" | jq -e '.hookSpecificOutput' >/dev/null 2>&1; echo $?)" 0
-  assert_not_contains skills-unreadable-none "$ou" "PACK SKILLS"
+  assert_not_contains skills-unreadable-none "$ou" "PACK SKILLS — run one"
 fi
 
 [ "$fail" -eq 0 ] && echo "PASS: all shared cases" || echo "FAILED"
