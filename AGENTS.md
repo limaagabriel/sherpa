@@ -16,6 +16,8 @@ workflow; sherpa offers the tools.
 - **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
   AGENTS.md.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
+- **`/invoke <name|path> [args]`** — runs a pack skill or any markdown file as a skill; no args
+  lists them.
 
 ## Versioning
 

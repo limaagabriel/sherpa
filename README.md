@@ -2,8 +2,8 @@
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugin:
 **composable skills** — one per layer of altitude, `/frame` (frame), `/shape` (shape),
-`/implement` (build) — plus `/persist` and the independently invokable `/analyze`, `/triage`, and
-`/restory` — with bundled codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and
+`/implement` (build) — plus `/persist` and the independently invokable `/analyze`, `/triage`, `/restory`, and
+`/invoke` — with bundled codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and
 reviewer subagents that rope up and check the rope at every stage.
 
 Sherpa offers the tools; **you compose the workflow**. It's **opt-in** (nothing runs until you
@@ -45,6 +45,7 @@ pack), and start a new thread. Verify with `/frame` — if the skill shows up, y
 | `/analyze` | Pre-review analysis of a branch's changes or a GitHub PR; opens with a short context briefing, then lens findings checked by `analysis-reviewer`, plus a verdict. | you want a pre-PR or pre-merge second opinion |
 | `/triage` | Categorize all PR review feedback (makes sense / questionable / push back / needs clarification), flag lessons for AGENTS.md. | you got PR feedback and want to sort it before acting |
 | `/restory` | Rewrite the current branch's messy commits into a clean, logical sequence; same end tree, fewer/better commits. | your branch history needs tidying before a PR |
+| `/invoke <name\|path> [args]` | Run a pack skill (`skills/<name>/SKILL.md`) or any markdown file as a skill; no args lists the pack skills. | a project pack ships a skill you want to run |
 
 Each skill is a standalone entry point: it uses the upstream artifact if it's in context, else
 does the minimum to proceed — never re-running the layer above.
@@ -97,11 +98,13 @@ schema and resolution rules: `packs/README.md`.
   strictly analytical, never edits code or replies on the PR.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence; pure
   git, never pushes.
+- **`/invoke`** — runs a pack skill or any markdown file as a skill; runs with your permissions,
+  unsandboxed.
 
 ## Layout
 
 ```
-skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, using-sherpa
+skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, /invoke, using-sherpa
 agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 packs/         project-pack template + docs
