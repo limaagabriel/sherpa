@@ -9,8 +9,8 @@
 # Output: init  runs inventory/ensure-board.sh with the same args (prints the project dir).
 #   loop  runs inventory/run.sh <project> once per pass, then waits --every seconds (a positive
 #   integer, default 300); --once makes one pass. First it checks the project with build-board.sh
-#   (which also refreshes board.md). board runs inventory/build-board.sh <project> and prints the
-#   board file.
+#   (which also refreshes board.md) and says "sherpa: looping <name> (<project>)" on stderr (name =
+#   the board's "# " heading). board runs inventory/build-board.sh <project> and prints the board.
 # Exit:   init and board: the script's own code. loop: a pass exiting 0 or 1 keeps it going; 2
 #   stops with 2; 3 prints "another loop holds <project>" and stops with 3; with --once it exits
 #   with the pass's code. An unknown project stops with 2 before any pass (build-board's message
@@ -38,7 +38,7 @@ stop() {  # kill the child's whole process group (each job leads its own under s
 }
 
 cmd_loop() {
-  local project= once=0 every=300 rc
+  local project= once=0 every=300 rc board name
   while [ $# -gt 0 ]; do
     case "$1" in
       --once) once=1; shift ;;
@@ -49,7 +49,10 @@ cmd_loop() {
   done
   [ -n "$project" ] || usage
   case $every in ''|*[!0-9]*|0*) echo "sherpa: --every needs a positive integer" >&2; exit 2 ;; esac
-  bash "$scripts/inventory/build-board.sh" "$project" >/dev/null || exit 2
+  board=$(bash "$scripts/inventory/build-board.sh" "$project") || exit 2
+  name=$(sed -n '1s/^# //p' "$board" 2>/dev/null || true)  # the board's heading is the display name
+  case $name in ''|"$project") name=$project ;; *) name="$name ($project)" ;; esac
+  echo "sherpa: looping $name" >&2
   set -m
   trap 'stop 130' INT; trap 'stop 143' TERM
   while :; do

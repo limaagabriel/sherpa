@@ -3,7 +3,7 @@
 # Input:  run in a repo (any git repository). `repository` is the main
 #   worktree of --repository (else $PWD). <project>, the board's ID, defaults to that folder's name.
 # Output: creates <inventory_dir>/<project>/ and its six stage folders if missing, writes
-#   settings.yaml ONLY when absent (repository, worktree.pattern, tools), builds board.md, prints the
+#   settings.yaml ONLY when absent (name, repository, worktree.pattern, tools), builds board.md, prints the
 #   project dir.
 # Exit:   0 ready; 1 with a reason on stderr (not a git repo, bad or unusable project name);
 #   2 usage. Needs yq and git.
@@ -37,6 +37,8 @@ q() { local s=\'; printf "'%s'" "${1//$s/$s$s}"; }
 if [ ! -e "$dir/settings.yaml" ] && [ ! -L "$dir/settings.yaml" ]; then
   wt="$(dirname "$repository")/$project-worktrees/\$TICKET_ID"
   tpl=$(cat <<'EOF2'
+# name is only a display label (board heading, loop start line); the folder name stays the ID.
+name: @NAME@
 # worktree.create, runner and any command: run arbitrary shell: keep this file yours.
 # repository and worktree.pattern each take exactly one of path or command; a command prints
 # one absolute path (it gets TICKET_ID; repository's runs in $HOME, the pattern's in the repository).
@@ -57,6 +59,7 @@ tools: []
 # ticket's worktree with TICKET_STAGE and TICKET_FILE set, and must print the STATUS line
 EOF2
 )
+  tpl=${tpl//@NAME@/"$(q "$project")"}
   tpl=${tpl//@REPOSITORY@/"$(q "$repository")"}; tpl=${tpl//@WT@/"$(q "$wt")"}
   printf '%s\n' "$tpl" >"$dir/settings.yaml"
 fi

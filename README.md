@@ -186,6 +186,7 @@ digits, `.`, `_` and `-`, for example `LPD-12345.md`. An ID lives in one folder 
 Here is a Liferay-style example of the location keys:
 
 ```yaml
+name: Liferay Portal                   # display label only
 repository:
   path: /home/you/liferay-portal       # or: command: <prints the path>
 worktree:
@@ -206,6 +207,10 @@ worktree:
   loop's stderr. It must print exactly one non-empty line, an absolute path (a trailing newline is
   fine). The output is used as written: nothing in it is expanded or run. A non-zero exit, no
   output or several lines stops the ticket. Use it when your tooling owns the layout.
+- `name:` (optional) is a display label, such as `Liferay Portal`. It heads `board.md` and shows
+  in the loop's start line (`sherpa: looping Liferay Portal (liferay)`). The folder name stays the
+  ID, used in paths and `TICKET` lines. Without a one-line text value, the ID is shown. `init`
+  writes `name: <project>`.
 - `repository` is the main checkout of your repo. Its `command` runs in `$HOME`.
 - `worktree.pattern` is where each ticket's worktree goes. Its `command` runs in `repository`.
   `init` writes `path: <repo parent>/<project>-worktrees/$TICKET_ID`. A folder that already

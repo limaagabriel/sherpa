@@ -51,6 +51,8 @@
 #                           Call it without a subshell.
 #   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
 #                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
+#   project_title <project>  prints settings.yaml `name` (the display label) when it is a one-line,
+#                           non-empty string, else the project ID; a missing or invalid file gives the ID.
 #   BASE_TOOLS              the default --allowedTools list (comma separated).
 #   settings_tools <settings-file>  sets the array TOOLS from the `tools` list (empty when absent);
 #                           1 and an empty TOOLS when `tools` is not a list or an entry is not a
@@ -305,6 +307,13 @@ lock_acquire() {
     mkdir "$lock" 2>/dev/null || return 1
   fi
   echo $$ >"$lock/pid"
+}
+
+project_title() {
+  local n
+  if n=$(yq -e '.name | select((type == "!!str") and (length > 0) and (test("\n") | not))' \
+    "$(inventory_dir)/$1/settings.yaml" 2>/dev/null) && [ -n "$n" ]; then printf '%s\n' "$n"
+  else printf '%s\n' "$1"; fi
 }
 
 settings_tools() {
