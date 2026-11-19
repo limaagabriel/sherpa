@@ -98,3 +98,6 @@ jobs:
 
       - name: Read-only Bash guard test
         run: bash scripts/hooks/test-guard-bash.sh
+
+      - name: Inventory board test
+        run: bash scripts/inventory/test-build-board.sh
