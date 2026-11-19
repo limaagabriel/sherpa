@@ -14,8 +14,10 @@ Other skills: `/persist`, `/analyze`, `/triage`, `/restory`, and `/invoke`.
 Sherpa also bundles helper agents: codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and the reviewers.
 
 Sherpa offers the tools. You decide the workflow. It is opt-in: nothing runs until you call a skill.
-It keeps nothing on disk unless you call `/persist`. Your project's rules go in an optional YAML file
-called a "pack", so the core stays general and knows nothing about your repo.
+It keeps nothing on disk unless you call `/persist`. The one exception is the optional inventory,
+a ticket board that only the `sherpa` inventory commands write to (see
+[Inventory](#inventory-optional)). Your project's rules go in an optional YAML file called a
+"pack", so the core stays general and knows nothing about your repo.
 
 ## Install
 

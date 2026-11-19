@@ -9,8 +9,8 @@ workflow; sherpa offers the tools.
   approve it.
 - **`/implement <task>`** (build) — build the plan (or the task as one implicit step), one
   reviewed step at a time.
-- **Nothing persists unless asked** — `/persist` writes the in-context frame or plan to
-  disk; there is no automatic run-state.
+- **Nothing persists unless asked** — `/persist` saves the in-context frame or plan to disk;
+  the inventory keeps ticket state under `~/.config/sherpa/inventory` only when you run it.
 - **`/analyze <branch or PR>`** — Pre-review analysis of changes; the report opens with a short
   context briefing, then lens findings checked by `analysis-reviewer`, plus a verdict.
 - **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
@@ -18,6 +18,9 @@ workflow; sherpa offers the tools.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
 - **`/invoke <name|path> [args]`** — runs a pack skill or any markdown file as a skill; no args
   lists them.
+- **`sherpa init` / `sherpa loop <pack>`** (inventory) — opt-in ticket board under
+  `~/.config/sherpa/inventory/<pack>/`; the loop runs each ticket's next layer headless and parks
+  it at every gate. See README "Inventory".
 
 ## Versioning
 

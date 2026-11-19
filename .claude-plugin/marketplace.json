@@ -11,7 +11,7 @@
     {
       "name": "sherpa",
       "source": "./",
-      "description": "Develop like a sherpa: composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, /restory, and /invoke skills for analyzing, triaging, reconstructing story context, and running pack skills, with bundled codebase-explorer/review/build subagents. The user composes the workflow; nothing persists unless you call /persist. Extend via project packs.",
+      "description": "Develop like a sherpa: composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, /restory, and /invoke skills for analyzing, triaging, reconstructing story context, and running pack skills, with bundled codebase-explorer/review/build subagents. The user composes the workflow; nothing persists unless you call /persist or run the opt-in inventory loop. Extend via project packs.",
       "version": "0.38.0",
       "category": "development",
       "keywords": ["workflow", "planning", "code-review", "adversarial"]

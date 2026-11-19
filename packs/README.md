@@ -122,4 +122,6 @@ Then create only the convention files you actually need, next to that
 
 ## State
 
-Sherpa persists nothing automatically; `/persist` is opt-in.
+Sherpa persists nothing automatically; `/persist` is opt-in. The one exception is the opt-in
+inventory, which keeps ticket state under `~/.config/sherpa/inventory` only when you run
+`sherpa init` or `sherpa loop`.

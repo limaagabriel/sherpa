@@ -6,7 +6,8 @@ description: Opt-in. Writes the in-context frame and/or plan to disk for a later
 # /persist — save the frame or plan to disk
 
 Sherpa keeps the frame and plan in conversation by default. Run this only when you want
-them on disk — to resume in a fresh session, or to commit them.
+them on disk — to resume in a fresh session, or to commit them. The separate opt-in inventory
+(`sherpa loop`, see README "Inventory") keeps its ticket state on its own; this skill does not touch it.
 
 ## Steps
 1. **Resolve the path.** Use the path arg if given. Else default to `.sherpa/<slug>.md` where
