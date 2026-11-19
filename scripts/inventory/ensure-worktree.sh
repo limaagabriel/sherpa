@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Usage: ensure-worktree.sh <pack> <ID>
 # Input:  <inventory_dir>/<pack>/settings.yaml with `repository` (main worktree) and `worktree.path`
-#   (required; a leading ~ and $TICKET_ID / ${TICKET_ID} are expanded, nothing else), optional
+#   (required); both keys expand a leading ~ and any $NAME / ${NAME} from the environment, with
+#   TICKET_ID set (see expand_path; nothing is run, an unset variable is an error), optional
 #   `worktree.create` (shell command, default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE").
 # Output: prints the ticket's absolute worktree path. It CREATES the worktree by running
 #   `worktree.create` via bash -c in `repository` (TICKET_ID, TICKET_WORKTREE exported, stdin
@@ -28,9 +29,11 @@ repository=$(get repository); raw=$(get worktree.path); create=$(get worktree.cr
 [ -n "$raw" ] || die "settings.yaml has no worktree.path"
 [ -n "$create" ] || create='git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"'
 
-path=$raw
-case "$path" in "~" | "~/"*) path="$HOME${path#"~"}" ;; esac
-path=${path//'${TICKET_ID}'/$id}; path=${path//'$TICKET_ID'/$id}
+expand() { # <key> <raw>: prints the expansion, or dies naming the unset variable
+  local v; v=$(TICKET_ID=$id expand_path "$2") || die "settings.yaml: $1 uses unset variable \$$v"
+  printf '%s\n' "$v"
+}
+repository=$(expand repository "$repository"); path=$(expand worktree.path "$raw")
 case "$path" in /*) ;; *) die "worktree.path must be absolute after expansion: $path" ;; esac
 
 if [ ! -d "$path" ]; then

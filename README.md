@@ -187,11 +187,13 @@ worktree:
   create: lp worktree add "$TICKET_ID"
 ```
 
-- `repository:` is the main checkout of your repo. `init` fills it in.
+- `repository:` is the main checkout of your repo. `init` fills it in. Like `path:`, it expands a
+  leading `~` and any `$NAME` or `${NAME}` from the environment (see `path:`).
 - `worktree:` holds two keys:
-  - `path:` (required) is where each ticket's worktree goes. Only `~` and `$TICKET_ID` (the ticket
-    ID) are expanded, and the result must be an absolute path. `init` writes
-    `<pack>-worktrees/$TICKET_ID` next to the repo.
+  - `path:` (required) is where each ticket's worktree goes. A leading `~` and any `$NAME` or
+    `${NAME}` from the loop's environment are expanded (`$TICKET_ID` is the ticket ID). Nothing is
+    run, and an unset variable stops the ticket with an error. The result must be an absolute path.
+    `init` writes `<pack>-worktrees/$TICKET_ID` next to the repo.
   - `create:` (optional) is the command that makes the worktree. It runs in `repository`, with
     `TICKET_ID` and `TICKET_WORKTREE` (the expanded `path`) set. It must create the folder that
     `path` names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.

@@ -36,6 +36,12 @@
 #   ticket_cap <file>       cuts a file to $SHERPA_MAX_OUTPUT bytes (default 1000000), noting it.
 #   ticket_diag <why> <rc|""> <stdout-file> <stderr-file>  prints a failed run's last-run text: the
 #                           reason, the exit code (when rc is given), last 20 stderr lines, stdout.
+#   expand_path <raw>       prints <raw> with a leading ~ or ~/ turned into $HOME and every $NAME or
+#                           ${NAME} (NAME = letters, digits, _; not starting with a digit) turned into
+#                           that variable's value from the environment. Nothing is run: no eval, no
+#                           command substitution; $(...), backticks, a lone $ and $1 stay as text,
+#                           and a value is not scanned again. An empty-but-set variable gives empty.
+#                           An unset variable prints its name instead and returns 1.
 #   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
 #                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
 # Exit:   0, except ticket_get: 1 when the front matter is not valid YAML. section_of: 1 for an
@@ -254,6 +260,20 @@ ticket_diag() {
   [ -z "$2" ] || printf 'exit code: %s\n' "$2"
   echo "stderr (last 20 lines):"; tail -n 20 "$4" | tail -c "$max"
   printf '\nstdout:\n'; cat "$3"
+}
+
+expand_path() {
+  local _ep_s=$1 _ep_out="" _ep_name _ep_a='^\{([A-Za-z_][A-Za-z0-9_]*)\}(.*)$' _ep_b='^([A-Za-z_][A-Za-z0-9_]*)(.*)$'
+  case "$_ep_s" in "~" | "~/"*) _ep_out=$HOME; _ep_s=${_ep_s#"~"} ;; esac
+  while [[ $_ep_s == *'$'* ]]; do
+    _ep_out+=${_ep_s%%'$'*}; _ep_s=${_ep_s#*'$'}
+    if [[ $_ep_s =~ $_ep_a ]] || [[ $_ep_s =~ $_ep_b ]]; then
+      _ep_name=${BASH_REMATCH[1]}; _ep_s=${BASH_REMATCH[2]}
+      [ -n "${!_ep_name+x}" ] || { printf '%s\n' "$_ep_name"; return 1; }
+      _ep_out+=${!_ep_name}
+    else _ep_out+='$'; fi
+  done
+  printf '%s\n' "$_ep_out$_ep_s"
 }
 
 lock_acquire() {

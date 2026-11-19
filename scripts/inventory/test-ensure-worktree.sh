@@ -45,6 +45,18 @@ pack_in "$HOME/tilde/T-3"
 settings "$repository" '~/tilde/$TICKET_ID'
 run T-3; assert_eq "tilde" "$out" "$HOME/tilde/T-3"
 
+# $HOME, ${HOME} and a custom variable expand in worktree.path and repository; ~ in repository
+pack_in "$HOME/w/T-3"
+settings "$repository" '$HOME/w/$TICKET_ID'; run T-3; assert_eq "\$HOME path" "$out" "$HOME/w/T-3"
+settings "$repository" '${HOME}/w/${TICKET_ID}'; run T-3; assert_eq "\${HOME} path" "$out" "$HOME/w/T-3"
+ln -s "$repository" "$HOME/repo-link"
+mk_pack="mkdir -p \"\$TICKET_WORKTREE/.sherpa\"; echo 'name: p' >\"\$TICKET_WORKTREE/.sherpa/project.yaml\""
+settings '~/repo-link' "$tmp/wt/\$TICKET_ID" "pwd -P >$tmp/where; $mk_pack"; run T-10
+assert_exit "~ in repository exit" "$rc" 0; assert_eq "~ in repository cwd" "$(cat "$tmp/where" 2>/dev/null)" "$repository"
+rm -rf "$tmp/wt/T-11" "$tmp/where"; settings '$TEST_REPO_DIR/repo' "$tmp/wt/\$TICKET_ID" "pwd -P >$tmp/where; $mk_pack"
+TEST_REPO_DIR=$tmp run T-11
+assert_exit "custom var in repository exit" "$rc" 0; assert_eq "custom var in repository cwd" "$(cat "$tmp/where" 2>/dev/null)" "$repository"
+
 # the default create makes a real worktree (the branch holds the pack file)
 git init -q "$repository" && pack_in "$repository" && git -C "$repository" add -A && git -C "$repository" commit -qm init
 settings "$repository" "$tmp/wt/\$TICKET_ID"
@@ -69,6 +81,14 @@ settings "$repository" "$tmp/wt/\$TICKET_ID" "true"; bad "still missing" "still 
 mkdir -p "$tmp/wt/T-8"; settings "$repository" "$tmp/wt/\$TICKET_ID"; bad "no pack" "no pack found" T-8
 pack_in "$tmp/wt/T-9" other
 bad "other pack" "detects pack 'other'" T-9
+# an unset variable names itself; nothing in a path value is ever run
+settings "$repository" '$NOPE_UNSET/$TICKET_ID'; bad "unset in path" "worktree.path uses unset variable \$NOPE_UNSET" T-5
+settings '${NOPE_REPO}/r' "$tmp/wt/\$TICKET_ID"; bad "unset in repository" "repository uses unset variable \$NOPE_REPO" T-5
+settings "$repository" "\$(touch $tmp/pwned)/\$TICKET_ID"; bad "cmd subst" "must be absolute" T-5
+settings "$repository" "'\`touch $tmp/pwned2\`/\$TICKET_ID'"; bad "backtick" "must be absolute" T-5
+settings "$repository" "$tmp/wt/\$(touch $tmp/pwned3)"; run T-13  # a folder with that literal name
+assert_exit "cmd subst in abs path exit" "$rc" 0; assert_eq "cmd subst in abs path literal" "$out" "$tmp/wt/\$(touch $tmp/pwned3)"
+[ ! -e "$tmp/pwned" ] && [ ! -e "$tmp/pwned2" ] && [ ! -e "$tmp/pwned3" ] || { echo "FAIL [path value ran code]"; fail=1; }
 n=$(printf '%s\n' "${msgs[@]}" | sed "s/T-[0-9]//; s/$(printf '%s' "$tmp" | sed 's/[.[\*^$/]/\\&/g')[^ ]*//" | sort -u | wc -l)
 assert_eq "messages distinct" "$n" "${#msgs[@]}"
 

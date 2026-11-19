@@ -27,6 +27,26 @@ assert_eq "section analysis" "$(section_of analysis)" "analysis|## Analysis"
 assert_eq "section last-run" "$(section_of last-run)" "last-run|## Last run"
 section_of nope >/dev/null; assert_exit "section unknown" $? 1
 
+# --- expand_path: ~ and $NAME, never run anything, no second pass
+export HOME=/h EP_A=aa EP_E="" EP_X='$EP_A'
+assert_eq "expand ~" "$(expand_path '~')" "/h"
+assert_eq "expand ~/x" "$(expand_path '~/x/$EP_A')" "/h/x/aa"
+assert_eq "expand ~user stays" "$(expand_path '~bob/x')" "~bob/x"
+assert_eq "expand mid ~ stays" "$(expand_path '/a/~/b')" "/a/~/b"
+assert_eq "expand braces" "$(expand_path '/p/${EP_A}b/$EP_A.c')" "/p/aab/aa.c"
+assert_eq "expand empty-but-set" "$(expand_path '/p/$EP_E/q')" "/p//q"
+assert_eq "expand no re-scan" "$(expand_path '$EP_X')" '$EP_A'
+assert_eq "expand lone dollar" "$(expand_path 'a$')" 'a$'
+assert_eq "expand dollar space" "$(expand_path '$ x')" '$ x'
+assert_eq "expand positional" "$(expand_path '/p/$1/$9')" '/p/$1/$9'
+assert_eq "expand unclosed brace" "$(expand_path '/p/${EP_A')" '/p/${EP_A'
+assert_eq "expand cmd subst text" "$(expand_path '/p/$(touch '"$tmp"'/x)')" "/p/\$(touch $tmp/x)"
+assert_eq "expand backtick text" "$(expand_path '/p/`touch '"$tmp"'/y`')" "/p/\`touch $tmp/y\`"
+[ ! -e "$tmp/x" ] && [ ! -e "$tmp/y" ] || { echo "FAIL [expand ran code]"; fail=1; }
+out=$(expand_path '/p/$EP_A/$EP_NOPE/$EP_NOPE2'); assert_exit "expand unset exit" $? 1
+assert_eq "expand unset prints name" "$out" "EP_NOPE"
+out=$(expand_path '${EP_NOPE}'); assert_eq "expand unset braces" "$out" "EP_NOPE"
+
 # --- ticket_set / ticket_del
 # body holds a "---" line, "## " lines and no front matter
 printf '# Title\nwords\n---\nmore\n## Notes\n---\nend\n' >"$tmp/nofm.md"; snap "$tmp/nofm.md"
