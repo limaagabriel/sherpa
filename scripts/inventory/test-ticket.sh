@@ -176,6 +176,6 @@ mv "$tmp/inventory/p/frame/LPD-1.md" "$tmp/inventory/p/shape/LPD-1.md"
 assert_eq "find after move" "$(ticket_find p LPD-1)" "$tmp/inventory/p/shape/LPD-1.md"
 ticket_find p NOPE >/dev/null; assert_exit "find unknown" $? 1
 ticket_find p ../q/done/LPD-1 >/dev/null; assert_exit "find bad id" $? 1
-ticket_find nopack LPD-1 >/dev/null; assert_exit "find unknown pack" $? 1
+ticket_find noproject LPD-1 >/dev/null; assert_exit "find unknown project" $? 1
 
 [ "$fail" -eq 0 ] && echo "PASS: all ticket cases" || { echo FAILED; exit 1; }

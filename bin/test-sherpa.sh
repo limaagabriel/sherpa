@@ -36,9 +36,9 @@ started() { for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do [ -n
 sherpa_run() { out=$(bash "$sherpa" "$@" 2>"$tmp/err"); rc=$?; err=$(cat "$tmp/err"); }
 
 # init forwards args and exit code
-: >"$CALLS"; STUB_RC=0 sherpa_run init mypack --repository /some/where
+: >"$CALLS"; STUB_RC=0 sherpa_run init myproject --repository /some/where
 assert_exit "init rc" "$rc" 0
-assert_eq "init args" "$(calls)" "ensure-board mypack --repository /some/where"
+assert_eq "init args" "$(calls)" "ensure-board myproject --repository /some/where"
 : >"$CALLS"; STUB_RC=1 sherpa_run init
 assert_exit "init forwards failure" "$rc" 1
 assert_eq "init no args" "$(calls)" "ensure-board "
@@ -58,7 +58,7 @@ assert_contains "once lock message" "$err" "another loop holds p"
 codes 0 1 2; sherpa_run loop p --every 1
 assert_exit "stop on 2" "$rc" 2
 assert_eq "three passes before 2" "$(runs | wc -l | tr -d ' ')" "3"
-assert_eq "pack passed to run.sh" "$(runs | sort -u)" "run p"
+assert_eq "project passed to run.sh" "$(runs | sort -u)" "run p"
 codes 1 3; sherpa_run loop p --every 1
 assert_exit "stop on 3" "$rc" 3
 assert_eq "two passes before 3" "$(runs | wc -l | tr -d ' ')" "2"
@@ -69,12 +69,12 @@ assert_not_contains "no lock message on 2" "$(codes 2; sherpa_run loop p; echo "
 codes 0 2; s=$(date +%s); sherpa_run loop p --every 2; e=$(date +%s)
 [ $((e - s)) -ge 2 ] || { echo "FAIL [every waits]: took $((e - s))s"; fail=1; }
 
-# an unknown pack (build-board fails) stops loop before any pass, with --once too
+# an unknown project (build-board fails) stops loop before any pass, with --once too
 for extra in "" "--once"; do
   codes 0; STUB_RC=1 sherpa_run loop typo $extra
-  assert_exit "unknown pack stops [$extra]" "$rc" 2
-  assert_eq "unknown pack runs nothing [$extra]" "$(runs)" ""
-  assert_eq "unknown pack checked [$extra]" "$(calls)" "build-board typo"
+  assert_exit "unknown project stops [$extra]" "$rc" 2
+  assert_eq "unknown project runs nothing [$extra]" "$(runs)" ""
+  assert_eq "unknown project checked [$extra]" "$(calls)" "build-board typo"
 done
 
 # a signal stops the loop and its child, even while waiting

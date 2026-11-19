@@ -18,8 +18,8 @@ workflow; sherpa offers the tools.
 - **`/restory`** — rewrites the current branch's commits into a clean, reviewable sequence.
 - **`/invoke <name|path> [args]`** — runs a pack skill or any markdown file as a skill; no args
   lists them.
-- **`sherpa init` / `sherpa loop <pack>`** (inventory) — opt-in ticket board under
-  `~/.config/sherpa/inventory/<pack>/`; the loop runs each ticket's next stage headless and parks
+- **`sherpa init` / `sherpa loop <project>`** (inventory) — opt-in ticket board under
+  `~/.config/sherpa/inventory/<project>/`; the loop runs each ticket's next stage headless and parks
   it at every gate. See README "Inventory".
 
 ## Versioning

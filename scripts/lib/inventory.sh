@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Usage: source scripts/lib/inventory.sh; ticket_state <file> <pack> | ticket_get <file> <field> ...
-# Input:  tickets are <inventory_dir>/<pack>/<stage>/<ID>.md; see scripts/lib/dirs.sh.
+# Usage: source scripts/lib/inventory.sh; ticket_state <file> <project> | ticket_get <file> <field> ...
+# Input:  tickets are <inventory_dir>/<project>/<stage>/<ID>.md; see scripts/lib/dirs.sh.
 # Output: STAGES (backlog, the middle stages named by LAYERS, done), PROTOCOL, ACTION_VALUES.
 #   Functions (read side):
 #   section_of <stage|marker>  prints "<marker>|<heading>", e.g. "plan|## Plan"; takes a stage
 #                           or a marker name (frame plan implementation analysis last-run).
 #   ticket_get <file> <field>  prints a front matter value, empty when absent.
 #   ticket_title <file>     prints the first "# " line outside front matter, else the ID.
-#   running_id <pack>       prints the ID in .lock/ticket while .lock/pid is alive, else nothing.
-#   ticket_state <file> <pack>  prints backlog|done|running|you|queued|bad:<reason>.
+#   running_id <project>       prints the ID in .lock/ticket while .lock/pid is alive, else nothing.
+#   ticket_state <file> <project>  prints backlog|done|running|you|queued|bad:<reason>.
 #   valid_id <ID>           succeeds when the ID is letters, digits, . _ - and starts with a
 #                           letter or digit.
 # Write side (touch only the loop's own front matter fields and marker sections):
@@ -19,8 +19,8 @@
 #                           or inserts "## <Heading>" + markers before the line "## Answers", else
 #                           at the end after a blank line. A missing final newline gets added.
 #   ticket_section_del <file> <name>  removes heading, markers and content, plus one blank line.
-#   ticket_find <pack> <ID>  prints the path of <ID>.md in any STAGES folder; 1 when none.
-#   ticket_apply_result <pack> <ID> <stage> <done|gate|failed> <action> <content-file>  writes one
+#   ticket_find <project> <ID>  prints the path of <ID>.md in any STAGES folder; 1 when none.
+#   ticket_apply_result <project> <ID> <stage> <done|gate|failed> <action> <content-file>  writes one
 #                           run's output into the ticket where it is NOW (re-located with
 #                           ticket_find): the stage's section (last-run when failed), parked: <folder
 #                           now>, actionNeeded: <action> (fix when failed). Lines that would break
@@ -29,9 +29,9 @@
 #                           analyze/ and done/ has no such file; otherwise it becomes gate. A
 #                           non-failed run deletes last-run. Prints the result (done|gate|failed);
 #                           on exit 1 prints the reason instead.
-#   ticket_save_lost <pack> <ID> <content-file>  when the write failed: parks the ticket (if it
+#   ticket_save_lost <project> <ID> <content-file>  when the write failed: parks the ticket (if it
 #                           exists) with actionNeeded: fix and keeps the content as
-#                           <stage dir>/<ID>.lost-output.txt (the pack dir when the ticket is gone);
+#                           <stage dir>/<ID>.lost-output.txt (the project dir when the ticket is gone);
 #                           prints that path.
 #   ticket_cap <file>       cuts a file to $SHERPA_MAX_OUTPUT bytes (default 1000000), noting it.
 #   ticket_diag <why> <rc|""> <stdout-file> <stderr-file>  prints a failed run's last-run text: the
@@ -92,10 +92,10 @@ running_id() {
 valid_id() { [[ $1 =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; }
 
 ticket_state() {
-  local f=$1 pack=$2 id stage s v n=0 parked action ok=0
+  local f=$1 project=$2 id stage s v n=0 parked action ok=0
   id=$(basename "$f" .md); stage=$(basename "$(dirname "$f")")
   if ! valid_id "$id"; then echo "bad:invalid ID (letters, digits, . _ - only)"; return 0; fi
-  for s in "${STAGES[@]}"; do [ -f "$(inventory_dir)/$pack/$s/$id.md" ] && n=$((n + 1)); done
+  for s in "${STAGES[@]}"; do [ -f "$(inventory_dir)/$project/$s/$id.md" ] && n=$((n + 1)); done
   if [ "$n" -gt 1 ]; then echo "bad:same ID in more than one folder"; return 0; fi
   if ! { parked=$(ticket_get "$f" parked) && action=$(ticket_get "$f" actionNeeded); }; then
     echo "bad:front matter is not valid YAML"; return 0
@@ -103,7 +103,7 @@ ticket_state() {
   for v in "${ACTION_VALUES[@]}"; do [ "$v" = "$action" ] && ok=1; done
   if [ -n "$action" ] && [ "$ok" -eq 0 ]; then echo "bad:unknown actionNeeded '$action'"; return 0; fi
   case "$stage" in backlog | done) echo "$stage"; return 0 ;; esac
-  if [ "$id" = "$(running_id "$pack")" ]; then echo running
+  if [ "$id" = "$(running_id "$project")" ]; then echo running
   elif [ -n "$action" ] && [ "$parked" = "$stage" ]; then echo you
   else echo queued; fi
   return 0
@@ -216,9 +216,9 @@ ticket_find() {
 }
 
 ticket_apply_result() {
-  local pack=$1 id=$2 stage=$3 kind=$4 action=$5 cf=$6 f cur sec=$3 dest
-  f=$(ticket_find "$pack" "$id") || { echo "ticket is gone: $id"; return 1; }
-  cur=$(basename "$(dirname "$f")"); dest=$(inventory_dir)/$pack/done/$id.md
+  local project=$1 id=$2 stage=$3 kind=$4 action=$5 cf=$6 f cur sec=$3 dest
+  f=$(ticket_find "$project" "$id") || { echo "ticket is gone: $id"; return 1; }
+  cur=$(basename "$(dirname "$f")"); dest=$(inventory_dir)/$project/done/$id.md
   [ "$kind" = failed ] && { sec=last-run; action=fix; }
   [ "$kind" = done ] && { [ "$stage" != analyze ] || [ "$cur" != analyze ]; } && kind=gate
   sed -e 's/^## Answers$/\\## Answers/' -e 's/^<!-- \(\/\{0,1\}\)sherpa:/<!-- \\\1sherpa:/' "$cf" >"$cf.safe" ||

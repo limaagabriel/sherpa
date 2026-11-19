@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Usage: build-board.sh <pack>
-# Input:  <inventory_dir>/<pack>/<stage>/<ID>.md; only *.md directly in a stage folder count.
-# Output: writes <inventory_dir>/<pack>/board.md, groups Waiting on you, Agent running,
+# Usage: build-board.sh <project>
+# Input:  <inventory_dir>/<project>/<stage>/<ID>.md; only *.md directly in a stage folder count.
+# Output: writes <inventory_dir>/<project>/board.md, groups Waiting on you, Agent running,
 #   Queued for agent, Backlog, Done, Needs fixing, one "[title](stage/ID.md) — stage" line per
 #   ticket; prints the board path.
-# Exit:   0 (a broken ticket lands in Needs fixing), 1 unknown pack, 2 usage.
+# Exit:   0 (a broken ticket lands in Needs fixing), 1 unknown project, 2 usage.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$here/../lib/inventory.sh"
 
-[ $# -eq 1 ] || { echo "usage: build-board.sh <pack>" >&2; exit 2; }
-pack=$1
-dir="$(inventory_dir)/$pack"
-valid_id "$pack" || dir=/nonexistent
-[ -d "$dir" ] || { echo "build-board: unknown pack: $pack" >&2; exit 1; }
+[ $# -eq 1 ] || { echo "usage: build-board.sh <project>" >&2; exit 2; }
+project=$1
+dir="$(inventory_dir)/$project"
+valid_id "$project" || dir=/nonexistent
+[ -d "$dir" ] || { echo "build-board: unknown project: $project" >&2; exit 1; }
 
 you= running= queued= backlog= done_= bad=
 for s in "${STAGES[@]}"; do
@@ -21,7 +21,7 @@ for s in "${STAGES[@]}"; do
     [ -f "$f" ] || continue
     id=$(basename "$f" .md)
     link="- [$(ticket_title "$f")]($s/$id.md) — $s"
-    state=$(ticket_state "$f" "$pack")
+    state=$(ticket_state "$f" "$project")
     case "$state" in
       you) you+="$link ($(ticket_get "$f" actionNeeded))"$'\n' ;;
       running) running+="$link"$'\n' ;;

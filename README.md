@@ -134,11 +134,11 @@ The verification is a check you can run again.
 
 ## Inventory (optional)
 
-The inventory is a ticket board for one pack. Each ticket is a markdown file, and its folder shows
-its stage. `sherpa loop <pack>` runs each queued ticket's next stage headless (no one is there to
-answer prompts) in a fresh session. It runs inside the ticket's own git worktree, a second checkout
-of your repo. Each run stops at the next human gate and hands the ticket back to you. You drive it
-by moving files and deleting one line.
+The inventory is a ticket board for one project, any git repository. Each ticket is a markdown
+file, and its folder shows its stage. `sherpa loop <project>` runs each queued ticket's next stage
+headless (no one is there to answer prompts) in a fresh session. It runs inside the ticket's own
+git worktree, a second checkout of your repo. Each run stops at the next human gate and hands the
+ticket back to you. You drive it by moving files and deleting one line.
 
 ### Install the CLI
 
@@ -152,20 +152,25 @@ Keep the CLI on the same version as the plugin. Both must agree on the unattende
 (`protocol=1` in `protocols/unattended.md`). If they differ, the ticket fails with
 `plugin and CLI versions differ`, and the reason goes to `## Last run`.
 
-### Set up a pack
+### Set up a project
 
-First, give the repo a pack (see [Project packs](#project-packs-optional)). Then, inside the repo:
+A project is one board for one git repository. It needs no pack. Inside the repo:
 
 ```sh
-sherpa init                              # the pack found for this repo
-sherpa init <pack> --repository <path>   # or name the pack and the repo yourself
+sherpa init                                 # board named after the repo folder
+sherpa init <project> --repository <path>   # or pick the name and the repo yourself
 ```
 
-`init` creates `~/.config/sherpa/inventory/<pack>/` and prints its path. `SHERPA_CONFIG_DIR` or
+The board's ID (`<project>`) is just a name you pick: letters, digits, `.`, `_` and `-`. It defaults
+to the folder name of the repository's main worktree; if that is not a valid name, `init` asks you to
+pass one. If the worktree has a sherpa pack (see [Project packs](#project-packs-optional)), the
+headless skills pick it up like any session (the SessionStart hook); otherwise they run with no pack.
+
+`init` creates `~/.config/sherpa/inventory/<project>/` and prints its path. `SHERPA_CONFIG_DIR` or
 `XDG_CONFIG_HOME` change the base. The folder holds:
 
 ```
-~/.config/sherpa/inventory/<pack>/
+~/.config/sherpa/inventory/<project>/
   settings.yaml        # your settings; written once, never overwritten
   board.md             # the generated board; never edit by hand
   .lock/               # pid and ticket ID while a pass runs
@@ -193,7 +198,10 @@ worktree:
   - `path:` (required) is where each ticket's worktree goes. A leading `~` and any `$NAME` or
     `${NAME}` from the loop's environment are expanded (`$TICKET_ID` is the ticket ID). Nothing is
     run, and an unset variable stops the ticket with an error. The result must be an absolute path.
-    `init` writes `<pack>-worktrees/$TICKET_ID` next to the repo.
+    `init` writes `<project>-worktrees/$TICKET_ID` next to the repo. A folder that already
+    exists at the path must be a separate worktree root of `repository` (not the main checkout, not
+    a subfolder); otherwise the ticket fails with
+    `<path> is not a git worktree of <repository>`. The same check runs after `create:`.
   - `create:` (optional) is the command that makes the worktree. It runs in `repository`, with
     `TICKET_ID` and `TICKET_WORKTREE` (the expanded `path`) set. It must create the folder that
     `path` names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.
@@ -229,16 +237,6 @@ them.
 Only the `claude -p` runner is tested. For Codex CLI or pi, a runner works if it reads
 `TICKET_STAGE` and `TICKET_FILE`, follows `protocols/unattended.md`, and prints the `STATUS:` line.
 That path is untested.
-
-For a workspace pack, its `detect` must match `worktree.path`. Otherwise the ticket fails. The text
-`no pack found in …` or `detects pack …` appears in the stderr part of `## Last run`; the reason
-line there is `worktree: could not be prepared`. For a worktree under `lp-worktrees/`:
-
-```yaml
-detect: case "$CWD" in */lp-worktrees/*) exit 0 ;; *) exit 1 ;; esac
-```
-
-A local pack (`.sherpa/project.yaml` committed in the repo) needs no `detect`.
 
 ### Write a ticket
 
@@ -324,17 +322,17 @@ IDs stay the same.
 ### Run it
 
 ```sh
-sherpa loop <pack>               # one pass, wait 300 s, repeat
-sherpa loop <pack> --every 60    # wait 60 s between passes instead
-sherpa loop <pack> --once        # one pass, then exit
-sherpa board <pack>              # refresh board.md and print it
+sherpa loop <project>            # one pass, wait 300 s, repeat
+sherpa loop <project> --every 60 # wait 60 s between passes instead
+sherpa loop <project> --once     # one pass, then exit
+sherpa board <project>           # refresh board.md and print it
 ```
 
 - Ctrl-C stops the loop and the agent it started. A TERM signal does the same.
-- Run one loop per pack. If a pass finds the lock held by another pass, the loop stops with
-  `another loop holds <pack>` (exit 3).
+- Run one loop per project. If a pass finds the lock held by another pass, the loop stops with
+  `another loop holds <project>` (exit 3).
 - A pass with a failed ticket does not stop the loop; it keeps going. Exit 2 (no runner, unknown
-  pack, bad usage) does stop it.
+  project, bad usage) does stop it.
 - The board groups tickets into **Waiting on you**, **Agent running**, **Queued for agent**,
   **Backlog**, **Done**, and **Needs fixing**. The last holds broken tickets: a bad ID, one ID in
   two folders, broken front matter, or an unknown `actionNeeded:` value.
@@ -345,8 +343,8 @@ sherpa board <pack>              # refresh board.md and print it
 
 ### Trust
 
-- `sherpa init` and the worktree check run the `detect` of the packs they find. Use only repos you
-  trust.
+- `runner` and `worktree.create` run shell from `settings.yaml`, and the unattended agent reads
+  your repo. Use only repos you trust.
 - The unattended agent can edit any file in its worktree, including hook scripts that `git commit`
   runs. Review the code at the `review` gate.
 - `## Last run` and `.lost-output.txt` files can hold secrets from stderr or stdout. Do not share a

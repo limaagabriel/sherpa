@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: test-run.sh
-# Input:  none; builds a fake pack, worktrees and runner in a temp SHERPA_CONFIG_DIR (its path
-#   holds a space) and HOME. Needs yq.
+# Input:  none; builds a fake project, a git repo with worktrees and a runner in a temp
+#   SHERPA_CONFIG_DIR (its path holds a space) and HOME. Needs yq and git.
 # Output: "PASS: all run cases" or FAIL lines plus "FAILED".
 # Exit:   0 when every case passes, 1 otherwise.
 set -u
@@ -13,8 +13,10 @@ source "$here/../lib/assert.sh"
 export SHERPA_CONFIG_DIR="$tmp/cfg dir" HOME="$tmp/home" CTL="$tmp/ctl"
 mkdir -p "$HOME" "$CTL"
 source "$here/../lib/inventory.sh"
-pack=p; inv=$(inventory_dir)/$pack; conf=$inv/settings.yaml
+project=p; inv=$(inventory_dir)/$project; conf=$inv/settings.yaml
 mkdir -p "$inv"
+export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
+repo="$tmp/repo"; git init -q "$repo"; git -C "$repo" commit -q --allow-empty -m init
 
 # the fake runner: logs, runs hook (a bash file), prints err and out, exits rc; each file is
 # taken from $CTL as <name>.<ID> first, else <name>
@@ -28,19 +30,19 @@ pick() { if [ -f "$CTL/$1.$id" ]; then echo "$CTL/$1.$id"; else echo "$CTL/$1"; 
 exit "$(cat "$(pick rc)" 2>/dev/null || echo 0)"
 RUNNER
 settings() { # <runner> [create]: worktrees live under $tmp/wt/<ID>
-  { echo "repository: $tmp"; [ -z "$1" ] || echo "runner: '$1'"; echo "worktree:"
+  { echo "repository: $repo"; [ -z "$1" ] || echo "runner: '$1'"; echo "worktree:"
     echo "  path: $tmp/wt/\$TICKET_ID"; [ -z "${2:-}" ] || echo "  create: '$2'"; } >"$conf"
 }
 settings "bash $tmp/runner.sh"
-reset() { rm -rf "$CTL"/* "$inv/.lock" "$inv/board.md" "$tmp/wt" "$inv"/*.lost-output.txt
+reset() { rm -rf "$CTL"/* "$inv/.lock" "$inv/board.md" "$tmp/wt" "$inv"/*.lost-output.txt; git -C "$repo" worktree prune
   for s in "${STAGES[@]}"; do rm -rf "${inv:?}/$s"; mkdir -p "$inv/$s"; done; }
 mk() { # <stage> <ID> [<parked> <actionNeeded>]
   { [ -z "${3:-}" ] || printf -- '---\nparked: %s\nactionNeeded: %s\n---\n' "$3" "$4"
     printf '# Title %s\nbody words\n' "$2"; } >"$inv/$1/$2.md"
-  mkdir -p "$tmp/wt/$2/.sherpa"; echo "name: $pack" >"$tmp/wt/$2/.sherpa/project.yaml"
+  [ -d "$tmp/wt/$2" ] || git -C "$repo" worktree add -q --detach "$tmp/wt/$2"
 }
 ctl() { printf '%s' "$2" >"$CTL/$1"; }  # <file> <content>
-go() { out=$(bash "$here/run.sh" "$pack" 2>"$tmp/rerr" <<<leak); rc=$?; rerr=$(cat "$tmp/rerr"); }
+go() { out=$(bash "$here/run.sh" "$project" 2>"$tmp/rerr" <<<leak); rc=$?; rerr=$(cat "$tmp/rerr"); }
 sec() { sed -n "/^<!-- sherpa:$2 -->\$/,/^<!-- \/sherpa:$2 -->\$/p" "$1"; }  # <file> <marker>
 count() { grep -c -- "$2" "$1" 2>/dev/null; true; }  # <file> <fixed text>
 runs() { [ -f "$CTL/log" ] && wc -l <"$CTL/log" | tr -d ' ' || echo 0; }
@@ -51,7 +53,7 @@ table() { # <stage> <marker> <heading> <default action>
   reset; mk "$L" T-1
   ctl out $'STATUS: GATE protocol=1 actionNeeded=answers\nthe output\n## Waiting on you\nQ1: why?\n'
   ctl err "noise on stderr"; go
-  assert_exit "$L gate exit" "$rc" 0; assert_eq "$L gate print" "$out" "TICKET $pack/T-1 $L: gate"
+  assert_exit "$L gate exit" "$rc" 0; assert_eq "$L gate print" "$out" "TICKET $project/T-1 $L: gate"
   assert_eq "$L gate parked" "$(ticket_get "$f" parked)" "$L"
   assert_eq "$L gate action" "$(ticket_get "$f" actionNeeded)" "answers"
   assert_contains "$L gate heading" "$(cat "$f")" "$h"$'\n'"<!-- sherpa:$m -->"$'\nthe output\n## Waiting on you'
@@ -75,20 +77,20 @@ table() { # <stage> <marker> <heading> <default action>
   reset; mk "$L" T-1; ctl out $'STATUS: DONE protocol=1\nverdict\n'; go
   assert_exit "$L done exit" "$rc" 0
   if [ "$L" = analyze ]; then
-    f="$inv/done/T-1.md"; assert_eq "$L done print" "$out" "TICKET $pack/T-1 $L: done"
+    f="$inv/done/T-1.md"; assert_eq "$L done print" "$out" "TICKET $project/T-1 $L: done"
     [ -f "$f" ] && [ ! -e "$inv/analyze/T-1.md" ] || { echo "FAIL [$L done move]"; fail=1; }
     assert_eq "$L done fields" "$(ticket_get "$f" parked)|$(ticket_get "$f" actionNeeded)" "|"
     assert_eq "$L done front matter" "$(head -n 1 "$f")" "# Title T-1"
     assert_contains "$L done section" "$(sec "$f" analysis)" "verdict"
   else
-    assert_eq "$L done is a gate" "$out" "TICKET $pack/T-1 $L: gate"
+    assert_eq "$L done is a gate" "$out" "TICKET $project/T-1 $L: gate"
     assert_eq "$L done parked" "$(ticket_get "$f" parked)/$(ticket_get "$f" actionNeeded)" "$L/$d"
   fi
 
   # FAILED, exit code, no STATUS, other protocol: all land in last-run, parked with fix
   f="$inv/$L/T-1.md"
   reset; mk "$L" T-1; ctl out $'STATUS: FAILED protocol=1\nit broke\n## Waiting on you\n'; go
-  assert_exit "$L failed exit" "$rc" 1; assert_eq "$L failed print" "$out" "TICKET $pack/T-1 $L: failed"
+  assert_exit "$L failed exit" "$rc" 1; assert_eq "$L failed print" "$out" "TICKET $project/T-1 $L: failed"
   assert_eq "$L failed fields" "$(ticket_get "$f" parked)/$(ticket_get "$f" actionNeeded)" "$L/fix"
   assert_contains "$L failed last-run" "$(sec "$f" last-run)" $'it broke\n## Waiting on you'
   assert_eq "$L failed no stage section" "$(sec "$f" "$m")" ""
@@ -134,7 +136,7 @@ assert_contains "kept body" "$(cat "$f")" $'# Title T-1\nbody words'
 reset; mk frame T-1 frame answers; mk shape T-2 shape review; mk backlog T-3; mk done T-4; mk implement T-5 frame approval
 ctl out $'STATUS: GATE protocol=1\nx\n'; go
 assert_eq "skipped: nothing ran" "$(runs)" 1
-assert_eq "only the moved ticket ran" "$out" "TICKET $pack/T-5 implement: gate"
+assert_eq "only the moved ticket ran" "$out" "TICKET $project/T-5 implement: gate"
 
 # --- order: right to left, one failure does not stop the pass
 reset; mk frame T-1; mk analyze T-2; mk implement T-3; mk shape T-4
@@ -150,7 +152,7 @@ assert_eq "section before answers" "$(grep -n -e '^## Frame$' -e '^## Answers$' 
 for L in analyze frame; do
   reset; mk "$L" T-1; ctl out $'STATUS: DONE protocol=1\nthe verdict\n'
   ctl hook "mv \"\$TICKET_FILE\" \"$inv/implement/\""; go; f="$inv/implement/T-1.md"
-  assert_eq "$L moved print" "$out" "TICKET $pack/T-1 $L: gate"
+  assert_eq "$L moved print" "$out" "TICKET $project/T-1 $L: gate"
   assert_eq "$L moved parked" "$(ticket_get "$f" parked)" "implement"
   assert_eq "$L moved action" "$(ticket_get "$f" actionNeeded)" "$([ $L = analyze ] && echo decision || echo approval)"
   assert_contains "$L moved output" "$(cat "$f")" "the verdict"
@@ -158,9 +160,9 @@ for L in analyze frame; do
 done
 reset; mk frame T-1; mk shape T-2; ctl out $'STATUS: GATE protocol=1\nx\n'
 ctl hook.T-1 'rm "$TICKET_FILE"'; go
-assert_exit "deleted exit" "$rc" 1; assert_contains "deleted print" "$out" "TICKET $pack/T-1 frame: failed"
+assert_exit "deleted exit" "$rc" 1; assert_contains "deleted print" "$out" "TICKET $project/T-1 frame: failed"
 assert_contains "deleted note" "$rerr" "ticket is gone"
-assert_contains "deleted: pass went on" "$out" "TICKET $pack/T-2 shape: gate"
+assert_contains "deleted: pass went on" "$out" "TICKET $project/T-2 shape: gate"
 reset; mk frame T-1; ctl out $'STATUS: GATE protocol=1\nx\n'
 ctl hook $'echo "<!-- sherpa:frame -->" >>"$TICKET_FILE"'; go
 assert_exit "broken markers exit" "$rc" 1; assert_contains "broken markers print" "$out" "T-1 frame: failed"
@@ -169,14 +171,14 @@ assert_contains "broken markers note" "$rerr" "cannot write section"
 # a frame DONE must not finish a ticket the user moved into analyze/
 reset; mk frame T-1; ctl out $'STATUS: DONE protocol=1\nthe plan\n'
 ctl hook "mv \"\$TICKET_FILE\" \"$inv/analyze/\""; go; f="$inv/analyze/T-1.md"
-assert_eq "frame DONE into analyze: print" "$out" "TICKET $pack/T-1 frame: gate"
+assert_eq "frame DONE into analyze: print" "$out" "TICKET $project/T-1 frame: gate"
 [ -f "$f" ] && [ ! -e "$inv/done/T-1.md" ] || { echo "FAIL [frame DONE into analyze: ticket left analyze/]"; fail=1; }
 assert_eq "frame DONE into analyze: fields" "$(ticket_get "$f" parked)/$(ticket_get "$f" actionNeeded)" "analyze/approval"
 assert_contains "frame DONE into analyze: section" "$(sec "$f" frame)" "the plan"
 # an analyze DONE must not overwrite a file that appeared in done/
 reset; mk analyze T-1; ctl out $'STATUS: DONE protocol=1\nverdict\n'
 ctl hook "echo precious >\"$inv/done/T-1.md\""; go
-assert_eq "done exists: print" "$out" "TICKET $pack/T-1 analyze: gate"
+assert_eq "done exists: print" "$out" "TICKET $project/T-1 analyze: gate"
 assert_eq "done exists: untouched" "$(cat "$inv/done/T-1.md")" "precious"
 assert_eq "done exists: parked" "$(ticket_get "$inv/analyze/T-1.md" parked)/$(ticket_get "$inv/analyze/T-1.md" actionNeeded)" "analyze/decision"
 assert_contains "done exists: note" "$rerr" "stays in analyze/"
@@ -210,7 +212,7 @@ assert_not_contains "capped stdout: bounded" "$(sec "$f" last-run)" "END"
 # --- a write that fails keeps the output, parks the ticket, and the loop stops re-running it
 reset; mk frame T-1; ctl out $'STATUS: GATE protocol=1\nthe lost words\n'
 ctl hook $'echo "<!-- sherpa:frame -->" >>"$TICKET_FILE"'; go; f="$inv/frame/T-1.md"
-assert_eq "lost: not queued" "$(ticket_state "$f" "$pack")" "you"
+assert_eq "lost: not queued" "$(ticket_state "$f" "$project")" "you"
 assert_eq "lost: fields" "$(ticket_get "$f" parked)/$(ticket_get "$f" actionNeeded)" "frame/fix"
 assert_contains "lost: output kept" "$(cat "$inv/frame/T-1.lost-output.txt")" "the lost words"
 assert_contains "lost: path in note" "$rerr" "$inv/frame/T-1.lost-output.txt"
@@ -223,7 +225,7 @@ rm -f "$inv/T-1.lost-output.txt"
 
 # --- a worktree that cannot be made: the reason is parked in the ticket
 reset; mk frame T-1; rm -rf "$tmp/wt/T-1"; settings "bash $tmp/runner.sh" 'exit 3'; go; f="$inv/frame/T-1.md"
-assert_exit "worktree exit" "$rc" 1; assert_eq "worktree print" "$out" "TICKET $pack/T-1 frame: failed"
+assert_exit "worktree exit" "$rc" 1; assert_eq "worktree print" "$out" "TICKET $project/T-1 frame: failed"
 assert_contains "worktree reason" "$(sec "$f" last-run)" "worktree.create failed"
 assert_not_contains "worktree: no exit code" "$(sec "$f" last-run)" "exit code"
 assert_eq "worktree fields" "$(ticket_get "$f" parked)/$(ticket_get "$f" actionNeeded)" "frame/fix"
@@ -266,7 +268,7 @@ assert_not_contains "board not stale" "$(cat "$inv/board.md")" "stale"
 settings ""; go; assert_exit "no runner exit" "$rc" 2; assert_contains "no runner msg" "$rerr" "set runner in settings.yaml"
 settings x; sed -i "s/^runner:.*/runner: ''/" "$conf"; go; assert_exit "empty runner exit" "$rc" 2
 settings "bash $tmp/runner.sh"
-bash "$here/run.sh" nope >/dev/null 2>&1; assert_exit "unknown pack" $? 1
+bash "$here/run.sh" nope >/dev/null 2>&1; assert_exit "unknown project" $? 1
 bash "$here/run.sh" >/dev/null 2>&1; assert_exit "no args" $? 2
 
 [ "$fail" -eq 0 ] && echo "PASS: all run cases" || { echo FAILED; exit 1; }

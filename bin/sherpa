@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Usage: sherpa init [<pack>] [--repository <path>]
-#        sherpa loop <pack> [--once] [--every <seconds>]
-#        sherpa board <pack>
+# Usage: sherpa init [<project>] [--repository <path>]
+#        sherpa loop <project> [--once] [--every <seconds>]
+#        sherpa board <project>
 #        sherpa help
 # Input:  the inventory scripts under <root>/scripts, found through the symlinks this file may be
 #   called by (chained, relative, no `readlink -f`). SHERPA_SCRIPTS overrides that scripts dir
 #   (for tests).
-# Output: init  runs inventory/ensure-board.sh with the same args (prints the pack dir).
-#   loop  runs inventory/run.sh <pack> once per pass, then waits --every seconds (a positive
-#   integer, default 300); --once makes one pass. First it checks the pack with build-board.sh
-#   (which also refreshes board.md). board runs inventory/build-board.sh <pack> and prints the
+# Output: init  runs inventory/ensure-board.sh with the same args (prints the project dir).
+#   loop  runs inventory/run.sh <project> once per pass, then waits --every seconds (a positive
+#   integer, default 300); --once makes one pass. First it checks the project with build-board.sh
+#   (which also refreshes board.md). board runs inventory/build-board.sh <project> and prints the
 #   board file.
 # Exit:   init and board: the script's own code. loop: a pass exiting 0 or 1 keeps it going; 2
-#   stops with 2; 3 prints "another loop holds <pack>" and stops with 3; with --once it exits
-#   with the pass's code. An unknown pack stops with 2 before any pass (build-board's message
+#   stops with 2; 3 prints "another loop holds <project>" and stops with 3; with --once it exits
+#   with the pass's code. An unknown project stops with 2 before any pass (build-board's message
 #   on stderr). Ctrl-C or a TERM stops the pass (run.sh and its runner) and the wait, then
 #   exits 130 or 143. Bad usage: 2 (usage on stderr). help or -h: usage on stdout, 0.
 set -euo pipefail
@@ -38,25 +38,25 @@ stop() {  # kill the child's whole process group (each job leads its own under s
 }
 
 cmd_loop() {
-  local pack= once=0 every=300 rc
+  local project= once=0 every=300 rc
   while [ $# -gt 0 ]; do
     case "$1" in
       --once) once=1; shift ;;
       --every) [ $# -ge 2 ] || usage; every=$2; shift 2 ;;
       -*) usage ;;
-      *) [ -z "$pack" ] || usage; pack=$1; shift ;;
+      *) [ -z "$project" ] || usage; project=$1; shift ;;
     esac
   done
-  [ -n "$pack" ] || usage
+  [ -n "$project" ] || usage
   case $every in ''|*[!0-9]*|0*) echo "sherpa: --every needs a positive integer" >&2; exit 2 ;; esac
-  bash "$scripts/inventory/build-board.sh" "$pack" >/dev/null || exit 2
+  bash "$scripts/inventory/build-board.sh" "$project" >/dev/null || exit 2
   set -m
   trap 'stop 130' INT; trap 'stop 143' TERM
   while :; do
-    bash "$scripts/inventory/run.sh" "$pack" & child=$!
+    bash "$scripts/inventory/run.sh" "$project" & child=$!
     wait "$child" && rc=0 || rc=$?
     child=
-    [ "$rc" -ne 3 ] || echo "sherpa: another loop holds $pack" >&2
+    [ "$rc" -ne 3 ] || echo "sherpa: another loop holds $project" >&2
     if [ "$once" = 1 ] || [ "$rc" -gt 1 ]; then exit "$rc"; fi
     sleep "$every" & child=$!
     wait "$child" || true
