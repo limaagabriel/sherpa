@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: sherpa init [<pack>] [--repo <path>]
+# Usage: sherpa init [<pack>] [--repository <path>]
 #        sherpa loop <pack> [--once] [--every <seconds>]
 #        sherpa board <pack>
 #        sherpa help

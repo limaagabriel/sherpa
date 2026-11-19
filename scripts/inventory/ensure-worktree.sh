@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Usage: ensure-worktree.sh <pack> <ID>
-# Input:  <inventory_dir>/<pack>/settings.yaml with `repo` (main worktree) and `worktree.path`
-#   (required; a leading ~ and $SHERPA_ID / ${SHERPA_ID} are expanded, nothing else), optional
-#   `worktree.create` (shell command, default: git worktree add -b "$SHERPA_ID" "$SHERPA_WORKTREE").
+# Input:  <inventory_dir>/<pack>/settings.yaml with `repository` (main worktree) and `worktree.path`
+#   (required; a leading ~ and $TICKET_ID / ${TICKET_ID} are expanded, nothing else), optional
+#   `worktree.create` (shell command, default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE").
 # Output: prints the ticket's absolute worktree path. It CREATES the worktree by running
-#   `worktree.create` via bash -c in `repo` (SHERPA_ID, SHERPA_WORKTREE exported, stdin
+#   `worktree.create` via bash -c in `repository` (TICKET_ID, TICKET_WORKTREE exported, stdin
 #   /dev/null, its stdout sent to stderr) when the path is missing; an existing path is reused.
 #   The path is derived on every call, never stored. Needs yq.
 # Exit:   0 worktree ready and pack detected there; 1 with a one-line reason on stderr (no
@@ -23,19 +23,19 @@ valid_id "$pack" || conf=/nonexistent
 valid_id "$id" || die "invalid ID: $id (letters, digits, . _ - only)"
 
 get() { yq ".$1 // \"\"" "$conf" 2>/dev/null || die "settings.yaml is not valid YAML: $conf"; }
-repo=$(get repo); raw=$(get worktree.path); create=$(get worktree.create)
-[ -n "$repo" ] || die "settings.yaml has no repo"
+repository=$(get repository); raw=$(get worktree.path); create=$(get worktree.create)
+[ -n "$repository" ] || die "settings.yaml has no repository"
 [ -n "$raw" ] || die "settings.yaml has no worktree.path"
-[ -n "$create" ] || create='git worktree add -b "$SHERPA_ID" "$SHERPA_WORKTREE"'
+[ -n "$create" ] || create='git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"'
 
 path=$raw
 case "$path" in "~" | "~/"*) path="$HOME${path#"~"}" ;; esac
-path=${path//'${SHERPA_ID}'/$id}; path=${path//'$SHERPA_ID'/$id}
+path=${path//'${TICKET_ID}'/$id}; path=${path//'$TICKET_ID'/$id}
 case "$path" in /*) ;; *) die "worktree.path must be absolute after expansion: $path" ;; esac
 
 if [ ! -d "$path" ]; then
-  [ -d "$repo" ] || die "repo is not a directory: $repo"
-  (cd "$repo" && SHERPA_ID=$id SHERPA_WORKTREE=$path bash -c "$create" </dev/null >&2) ||
+  [ -d "$repository" ] || die "repository is not a directory: $repository"
+  (cd "$repository" && TICKET_ID=$id TICKET_WORKTREE=$path bash -c "$create" </dev/null >&2) ||
     die "worktree.create failed for $id"
   [ -d "$path" ] || die "worktree.create ran but $path is still missing"
 fi

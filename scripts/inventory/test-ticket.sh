@@ -16,7 +16,7 @@ source "$here/../lib/inventory.sh"
 same() { cmp -s "$2" "$3" || { echo "FAIL [$1]: files differ: $2 vs $3"; fail=1; }; }  # <label> <a> <b>
 snap() { cp -p "$1" "$1.orig"; }  # keep a copy to compare against
 
-# --- section_of: every layer and marker name, and an unknown one
+# --- section_of: every stage and marker name, and an unknown one
 assert_eq "section frame" "$(section_of frame)" "frame|## Frame"
 assert_eq "section shape" "$(section_of shape)" "plan|## Plan"
 assert_eq "section plan" "$(section_of plan)" "plan|## Plan"
@@ -104,8 +104,8 @@ cp "$tmp/s.md" "$tmp/s.once"
 ticket_section_put "$tmp/s.md" plan "$tmp/c1.txt"; assert_exit "put twice" $? 0
 same "put is idempotent" "$tmp/s.md" "$tmp/s.once"
 assert_eq "one plan section" "$(grep -c 'sherpa:plan -->' "$tmp/s.md")" 2
-ticket_section_put "$tmp/s.md" shape "$tmp/c2.txt"  # a layer name reaches the same section
-assert_eq "layer name replaces" "$(grep -c '^## Plan$' "$tmp/s.md")" 1
+ticket_section_put "$tmp/s.md" shape "$tmp/c2.txt"  # a stage name reaches the same section
+assert_eq "stage name replaces" "$(grep -c '^## Plan$' "$tmp/s.md")" 1
 assert_not_contains "old content gone" "$(cat "$tmp/s.md")" "Sub heading"
 assert_contains "new content in" "$(cat "$tmp/s.md")" $'<!-- sherpa:plan -->\nsecond\n<!-- /sherpa:plan -->'
 ticket_section_del "$tmp/s.md" plan; assert_exit "del section" $? 0

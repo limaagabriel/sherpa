@@ -12,17 +12,17 @@ approval" and "ask right then" in the skill you were invoked as. Protocol versio
    in double quotes; drop them); the file name without `.md` is the ID.
    - The task is the first `# ` line (the title) plus the body above the first `<!-- sherpa:`
      marker.
-   - Output of earlier layers lives in marker sections, `<!-- sherpa:<name> -->` to
+   - Output of earlier stages lives in marker sections, `<!-- sherpa:<name> -->` to
      `<!-- /sherpa:<name> -->`, under a heading. Read them as if they were in your context. A plan
      section is approved.
-   - Section map (layer → marker name / heading): frame → `frame` / `## Frame`; shape → `plan` /
+   - Section map (stage → marker name / heading): frame → `frame` / `## Frame`; shape → `plan` /
      `## Plan`; implement → `implementation` / `## Implementation`; analyze → `analysis` /
      `## Analysis`; a failed earlier run → `last-run` / `## Last run`.
    - `## Answers` holds the user's replies, all rounds. It is theirs.
 3. **Resume, never start over.** If the ticket already has a section for your own layer, continue
    it: keep its discovery, apply every answer, keep unanswered questions with their ids, number
    new questions after the highest id, and re-run the layer's reviewers.
-4. **Per layer.**
+4. **Per stage.**
    - Frame: the task is the ticket.
    - Shape: the problem is the frame section. Earlier implement work exists when the ticket already
      has an implementation section, or when the worktree's branch (cwd) already has commits past

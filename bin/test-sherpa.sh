@@ -36,9 +36,9 @@ started() { for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do [ -n
 sherpa_run() { out=$(bash "$sherpa" "$@" 2>"$tmp/err"); rc=$?; err=$(cat "$tmp/err"); }
 
 # init forwards args and exit code
-: >"$CALLS"; STUB_RC=0 sherpa_run init mypack --repo /some/where
+: >"$CALLS"; STUB_RC=0 sherpa_run init mypack --repository /some/where
 assert_exit "init rc" "$rc" 0
-assert_eq "init args" "$(calls)" "ensure-board mypack --repo /some/where"
+assert_eq "init args" "$(calls)" "ensure-board mypack --repository /some/where"
 : >"$CALLS"; STUB_RC=1 sherpa_run init
 assert_exit "init forwards failure" "$rc" 1
 assert_eq "init no args" "$(calls)" "ensure-board "

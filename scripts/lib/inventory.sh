@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Usage: source scripts/lib/inventory.sh; ticket_state <file> <pack> | ticket_get <file> <field> ...
 # Input:  tickets are <inventory_dir>/<pack>/<stage>/<ID>.md; see scripts/lib/dirs.sh.
-# Output: STAGES (backlog, the layers, done), PROTOCOL, ACTION_VALUES. Functions (read side):
-#   section_of <layer|marker>  prints "<marker>|<heading>", e.g. "plan|## Plan"; takes a layer
+# Output: STAGES (backlog, the middle stages named by LAYERS, done), PROTOCOL, ACTION_VALUES.
+#   Functions (read side):
+#   section_of <stage|marker>  prints "<marker>|<heading>", e.g. "plan|## Plan"; takes a stage
 #                           or a marker name (frame plan implementation analysis last-run).
 #   ticket_get <file> <field>  prints a front matter value, empty when absent.
 #   ticket_title <file>     prints the first "# " line outside front matter, else the ID.
@@ -19,12 +20,12 @@
 #                           at the end after a blank line. A missing final newline gets added.
 #   ticket_section_del <file> <name>  removes heading, markers and content, plus one blank line.
 #   ticket_find <pack> <ID>  prints the path of <ID>.md in any STAGES folder; 1 when none.
-#   ticket_apply_result <pack> <ID> <layer> <done|gate|failed> <action> <content-file>  writes one
+#   ticket_apply_result <pack> <ID> <stage> <done|gate|failed> <action> <content-file>  writes one
 #                           run's output into the ticket where it is NOW (re-located with
-#                           ticket_find): the layer's section (last-run when failed), parked: <folder
+#                           ticket_find): the stage's section (last-run when failed), parked: <folder
 #                           now>, actionNeeded: <action> (fix when failed). Lines that would break
 #                           the ticket ("## Answers", sherpa markers) get a backslash. done moves the
-#                           ticket to done/ only when the layer is analyze and the ticket is still in
+#                           ticket to done/ only when the stage is analyze and the ticket is still in
 #                           analyze/ and done/ has no such file; otherwise it becomes gate. A
 #                           non-failed run deletes last-run. Prints the result (done|gate|failed);
 #                           on exit 1 prints the reason instead.
@@ -38,7 +39,7 @@
 #   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
 #                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
 # Exit:   0, except ticket_get: 1 when the front matter is not valid YAML. section_of: 1 for an
-#   unknown layer or marker. ticket_apply_result and lock_acquire: 1, see above. Write side: 1 on a bad argument, bad YAML, or markers that open but
+#   unknown stage or marker. ticket_apply_result and lock_acquire: 1, see above. Write side: 1 on a bad argument, bad YAML, or markers that open but
 #   do not close; the file is then left untouched. Never exits the caller. Needs yq. Sourced only;
 #   never run directly.
 
@@ -209,11 +210,11 @@ ticket_find() {
 }
 
 ticket_apply_result() {
-  local pack=$1 id=$2 layer=$3 kind=$4 action=$5 cf=$6 f cur sec=$3 dest
+  local pack=$1 id=$2 stage=$3 kind=$4 action=$5 cf=$6 f cur sec=$3 dest
   f=$(ticket_find "$pack" "$id") || { echo "ticket is gone: $id"; return 1; }
   cur=$(basename "$(dirname "$f")"); dest=$(inventory_dir)/$pack/done/$id.md
   [ "$kind" = failed ] && { sec=last-run; action=fix; }
-  [ "$kind" = done ] && { [ "$layer" != analyze ] || [ "$cur" != analyze ]; } && kind=gate
+  [ "$kind" = done ] && { [ "$stage" != analyze ] || [ "$cur" != analyze ]; } && kind=gate
   sed -e 's/^## Answers$/\\## Answers/' -e 's/^<!-- \(\/\{0,1\}\)sherpa:/<!-- \\\1sherpa:/' "$cf" >"$cf.safe" ||
     { echo "cannot read the output"; return 1; }
   ticket_section_put "$f" "$sec" "$cf.safe" ||

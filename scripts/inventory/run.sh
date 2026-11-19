@@ -3,9 +3,9 @@
 # Input:  <inventory_dir>/<pack>/settings.yaml (`runner`, a shell command; plus what
 #   ensure-worktree.sh reads) and the tickets in the pack's stage folders. Needs yq.
 # Output: one pass: each ticket whose state is queued, stages analyze, implement, shape, frame in
-#   that order, runs `bash -c <runner>` in its worktree (SHERPA_LAYER, SHERPA_TASK exported, stdin
+#   that order, runs `bash -c <runner>` in its worktree (TICKET_STAGE, TICKET_FILE exported, stdin
 #   /dev/null); the output goes into the ticket (see ticket_apply_result) and the ticket is
-#   parked. Prints "TICKET <pack>/<ID> <layer>: done|gate|failed" per ticket. Rebuilds board.md
+#   parked. Prints "TICKET <pack>/<ID> <stage>: done|gate|failed" per ticket. Rebuilds board.md
 #   at the start and after each ticket. Holds <pack>/.lock (pid, ticket ID) during the pass.
 #   A failed run keeps the runner's whole stdout in last-run; stdout is cut at $SHERPA_MAX_OUTPUT
 #   bytes (default 1000000). A write that fails parks the ticket (fix) and keeps the output in
@@ -41,7 +41,7 @@ for stage in analyze implement shape frame; do
     case $stage in implement) action=review ;; analyze) action=decision ;; esac
     : >"$tmp/body"; : >"$tmp/out"
     if wt=$(bash "$here/ensure-worktree.sh" "$pack" "$id" 2>"$tmp/err" </dev/null); then
-      (cd "$wt" && SHERPA_LAYER=$stage SHERPA_TASK=$task bash -c "$runner" \
+      (cd "$wt" && TICKET_STAGE=$stage TICKET_FILE=$task bash -c "$runner" \
         </dev/null >"$tmp/out" 2>"$tmp/err") || rc=$?
       ticket_cap "$tmp/out"
       line=$(awk '/^STATUS: /{print; exit}' "$tmp/out")

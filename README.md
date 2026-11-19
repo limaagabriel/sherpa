@@ -135,7 +135,7 @@ The verification is a check you can run again.
 ## Inventory (optional)
 
 The inventory is a ticket board for one pack. Each ticket is a markdown file, and its folder shows
-its stage. `sherpa loop <pack>` runs each queued ticket's next layer headless (no one is there to
+its stage. `sherpa loop <pack>` runs each queued ticket's next stage headless (no one is there to
 answer prompts) in a fresh session. It runs inside the ticket's own git worktree, a second checkout
 of your repo. Each run stops at the next human gate and hands the ticket back to you. You drive it
 by moving files and deleting one line.
@@ -157,8 +157,8 @@ Keep the CLI on the same version as the plugin. Both must agree on the unattende
 First, give the repo a pack (see [Project packs](#project-packs-optional)). Then, inside the repo:
 
 ```sh
-sherpa init                        # the pack found for this repo
-sherpa init <pack> --repo <path>   # or name the pack and the repo yourself
+sherpa init                              # the pack found for this repo
+sherpa init <pack> --repository <path>   # or name the pack and the repo yourself
 ```
 
 `init` creates `~/.config/sherpa/inventory/<pack>/` and prints its path. `SHERPA_CONFIG_DIR` or
@@ -181,22 +181,22 @@ digits, `.`, `_` and `-`, for example `LPD-12345.md`. An ID lives in one folder 
 Here is a Liferay-style example of the `worktree` keys:
 
 ```yaml
-repo: /home/you/liferay-portal
+repository: /home/you/liferay-portal
 worktree:
-  path: ~/lp-worktrees/$SHERPA_ID
-  create: lp worktree add "$SHERPA_ID"
+  path: ~/lp-worktrees/$TICKET_ID
+  create: lp worktree add "$TICKET_ID"
 ```
 
-- `repo:` is the main checkout of your repo. `init` fills it in.
+- `repository:` is the main checkout of your repo. `init` fills it in.
 - `worktree:` holds two keys:
-  - `path:` (required) is where each ticket's worktree goes. Only `~` and `$SHERPA_ID` (the ticket
+  - `path:` (required) is where each ticket's worktree goes. Only `~` and `$TICKET_ID` (the ticket
     ID) are expanded, and the result must be an absolute path. `init` writes
-    `<pack>-worktrees/$SHERPA_ID` next to the repo.
-  - `create:` (optional) is the command that makes the worktree. It runs in `repo`, with
-    `SHERPA_ID` and `SHERPA_WORKTREE` (the expanded `path`) set. It must create the folder that
-    `path` names. The default is `git worktree add -b "$SHERPA_ID" "$SHERPA_WORKTREE"`.
-- `runner:` (required) is the command that runs one layer. It runs in the ticket's worktree with
-  `SHERPA_LAYER` (`frame`, `shape`, `implement` or `analyze`) and `SHERPA_TASK` (the ticket
+    `<pack>-worktrees/$TICKET_ID` next to the repo.
+  - `create:` (optional) is the command that makes the worktree. It runs in `repository`, with
+    `TICKET_ID` and `TICKET_WORKTREE` (the expanded `path`) set. It must create the folder that
+    `path` names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.
+- `runner:` (required) is the command that runs one stage. It runs in the ticket's worktree with
+  `TICKET_STAGE` (`frame`, `shape`, `implement` or `analyze`) and `TICKET_FILE` (the ticket
   file's absolute path) set.
 
 `runner` and `worktree.create` run arbitrary shell from this file. Keep it yours.
@@ -205,7 +205,7 @@ worktree:
 
 ```yaml
 runner: |-
-  claude -p "/sherpa:$SHERPA_LAYER --unattended \"$SHERPA_TASK\"" --permission-mode acceptEdits --add-dir "$(dirname "$SHERPA_TASK")" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
+  claude -p "/sherpa:$TICKET_STAGE --unattended \"$TICKET_FILE\"" --permission-mode acceptEdits --add-dir "$(dirname "$TICKET_FILE")" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
 ```
 
 - `--unattended` makes the skill follow `protocols/unattended.md`: no questions, and it stops at
@@ -225,7 +225,7 @@ Keep the prompt first in the runner. `--add-dir` and `--allowedTools` take every
 them.
 
 Only the `claude -p` runner is tested. For Codex CLI or pi, a runner works if it reads
-`SHERPA_LAYER` and `SHERPA_TASK`, follows `protocols/unattended.md`, and prints the `STATUS:` line.
+`TICKET_STAGE` and `TICKET_FILE`, follows `protocols/unattended.md`, and prints the `STATUS:` line.
 That path is untested.
 
 For a workspace pack, its `detect` must match `worktree.path`. Otherwise the ticket fails. The text
@@ -264,7 +264,7 @@ actionNeeded: answers
 - `parked:` is the folder where the run stopped. The loop writes it.
 - `actionNeeded:` is what the loop needs from you. Remove the line to say "ready again".
 
-The loop writes each layer's output into its own section, between markers:
+The loop writes each stage's output into its own section, between markers:
 
 ```markdown
 ## Frame
@@ -273,7 +273,7 @@ The loop writes each layer's output into its own section, between markers:
 <!-- /sherpa:frame -->
 ```
 
-| Layer | Marker | Heading |
+| Stage | Marker | Heading |
 |---|---|---|
 | frame | `frame` | `## Frame` |
 | shape | `plan` | `## Plan` |
@@ -282,7 +282,7 @@ The loop writes each layer's output into its own section, between markers:
 | failed run | `last-run` | `## Last run` |
 
 The loop edits only its front matter and these marker sections. Do not edit the `<!-- sherpa:… -->`
-markers, and do not write inside them: the next run of that layer replaces the text there. Your
+markers, and do not write inside them: the next run of that stage replaces the text there. Your
 replies go under `## Answers`, which the loop never edits.
 
 ### Your actions
@@ -315,7 +315,7 @@ The board and the loop read a ticket's state the same way. A ticket **waits on y
 Anything else is **queued**, and the next pass runs it. So moving a file out of a parked folder
 queues it, and the old `actionNeeded:` line stops counting.
 
-A re-run continues a ticket; it never starts over. If the ticket already has its layer's section,
+A re-run continues a ticket; it never starts over. If the ticket already has its stage's section,
 the agent keeps that output, applies every answer, and asks only about questions still open. Question
 IDs stay the same.
 
