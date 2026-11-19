@@ -205,17 +205,22 @@ worktree:
   - `create:` (optional) is the command that makes the worktree. It runs in `repository`, with
     `TICKET_ID` and `TICKET_WORKTREE` (the expanded `path`) set. It must create the folder that
     `path` names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.
-- `runner:` (required) is the command that runs one stage. It runs in the ticket's worktree with
-  `TICKET_STAGE` (`frame`, `shape`, `implement` or `analyze`) and `TICKET_FILE` (the ticket
-  file's absolute path) set.
+- `tools:` (optional) is a list of extra commands the headless agent may run, added to the default
+  `--allowedTools` (see below), for example `Bash(npm test:*)`. Never add `git push`. Each entry is
+  one line of text; a value that is not a list, or an entry with a line break, stops the pass with
+  exit 2. `init` writes `tools: []`.
+- `runner:` (optional) replaces the whole default command. It runs via `bash -c` in the ticket's
+  worktree with `TICKET_STAGE` (`frame`, `shape`, `implement` or `analyze`) and `TICKET_FILE` (the
+  ticket file's absolute path) set, and `tools` is then ignored. It must print the `STATUS:` line.
 
-`runner` and `worktree.create` run arbitrary shell from this file. Keep it yours.
+`worktree.create` and `runner` run arbitrary shell from this file. Keep it yours.
 
-`init` writes this runner:
+Without `runner`, the loop runs this command in the ticket's worktree (it is run directly, not
+through a shell, so a `tools` entry is never read as shell code). `<stage>` is `frame`, `shape`,
+`implement` or `analyze`:
 
-```yaml
-runner: |-
-  claude -p "/sherpa:$TICKET_STAGE --unattended \"$TICKET_FILE\"" --permission-mode acceptEdits --add-dir "$(dirname "$TICKET_FILE")" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
+```sh
+claude -p "/sherpa:<stage> --unattended \"<ticket file>\"" --permission-mode acceptEdits --add-dir "<folder of the ticket file>" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*),<each tools entry>"
 ```
 
 - `--unattended` makes the skill follow `protocols/unattended.md`: no questions, and it stops at
@@ -223,20 +228,20 @@ runner: |-
 - `--permission-mode acceptEdits` lets the agent edit files without asking.
 - `--add-dir` gives the agent the ticket's stage folder.
 - `--allowedTools` lists the tools that run without asking. A headless run cannot answer a prompt,
-  so a command you do not list may fail.
+  so a command you do not list may fail. Add yours with `tools:`.
 
-Rules for `--allowedTools`:
+Rules for `tools`:
 
 - Add your build and test commands, for example `Bash(npm test:*)`.
 - Never allow `git push`.
 - Never use a full permission bypass.
 
-Keep the prompt first in the runner. `--add-dir` and `--allowedTools` take every argument after
-them.
+If you write your own `runner`, keep the prompt first. `--add-dir` and `--allowedTools` take every
+argument after them.
 
-Only the `claude -p` runner is tested. For Codex CLI or pi, a runner works if it reads
-`TICKET_STAGE` and `TICKET_FILE`, follows `protocols/unattended.md`, and prints the `STATUS:` line.
-That path is untested.
+Only the default `claude -p` command is tested. For Codex CLI or pi, set a `runner`; it works if
+it reads `TICKET_STAGE` and `TICKET_FILE`, follows `protocols/unattended.md`, and prints the
+`STATUS:` line. That path is untested.
 
 ### Write a ticket
 
@@ -331,7 +336,7 @@ sherpa board <project>           # refresh board.md and print it
 - Ctrl-C stops the loop and the agent it started. A TERM signal does the same.
 - Run one loop per project. If a pass finds the lock held by another pass, the loop stops with
   `another loop holds <project>` (exit 3).
-- A pass with a failed ticket does not stop the loop; it keeps going. Exit 2 (no runner, unknown
+- A pass with a failed ticket does not stop the loop; it keeps going. Exit 2 (bad `tools`, unknown
   project, bad usage) does stop it.
 - The board groups tickets into **Waiting on you**, **Agent running**, **Queued for agent**,
   **Backlog**, **Done**, and **Needs fixing**. The last holds broken tickets: a bad ID, one ID in
@@ -343,8 +348,10 @@ sherpa board <project>           # refresh board.md and print it
 
 ### Trust
 
-- `runner` and `worktree.create` run shell from `settings.yaml`, and the unattended agent reads
-  your repo. Use only repos you trust.
+- `runner` and `worktree.create` run shell from `settings.yaml`, `tools` widens what the unattended
+  agent may run, and the agent reads your repo. Use only repos you trust.
+- Without `runner`, the command shown under settings is exactly what runs, with exactly those
+  permissions plus your `tools`. Read it once before you start the loop.
 - The unattended agent can edit any file in its worktree, including hook scripts that `git commit`
   runs. Review the code at the `review` gate.
 - `## Last run` and `.lost-output.txt` files can hold secrets from stderr or stdout. Do not share a

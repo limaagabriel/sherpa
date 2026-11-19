@@ -44,6 +44,13 @@
 #                           An unset variable prints its name instead and returns 1.
 #   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
 #                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
+#   BASE_TOOLS              the default --allowedTools list (comma separated).
+#   settings_tools <settings-file>  sets the array TOOLS from the `tools` list (empty when absent);
+#                           1 and an empty TOOLS when `tools` is not a list or an entry is not a
+#                           one-line, non-empty string.
+#   default_cmd <stage> <ticket-file> [tool...]  sets the array DEFAULT_CMD: the default runner
+#                           command, `claude -p` with the prompt first, BASE_TOOLS plus each tool.
+#                           An array, so a tool entry is never read as shell code.
 # Exit:   0, except ticket_get: 1 when the front matter is not valid YAML. section_of: 1 for an
 #   unknown stage or marker. ticket_apply_result and lock_acquire: 1, see above. Write side: 1 on a bad argument, bad YAML, or markers that open but
 #   do not close; the file is then left untouched. Never exits the caller. Needs yq. Sourced only;
@@ -54,6 +61,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/dirs.sh"
 
 STAGES=(backlog "${LAYERS[@]}" done)
 PROTOCOL=1
+BASE_TOOLS="Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
 ACTION_VALUES=(answers approval review decision fix)
 
 section_of() {
@@ -290,4 +298,18 @@ lock_acquire() {
     mkdir "$lock" 2>/dev/null || return 1
   fi
   echo $$ >"$lock/pid"
+}
+
+settings_tools() {
+  TOOLS=()
+  yq -e '(.tools // []) | ((type == "!!seq") and (([.[] | select((type != "!!str") or (length == 0) or test("\n"))] | length) == 0))' \
+    "$1" >/dev/null 2>&1 || return 1
+  local t; while IFS= read -r t; do TOOLS+=("$t"); done < <(yq '.tools // [] | .[]' "$1")
+}
+
+default_cmd() {
+  local stage=$1 file=$2 tools=$BASE_TOOLS t; shift 2
+  for t in "$@"; do tools+=",$t"; done
+  DEFAULT_CMD=(claude -p "/sherpa:$stage --unattended \"$file\"" --permission-mode acceptEdits
+    --add-dir "$(dirname "$file")" --allowedTools "$tools")
 }

@@ -30,23 +30,12 @@ assert_eq "settings path" "$(yq .worktree.path "$conf")" "$tmp/repo-worktrees/\$
 assert_eq "no create by default" "$(yq '.worktree.create // "none"' "$conf")" "none"
 assert_eq "init stderr" "$err" ""
 
-# the runner: add-dir, quoted task, an allow-list, never a bypass
-runner=$(yq .runner "$conf")
-assert_contains "runner add-dir" "$runner" '--add-dir "$(dirname "$TICKET_FILE")"'
-assert_contains "runner mode" "$runner" "--permission-mode acceptEdits"
-assert_contains "runner allow-list" "$runner" "--allowedTools"
-assert_not_contains "runner bypass" "$runner" "dangerously"
-assert_not_contains "runner broad git" "$runner" "Bash(git *)"
-assert_not_contains "runner push" "$runner" "git push"
-assert_contains "runner git commit" "$runner" "Bash(git commit:*)"
-# it survives bash -c with a path holding spaces: the prompt comes first, one argument each
-mkdir -p "$tmp/bin"; printf '#!/bin/sh\nfor a; do echo "[$a]"; done >"$FAKE_OUT"\n' >"$tmp/bin/claude"
-chmod +x "$tmp/bin/claude"
-task="$tmp/a dir/T-1.md"
-FAKE_OUT="$tmp/argv" PATH="$tmp/bin:$PATH" TICKET_STAGE=shape TICKET_FILE=$task bash -c "$runner"
-assert_eq "runner argv" "$(sed -n '1,4p' "$tmp/argv" | tr '\n' ' ')" \
-  "[-p] [/sherpa:shape --unattended \"$task\"] [--permission-mode] [acceptEdits] "
-assert_contains "runner add-dir value" "$(cat "$tmp/argv")" "[$tmp/a dir]"
+# tools: an empty list; no active runner (the default command is built into run.sh)
+assert_eq "tools empty list" "$(yq -o=json -I=0 '.tools' "$conf")" "[]"
+assert_eq "no runner key" "$(yq 'has("runner")' "$conf")" "false"
+assert_contains "runner comment" "$(cat "$conf")" "# runner: replaces the whole default command"
+assert_not_contains "no claude command" "$(cat "$conf")" "claude -p"
+assert_not_contains "no push allowed" "$(grep -v '^#' "$conf")" "git push"
 
 # ensure-worktree.sh accepts the file as written (default create makes a worktree)
 wt=$(bash "$here/ensure-worktree.sh" repo T-1 2>"$tmp/err"); assert_exit "worktree exit" $? 0

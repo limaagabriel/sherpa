@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: test-run.sh
-# Input:  none; builds a fake project, a git repo with worktrees and a runner in a temp
-#   SHERPA_CONFIG_DIR (its path holds a space) and HOME. Needs yq and git.
+# Input:  none; builds a fake project, a git repo with worktrees, a runner and a fake `claude` (first
+#   on PATH) in a temp SHERPA_CONFIG_DIR (its path holds a space) and HOME. Needs yq and git.
 # Output: "PASS: all run cases" or FAIL lines plus "FAILED".
 # Exit:   0 when every case passes, 1 otherwise.
 set -u
@@ -264,10 +264,62 @@ assert_eq "empty pass exit" "$rc" 0; assert_eq "empty pass prints nothing" "$out
 assert_contains "empty pass rewrites board" "$(cat "$inv/board.md")" "[Title T-2](shape/T-2.md) — shape (review)"
 assert_not_contains "board not stale" "$(cat "$inv/board.md")" "stale"
 
-# --- setup errors
-settings ""; go; assert_exit "no runner exit" "$rc" 2; assert_contains "no runner msg" "$rerr" "set runner in settings.yaml"
-settings x; sed -i "s/^runner:.*/runner: ''/" "$conf"; go; assert_exit "empty runner exit" "$rc" 2
+# --- the default command: no runner, a fake claude first on PATH records one argument per line
+mkdir -p "$tmp/bin"; PATH="$tmp/bin:$PATH"
+cat >"$tmp/bin/claude" <<'FAKE'
+#!/bin/sh
+{ echo "cwd=$PWD stage=$TICKET_STAGE file=$TICKET_FILE stdin=$(cat | wc -c)"; for a; do echo "$a"; done; } >"$CTL/argv"
+echo "ran" >>"$CTL/claude-runs"
+echo "STATUS: GATE protocol=1"; echo "from claude"
+FAKE
+chmod +x "$tmp/bin/claude"
+dsettings() { # [tools yaml lines]: a settings.yaml with no runner
+  { echo "repository: $repo"; echo "worktree:"; echo "  path: $tmp/wt/\$TICKET_ID"; printf '%s' "${1:-}"; } >"$conf"; }
+dargs() { sed 1d "$CTL/argv"; }
+f="$inv/frame/T-1.md"; base=$BASE_TOOLS
+reset; mk frame T-1; dsettings; go
+assert_exit "default exit" "$rc" 0; assert_eq "default print" "$out" "TICKET $project/T-1 frame: gate"
+assert_contains "default output" "$(cat "$f")" "from claude"
+assert_eq "default cwd, env, stdin" "$(head -n1 "$CTL/argv")" "cwd=$tmp/wt/T-1 stage=frame file=$inv/frame/T-1.md stdin=0"
+assert_eq "default argv" "$(dargs)" "-p
+/sherpa:frame --unattended \"$inv/frame/T-1.md\"
+--permission-mode
+acceptEdits
+--add-dir
+$inv/frame
+--allowedTools
+$base"
+assert_contains "base tools exact" "$base" "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
+assert_not_contains "base: no push" "$base" "push"
+# tools: appended in order; `tools: []` and no tools key give the base list only
+reset; mk implement T-1; dsettings $'tools:\n  - Bash(./gradlew test:*)\n  - "Bash(npm run lint:*)"\n'; go
+assert_eq "tools appended" "$(dargs | tail -n1)" "$base,Bash(./gradlew test:*),Bash(npm run lint:*)"
+assert_eq "tools stage" "$(dargs | sed -n 2p)" "/sherpa:implement --unattended \"$inv/implement/T-1.md\""
+reset; mk frame T-1; dsettings $'tools: []\n'; go; assert_eq "empty tools" "$(dargs | tail -n1)" "$base"
+# a tools entry is data: shell syntax in it creates nothing and arrives as a literal entry
+for bad in "Bash(x:*); touch $tmp/pwned" "\$(touch $tmp/pwned)" "\`touch $tmp/pwned\`" "x\" \"; touch $tmp/pwned; \""; do
+  reset; mk frame T-1; dsettings "tools:
+  - '${bad//\'/\'\'}'
+"; go
+  assert_exit "inject exit" "$rc" 0; [ ! -e "$tmp/pwned" ] || { echo "FAIL [inject]: $bad ran"; fail=1; rm -f "$tmp/pwned"; }
+  assert_eq "inject literal" "$(dargs | tail -n1)" "$base,$bad"
+done
+# a runner wins: it runs, claude does not, tools is ignored
+reset; rm -f "$CTL/claude-runs"; mk frame T-1; settings "bash $tmp/runner.sh"; printf 'tools:\n  - Bash(x:*)\n' >>"$conf"
+ctl out $'STATUS: GATE protocol=1\nx\n'; go
+assert_eq "runner used" "$(runs)" 1; [ ! -e "$CTL/claude-runs" ] || { echo "FAIL [runner set: claude ran]"; fail=1; }
+# a bad tools value stops the pass (exit 2) before any ticket; ignored when a runner is set
+for bad in $'tools: x\n' $'tools:\n  a: b\n' $'tools:\n  - "a\\nb"\n' $'tools:\n  - 5\n' $'tools:\n  - ""\n'; do
+  reset; rm -f "$CTL/claude-runs"; mk frame T-1; dsettings "$bad"; go
+  assert_exit "bad tools exit" "$rc" 2; assert_contains "bad tools msg" "$rerr" "tools must be a list"
+  assert_eq "bad tools: nothing ran" "$(ls "$CTL" | grep -c claude-runs)" 0
+  assert_eq "bad tools: ticket untouched" "$(count "$f" parked)" 0
+done
+reset; mk frame T-1; settings "bash $tmp/runner.sh"; printf 'tools: x\n' >>"$conf"; ctl out $'STATUS: GATE protocol=1\nx\n'; go
+assert_exit "bad tools ignored with runner" "$rc" 0
 settings "bash $tmp/runner.sh"
+
+# --- setup errors
 bash "$here/run.sh" nope >/dev/null 2>&1; assert_exit "unknown project" $? 1
 bash "$here/run.sh" >/dev/null 2>&1; assert_exit "no args" $? 2
 

@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 # Usage: run.sh <project>
-# Input:  <inventory_dir>/<project>/settings.yaml (`runner`, a shell command; plus what
-#   ensure-worktree.sh reads) and the tickets in the project's stage folders. Needs yq.
+# Input:  <inventory_dir>/<project>/settings.yaml (`tools`, a list of extra allowed tools; `runner`,
+#   an optional shell command; plus what ensure-worktree.sh reads) and the tickets in the project's
+#   stage folders. Needs yq.
 # Output: one pass: each ticket whose state is queued, stages analyze, implement, shape, frame in
-#   that order, runs `bash -c <runner>` in its worktree (TICKET_STAGE, TICKET_FILE exported, stdin
-#   /dev/null); the output goes into the ticket (see ticket_apply_result) and the ticket is
+#   that order, runs in its worktree (TICKET_STAGE, TICKET_FILE exported, stdin /dev/null) the
+#   default command (default_cmd in scripts/lib/inventory.sh, run directly, no shell) with `tools`
+#   added to its --allowedTools; or, when `runner` is set, `bash -c <runner>` and `tools` is
+#   ignored. The output goes into the ticket (see ticket_apply_result) and the ticket is
 #   parked. Prints "TICKET <project>/<ID> <stage>: done|gate|failed" per ticket. Rebuilds board.md
 #   at the start and after each ticket. Holds <project>/.lock (pid, ticket ID) during the pass.
 #   A failed run keeps the runner's whole stdout in last-run; stdout is cut at $SHERPA_MAX_OUTPUT
 #   bytes (default 1000000). A write that fails parks the ticket (fix) and keeps the output in
 #   <ID>.lost-output.txt. The runner's first line starting "STATUS: " is parsed; lines before it
 #   are dropped.
-# Exit:   0 pass finished; 1 a ticket failed, or unknown project; 2 usage or no runner; 3 pass
-#   already running.
+# Exit:   0 pass finished; 1 a ticket failed, or unknown project; 2 usage, or `tools` is not a
+#   list of one-line strings (checked only when no runner is set); 3 pass already running.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$here/../lib/inventory.sh"
@@ -21,7 +24,8 @@ source "$here/../lib/inventory.sh"
 project=$1; dir="$(inventory_dir)/$project"
 valid_id "$project" && [ -d "$dir" ] || { echo "run: unknown project: $project" >&2; exit 1; }
 runner=$(yq '.runner // ""' "$dir/settings.yaml" 2>/dev/null || true)
-[ -n "$runner" ] || { echo "run: no runner; set runner in settings.yaml" >&2; exit 2; }
+[ -n "$runner" ] || settings_tools "$dir/settings.yaml" ||
+  { echo "run: settings.yaml: tools must be a list of one-line strings" >&2; exit 2; }
 
 lock=$dir/.lock
 lock_acquire "$lock" || { echo "run: another pass is running for $project" >&2; exit 3; }
@@ -41,7 +45,9 @@ for stage in analyze implement shape frame; do
     case $stage in implement) action=review ;; analyze) action=decision ;; esac
     : >"$tmp/body"; : >"$tmp/out"
     if wt=$(bash "$here/ensure-worktree.sh" "$project" "$id" 2>"$tmp/err" </dev/null); then
-      (cd "$wt" && TICKET_STAGE=$stage TICKET_FILE=$task bash -c "$runner" \
+      if [ -n "$runner" ]; then cmd=(bash -c "$runner")
+      else default_cmd "$stage" "$task" ${TOOLS[@]+"${TOOLS[@]}"}; cmd=("${DEFAULT_CMD[@]}"); fi
+      (cd "$wt" && TICKET_STAGE=$stage TICKET_FILE=$task "${cmd[@]}" \
         </dev/null >"$tmp/out" 2>"$tmp/err") || rc=$?
       ticket_cap "$tmp/out"
       line=$(awk '/^STATUS: /{print; exit}' "$tmp/out")

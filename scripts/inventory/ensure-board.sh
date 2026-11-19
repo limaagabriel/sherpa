@@ -3,7 +3,7 @@
 # Input:  run in a repo (any git repository). `repository` is the main
 #   worktree of --repository (else $PWD). <project>, the board's ID, defaults to that folder's name.
 # Output: creates <inventory_dir>/<project>/ and its six stage folders if missing, writes
-#   settings.yaml ONLY when absent (repository, worktree.path, runner), builds board.md, prints the
+#   settings.yaml ONLY when absent (repository, worktree.path, tools), builds board.md, prints the
 #   project dir.
 # Exit:   0 ready; 1 with a reason on stderr (not a git repo, bad or unusable project name);
 #   2 usage. Needs yq and git.
@@ -38,16 +38,17 @@ if [ ! -e "$dir/settings.yaml" ] && [ ! -L "$dir/settings.yaml" ]; then
   wt="$(dirname "$repository")/$project-worktrees/\$TICKET_ID"
   tpl=$(cat <<'EOF2'
 repository: @REPOSITORY@
-# runner and worktree.create run arbitrary shell: keep this file yours.
+# worktree.create and runner run arbitrary shell: keep this file yours.
 worktree:
   path: @WT@
   # create: lp worktree add "$TICKET_ID"
   # default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"
-# --allowedTools: add your build/test commands (e.g. Bash(npm test:*)); never allow git push
-# run via bash -c with TICKET_STAGE and TICKET_FILE exported; keep the prompt first, since
-# --add-dir and --allowedTools take every argument that follows them
-runner: |-
-  claude -p "/sherpa:$TICKET_STAGE --unattended \"$TICKET_FILE\"" --permission-mode acceptEdits --add-dir "$(dirname "$TICKET_FILE")" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
+# extra commands the headless agent may run, added to the default --allowedTools
+# (never allow git push), e.g.
+#   - Bash(./gradlew test:*)
+tools: []
+# runner: replaces the whole default command (tools is then ignored); runs via bash -c in the
+# ticket's worktree with TICKET_STAGE and TICKET_FILE set, and must print the STATUS line
 EOF2
 )
   tpl=${tpl//@REPOSITORY@/"$(q "$repository")"}; tpl=${tpl//@WT@/"$(q "$wt")"}
