@@ -110,3 +110,6 @@ jobs:
 
       - name: Inventory ticket test
         run: bash scripts/inventory/test-ticket.sh
+
+      - name: Inventory run test
+        run: bash scripts/inventory/test-run.sh

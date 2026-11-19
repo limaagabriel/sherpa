@@ -19,8 +19,26 @@
 #                           at the end after a blank line. A missing final newline gets added.
 #   ticket_section_del <file> <name>  removes heading, markers and content, plus one blank line.
 #   ticket_find <pack> <ID>  prints the path of <ID>.md in any STAGES folder; 1 when none.
+#   ticket_apply_result <pack> <ID> <layer> <done|gate|failed> <action> <content-file>  writes one
+#                           run's output into the ticket where it is NOW (re-located with
+#                           ticket_find): the layer's section (last-run when failed), parked: <folder
+#                           now>, actionNeeded: <action> (fix when failed). Lines that would break
+#                           the ticket ("## Answers", sherpa markers) get a backslash. done moves the
+#                           ticket to done/ only when the layer is analyze and the ticket is still in
+#                           analyze/ and done/ has no such file; otherwise it becomes gate. A
+#                           non-failed run deletes last-run. Prints the result (done|gate|failed);
+#                           on exit 1 prints the reason instead.
+#   ticket_save_lost <pack> <ID> <content-file>  when the write failed: parks the ticket (if it
+#                           exists) with actionNeeded: fix and keeps the content as
+#                           <stage dir>/<ID>.lost-output.txt (the pack dir when the ticket is gone);
+#                           prints that path.
+#   ticket_cap <file>       cuts a file to $SHERPA_MAX_OUTPUT bytes (default 1000000), noting it.
+#   ticket_diag <why> <rc|""> <stdout-file> <stderr-file>  prints a failed run's last-run text: the
+#                           reason, the exit code (when rc is given), last 20 stderr lines, stdout.
+#   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
+#                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
 # Exit:   0, except ticket_get: 1 when the front matter is not valid YAML. section_of: 1 for an
-#   unknown layer or marker. Write side: 1 on a bad argument, bad YAML, or markers that open but
+#   unknown layer or marker. ticket_apply_result and lock_acquire: 1, see above. Write side: 1 on a bad argument, bad YAML, or markers that open but
 #   do not close; the file is then left untouched. Never exits the caller. Needs yq. Sourced only;
 #   never run directly.
 
@@ -188,4 +206,67 @@ ticket_find() {
     [ -f "$(inventory_dir)/$1/$s/$2.md" ] && { echo "$(inventory_dir)/$1/$s/$2.md"; return 0; }
   done
   return 1
+}
+
+ticket_apply_result() {
+  local pack=$1 id=$2 layer=$3 kind=$4 action=$5 cf=$6 f cur sec=$3 dest
+  f=$(ticket_find "$pack" "$id") || { echo "ticket is gone: $id"; return 1; }
+  cur=$(basename "$(dirname "$f")"); dest=$(inventory_dir)/$pack/done/$id.md
+  [ "$kind" = failed ] && { sec=last-run; action=fix; }
+  [ "$kind" = done ] && { [ "$layer" != analyze ] || [ "$cur" != analyze ]; } && kind=gate
+  sed -e 's/^## Answers$/\\## Answers/' -e 's/^<!-- \(\/\{0,1\}\)sherpa:/<!-- \\\1sherpa:/' "$cf" >"$cf.safe" ||
+    { echo "cannot read the output"; return 1; }
+  ticket_section_put "$f" "$sec" "$cf.safe" ||
+    { echo "cannot write section $sec (broken markers or YAML?)"; return 1; }
+  [ "$kind" = failed ] || ticket_section_del "$f" last-run || { echo "cannot remove last-run"; return 1; }
+  if [ "$kind" = done ]; then
+    if [ ! -e "$dest" ] && mv -n "$f" "$dest" && [ ! -e "$f" ]; then
+      ticket_del "$dest" parked && ticket_del "$dest" actionNeeded || { echo "cannot clear front matter"; return 1; }
+      echo done; return 0
+    fi
+    echo "run: $id stays in analyze/: $dest exists or cannot be moved" >&2; kind=gate
+  fi
+  ticket_set "$f" parked "$cur" && ticket_set "$f" actionNeeded "$action" ||
+    { echo "cannot write front matter (not valid YAML?)"; return 1; }
+  echo "$kind"
+}
+
+ticket_save_lost() {
+  local f d
+  if f=$(ticket_find "$1" "$2"); then
+    d=$(dirname "$f")
+    { ticket_set "$f" parked "$(basename "$d")" && ticket_set "$f" actionNeeded fix; } || true
+  else d=$(inventory_dir)/$1; fi
+  cp "$3" "$d/$2.lost-output.txt" && echo "$d/$2.lost-output.txt"
+}
+
+ticket_cap() {
+  local max=${SHERPA_MAX_OUTPUT:-1000000} t
+  [ "$(wc -c <"$1")" -gt "$max" ] || return 0
+  t=$(mktemp "$1.XXXXXX") || return 0
+  { head -c "$max" "$1"; printf '\n[truncated: output was over %s bytes]\n' "$max"; } >"$t" && mv -f "$t" "$1"
+}
+
+ticket_diag() {
+  local max=${SHERPA_MAX_OUTPUT:-1000000}
+  printf '%s\n\n' "$1"
+  [ -z "$2" ] || printf 'exit code: %s\n' "$2"
+  echo "stderr (last 20 lines):"; tail -n 20 "$4" | tail -c "$max"
+  printf '\nstdout:\n'; cat "$3"
+}
+
+lock_acquire() {
+  local lock=$1 old _
+  if ! mkdir "$lock" 2>/dev/null; then
+    for _ in 1 2 3; do [ -f "$lock/pid" ] && break; sleep 0.2; done
+    old=$(cat "$lock/pid" 2>/dev/null || true)
+    if [ -n "$old" ] && kill -0 "$old" 2>/dev/null; then return 1; fi
+    mv "$lock" "$lock.stale.$$" 2>/dev/null || return 1
+    if [ "$(cat "$lock.stale.$$/pid" 2>/dev/null || true)" != "$old" ]; then  # moved a fresh lock
+      mv "$lock.stale.$$" "$lock" 2>/dev/null; return 1
+    fi
+    rm -rf "$lock.stale.$$"
+    mkdir "$lock" 2>/dev/null || return 1
+  fi
+  echo $$ >"$lock/pid"
 }
