@@ -7,6 +7,8 @@
 #   ticket_title <file>     prints the first "# " line outside front matter, else the ID.
 #   running_id <pack>       prints the ID in .lock/ticket while .lock/pid is alive, else nothing.
 #   ticket_state <file> <pack>  prints backlog|done|running|you|queued|bad:<reason>.
+#   valid_id <ID>           succeeds when the ID is letters, digits, . _ - and starts with a
+#                           letter or digit.
 # Exit:   0, except ticket_get: 1 when the front matter is not valid YAML. section_of: 1 for an
 #   unknown layer. Never exits the caller. Needs yq. Sourced only; never run directly.
 
@@ -50,10 +52,12 @@ running_id() {
   return 0
 }
 
+valid_id() { [[ $1 =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; }
+
 ticket_state() {
-  local f=$1 pack=$2 id stage s v n=0 parked action ok=0 re='^[A-Za-z0-9][A-Za-z0-9._-]*$'
+  local f=$1 pack=$2 id stage s v n=0 parked action ok=0
   id=$(basename "$f" .md); stage=$(basename "$(dirname "$f")")
-  if ! [[ $id =~ $re ]]; then echo "bad:invalid ID (letters, digits, . _ - only)"; return 0; fi
+  if ! valid_id "$id"; then echo "bad:invalid ID (letters, digits, . _ - only)"; return 0; fi
   for s in "${STAGES[@]}"; do [ -f "$(inventory_dir)/$pack/$s/$id.md" ] && n=$((n + 1)); done
   if [ "$n" -gt 1 ]; then echo "bad:same ID in more than one folder"; return 0; fi
   if ! { parked=$(ticket_get "$f" parked) && action=$(ticket_get "$f" actionNeeded); }; then

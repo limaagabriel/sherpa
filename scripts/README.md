@@ -17,9 +17,10 @@ A test sits beside its script as `test-<script name>.sh`.
 
 ## Verbs
 
-Only these eight:
+Only these nine:
 
 - `find` — print one path
+- `ensure` — create one thing if missing, print its path
 - `load` — print context for an agent
 - `list` — print entries
 - `run` — execute and report pass/fail

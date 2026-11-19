@@ -101,3 +101,6 @@ jobs:
 
       - name: Inventory board test
         run: bash scripts/inventory/test-build-board.sh
+
+      - name: Inventory worktree test
+        run: bash scripts/inventory/test-ensure-worktree.sh
