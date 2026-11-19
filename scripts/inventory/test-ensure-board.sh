@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Usage: test-ensure-board.sh
+# Input:  none; builds fixtures in a temp SHERPA_CONFIG_DIR and HOME. Needs yq and git.
+# Output: "PASS: all init cases" or FAIL lines plus "FAILED".
+# Exit:   0 when every case passes, 1 otherwise.
+set -u
+here=$(cd "$(dirname "$0")" && pwd)
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+fail=0
+source "$here/../lib/assert.sh"
+export SHERPA_CONFIG_DIR="$tmp/cfg" HOME="$tmp/home"
+export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
+mkdir -p "$HOME" "$tmp/elsewhere"
+inv="$SHERPA_CONFIG_DIR/inventory"
+repository="$tmp/repo"
+git init -q "$repository"; git -C "$repository" commit -q --allow-empty -m init
+
+run() { out=$(cd "${cwd:-$repository}" && bash "$here/ensure-board.sh" "$@" 2>"$tmp/err"); rc=$?; err=$(cat "$tmp/err"); }
+
+# no args in a repo with no .sherpa config: the board is named after the repository folder
+run; assert_exit "init exit" "$rc" 0; assert_eq "init stdout" "$out" "$inv/repo"
+for s in backlog frame shape implement analyze done; do
+  [ -d "$inv/repo/$s" ] || { echo "FAIL [stage]: missing $s"; fail=1; }
+done
+assert_contains "board built" "$(cat "$inv/repo/board.md" 2>&1)" "GENERATED FILE - DO NOT EDIT THIS!"
+conf="$inv/repo/settings.yaml"
+assert_eq "settings name" "$(yq .name "$conf")" "repo"
+assert_eq "heading uses the name" "$(sed -n 1p "$inv/repo/board.md")" "# repo"
+assert_eq "settings repository.path" "$(yq .repository.path "$conf")" "$repository"
+assert_eq "settings worktree.pattern.path" "$(yq .worktree.pattern.path "$conf")" "$tmp/repo-worktrees/\$TICKET_ID"
+assert_not_contains "command only as a comment" "$(grep -v '^ *#' "$conf")" "command"
+assert_contains "command alternative shown" "$(cat "$conf")" "# command:"
+assert_eq "no create by default" "$(yq '.worktree.create // "none"' "$conf")" "none"
+assert_eq "init stderr" "$err" ""
+
+# tools: an empty list; no active runner (the default command is built into run.sh)
+assert_eq "tools empty list" "$(yq -o=json -I=0 '.tools' "$conf")" "[]"
+assert_eq "no runner key" "$(yq 'has("runner")' "$conf")" "false"
+assert_contains "runner comment" "$(cat "$conf")" "# runner: replaces the whole default command"
+assert_not_contains "no claude command" "$(cat "$conf")" "claude -p"
+assert_not_contains "no push allowed" "$(grep -v '^#' "$conf")" "git push"
+
+# ensure-worktree.sh accepts the file as written (default create makes a worktree)
+wt=$(bash "$here/ensure-worktree.sh" repo T-1 2>"$tmp/err"); assert_exit "worktree exit" $? 0
+assert_eq "worktree path" "$wt" "$tmp/repo-worktrees/T-1"
+assert_eq "worktree branch" "$(git -C "$wt" branch --show-current)" "T-1"
+
+# a second run leaves an edited settings.yaml byte-identical
+echo "# my edit" >>"$conf"; cp "$conf" "$tmp/edited"
+run; assert_exit "rerun exit" "$rc" 0; assert_eq "rerun stdout" "$out" "$inv/repo"
+cmp -s "$conf" "$tmp/edited" || { echo "FAIL [rerun]: settings.yaml changed"; fail=1; }
+
+# an explicit name and --repository override the default, from outside any repo
+cwd="$tmp/elsewhere" run q --repository "$repository"
+assert_exit "override exit" "$rc" 0; assert_eq "override stdout" "$out" "$inv/q"
+assert_eq "override repository" "$(yq .repository.path "$inv/q/settings.yaml")" "$repository"
+# a path with a single quote survives the YAML quoting
+qr="$tmp/o'b"; git init -q "$qr"; git -C "$qr" commit -q --allow-empty -m init
+cwd="$tmp/elsewhere" run qp --repository "$qr"; assert_exit "quote exit" "$rc" 0
+assert_eq "quote repository" "$(yq .repository.path "$inv/qp/settings.yaml")" "$qr"
+assert_eq "quote path" "$(yq .worktree.pattern.path "$inv/qp/settings.yaml")" "$tmp/qp-worktrees/\$TICKET_ID"
+# a settings.yaml that is a symlink is left alone
+rm -f "$inv/qp/settings.yaml"; ln -s "$tmp/edited" "$inv/qp/settings.yaml"
+cwd="$tmp/elsewhere" run qp --repository "$qr"; assert_exit "symlink exit" "$rc" 0
+cmp -s "$tmp/edited" "$inv/qp/settings.yaml" && [ -L "$inv/qp/settings.yaml" ] || { echo "FAIL [symlink]: replaced"; fail=1; }
+# a linked worktree still records the main worktree
+cwd="$wt" run r; assert_eq "linked repository" "$(yq .repository.path "$inv/r/settings.yaml")" "$repository"
+# --repository alone names the board after that repo folder
+cwd="$tmp/elsewhere" run --repository "$repository"; assert_eq "repository-only stdout" "$out" "$inv/repo"
+
+# a repository folder that is no valid name needs an explicit one
+git init -q "$tmp/.odd"; cwd="$tmp/.odd" run; assert_exit "odd folder exit" "$rc" 1
+assert_contains "odd folder msg" "$err" "pass a name"
+cwd="$tmp/.odd" run odd; assert_exit "odd folder with name" "$rc" 0; assert_eq "odd folder stdout" "$out" "$inv/odd"
+assert_eq "odd folder repository" "$(yq .repository.path "$inv/odd/settings.yaml")" "$tmp/.odd"
+# a .sherpa/project.yaml naming another project does not rename the board
+mkdir "$repository/.sherpa"; echo "name: other" >"$repository/.sherpa/project.yaml"
+rm -rf "$inv/repo"; run; assert_eq "project.yaml ignored" "$out" "$inv/repo"
+
+# failures
+cwd="$tmp/elsewhere" run; assert_exit "not a repo exit" "$rc" 1; assert_contains "not a repo msg" "$err" "not a git repo"
+for bad in .hidden a/b "a b"; do
+  run "$bad"; assert_exit "bad name $bad" "$rc" 1; assert_contains "bad name msg $bad" "$err" "invalid project name"
+done
+run '' ; assert_exit "empty name" "$rc" 1
+[ ! -e "$inv/.hidden" ] || { echo "FAIL [bad name]: created $inv/.hidden"; fail=1; }
+run --bogus; assert_exit "unknown flag" "$rc" 2
+run a b; assert_exit "two names" "$rc" 2
+run --repository; assert_exit "--repository without value" "$rc" 2
+
+[ "$fail" -eq 0 ] && echo "PASS: all init cases" || { echo FAILED; exit 1; }

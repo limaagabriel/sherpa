@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Usage: test-build-board.sh
+# Input:  none; builds a fixture inventory in a temp SHERPA_CONFIG_DIR. Also tests the read
+#   helpers in scripts/lib/inventory.sh through the board. Needs yq.
+# Output: "PASS: all board cases" or FAIL lines plus "FAILED".
+# Exit:   0 when every case passes, 1 otherwise.
+set -u
+here=$(cd "$(dirname "$0")" && pwd)
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+fail=0
+source "$here/../lib/assert.sh"
+export SHERPA_CONFIG_DIR="$tmp"
+inv="$tmp/inventory/p"
+mkdir -p "$inv"
+
+put() { mkdir -p "$inv/$1"; printf '%b' "$3" >"$inv/$1/$2.md"; }  # <stage> <ID> <content>
+fm() { printf -- '---\nparked: %s\n%s---\n# T-%s\n' "$1" "$2" "$3"; }  # <parked> <lines> <ID>
+sec() { awk -v h="## $2" '/^## /{on=($0==h)} on' "$1"; }  # <board> <group>
+board() { out=$(bash "$here/build-board.sh" p 2>&1); rc=$?; b=$inv/board.md; }
+
+put frame FRESH '# Fresh one\nwords\n'
+put frame ASK "$(fm frame 'actionNeeded: answers\n' ASK)"
+put frame BACK "$(fm frame '' BACK)"
+put shape MOVED "$(fm frame 'actionNeeded: answers\n' MOVED)"
+put frame BOGUS "$(fm frame 'actionNeeded: bogus\n' BOGUS)"
+put implement LIVE '# Live one\n'
+put implement STALE '# Stale one\n'
+put frame NOTITLE 'just words\n'
+put frame LATERFM 'parked: frame\nactionNeeded: answers\n# Later fm\n'
+put backlog LATER '# Later one\n'
+put done OLD '# Old one\n'
+put frame _BADID '# Bad id\n'
+put frame BROKEN '---\nparked: [oops\n---\n# Broken yaml\n'
+put frame DUP '# Dup one\n'; put shape DUP '# Dup one\n'
+echo x >"$inv/frame/notes.txt"; mkdir -p "$inv/frame/sub" "$tmp/inventory/other"
+echo '# Inner' >"$inv/frame/sub/INNER.md"; echo '# Root' >"$inv/ROOT.md"
+echo '# Other' >"$tmp/inventory/other/OTHER.md"
+sleep 60 & live=$!
+trap 'kill $live 2>/dev/null; rm -rf "$tmp"' EXIT
+mkdir "$inv/.lock"; echo "$live" >"$inv/.lock/pid"; echo LIVE >"$inv/.lock/ticket"
+
+board; assert_exit "board exit" "$rc" 0
+assert_eq "board path printed" "$out" "$b"
+assert_eq "generated line" "$(sed -n 3p "$b")" "GENERATED FILE - DO NOT EDIT THIS!"
+you=$(sec "$b" "Waiting on you"); run=$(sec "$b" "Agent running"); que=$(sec "$b" "Queued for agent")
+bad=$(sec "$b" "Needs fixing")
+assert_contains "ask waits" "$you" "[T-ASK](frame/ASK.md) — frame (answers)"
+assert_not_contains "fresh not waiting" "$you" "FRESH"
+assert_not_contains "back not waiting" "$you" "BACK"
+assert_not_contains "moved not waiting" "$you" "MOVED"
+assert_contains "fresh queued" "$que" "[Fresh one](frame/FRESH.md) — frame"
+assert_contains "no action queued" "$que" "[T-BACK](frame/BACK.md)"
+assert_contains "moved queued" "$que" "[T-MOVED](shape/MOVED.md) — shape"
+assert_contains "no title shows ID" "$que" "[NOTITLE](frame/NOTITLE.md)"
+assert_contains "front matter only on line 1" "$que" "[Later fm](frame/LATERFM.md)"
+assert_contains "bogus action" "$bad" "[T-BOGUS](frame/BOGUS.md) — frame — unknown actionNeeded 'bogus'"
+assert_contains "bad id" "$bad" "_BADID.md"
+assert_contains "bad yaml" "$bad" "[Broken yaml](frame/BROKEN.md) — frame — front matter is not valid YAML"
+assert_contains "dup frame" "$bad" "(frame/DUP.md)"
+assert_contains "dup shape" "$bad" "(shape/DUP.md)"
+assert_contains "live runs" "$run" "[Live one](implement/LIVE.md)"
+assert_not_contains "live not queued" "$que" "LIVE"
+assert_contains "stale queued" "$que" "[Stale one](implement/STALE.md)"
+assert_contains "backlog" "$(sec "$b" Backlog)" "[Later one](backlog/LATER.md) — backlog"
+assert_contains "done" "$(sec "$b" Done)" "[Old one](done/OLD.md) — done"
+for x in notes INNER ROOT OTHER; do assert_not_contains "ignored $x" "$(cat "$b")" "$x"; done
+
+echo STALE >"$inv/.lock/ticket"; sleep 0 & dead=$!; wait "$dead"; echo "$dead" >"$inv/.lock/pid"
+board; run=$(sec "$b" "Agent running"); que=$(sec "$b" "Queued for agent")
+assert_not_contains "dead lock not running" "$run" "STALE"
+assert_contains "dead lock queued" "$que" "[Stale one](implement/STALE.md)"
+assert_not_contains "lock now dead, LIVE gone" "$run" "LIVE"
+
+# the heading is settings.yaml's name, else the ID (no settings.yaml, no name, bad name)
+assert_eq "heading falls back to the ID" "$(sed -n 1p "$b")" "# p"
+printf "name: 'Liferay Portal'\n" >"$inv/settings.yaml"; board
+assert_eq "heading shows name" "$(sed -n 1p "$b")" "# Liferay Portal"
+for bad in 'tools: []' "name: ''" 'name: [a]' 'name: 7' 'name: [oops' 'name: |-\n  two\n  lines'; do
+  printf '%b\n' "$bad" >"$inv/settings.yaml"; board
+  assert_eq "heading ignores [$bad]" "$(sed -n 1p "$b")" "# p"
+done
+rm -f "$inv/settings.yaml"
+
+mkdir "$tmp/inventory/bare"
+out=$(bash "$here/build-board.sh" bare); assert_exit "bare project" $? 0
+assert_contains "bare done empty" "$(sec "$tmp/inventory/bare/board.md" Done)" "_none_"
+out=$(bash "$here/build-board.sh" nope 2>&1); assert_exit "unknown project" $? 1
+out=$(bash "$here/build-board.sh" 2>&1); assert_exit "no arg" $? 2
+mkdir -p "$tmp/inventory/a b" "$tmp/inventory/-x"
+for bad in "a b" -x; do out=$(bash "$here/build-board.sh" "$bad" 2>&1); assert_exit "bad name $bad" $? 1; done
+[ "$fail" -eq 0 ] && echo "PASS: all board cases" || { echo FAILED; exit 1; }

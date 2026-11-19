@@ -98,3 +98,21 @@ jobs:
 
       - name: Read-only Bash guard test
         run: bash scripts/hooks/test-guard-bash.sh
+
+      - name: Inventory board test
+        run: bash scripts/inventory/test-build-board.sh
+
+      - name: Inventory worktree test
+        run: bash scripts/inventory/test-ensure-worktree.sh
+
+      - name: Inventory init test
+        run: bash scripts/inventory/test-ensure-board.sh
+
+      - name: Inventory ticket test
+        run: bash scripts/inventory/test-ticket.sh
+
+      - name: Inventory run test
+        run: bash scripts/inventory/test-run.sh
+
+      - name: CLI test
+        run: bash bin/test-sherpa.sh

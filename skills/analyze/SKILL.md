@@ -2,6 +2,8 @@
 name: analyze
 description: Pre-review analysis of local branch changes or a GitHub PR. Read-only, report-only.
 ---
+<!-- shared:unattended -->Args start with `--unattended` → read `${CLAUDE_PLUGIN_ROOT}/protocols/unattended.md` first; it overrides every ask/wait in this skill.
+<!-- /shared -->
 
 # Code Review
 

@@ -50,5 +50,8 @@ VERDICT: OK | GAPS
 ## test-quality
 Tests that only assert against their own mocks, or that would pass with wrong logic, count as missing tests. Each test must fail if the code it covers breaks.
 
+## unattended
+Args start with `--unattended` → read `${CLAUDE_PLUGIN_ROOT}/protocols/unattended.md` first; it overrides every ask/wait in this skill.
+
 ## docs-update
 A change to how something is built, tested, invoked, or behaves needs a matching README/docs update.

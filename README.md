@@ -14,8 +14,10 @@ Other skills: `/persist`, `/analyze`, `/triage`, `/restory`, and `/invoke`.
 Sherpa also bundles helper agents: codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and the reviewers.
 
 Sherpa offers the tools. You decide the workflow. It is opt-in: nothing runs until you call a skill.
-It keeps nothing on disk unless you call `/persist`. Your project's rules go in an optional YAML file
-called a "pack", so the core stays general and knows nothing about your repo.
+It keeps nothing on disk unless you call `/persist`. The one exception is the optional inventory,
+a ticket board that only the `sherpa` inventory commands write to (see
+[Inventory](#inventory-optional)). Your project's rules go in an optional YAML file called a
+"pack", so the core stays general and knows nothing about your repo.
 
 ## Install
 
@@ -130,6 +132,259 @@ The verification is a check you can run again.
 1. A gap only you can close. The driver shows the finding and waits.
 2. Plan approval. Say "approved", "go" or "lgtm". A question or a critique is not approval.
 
+## Inventory (optional)
+
+The inventory is a ticket board for one project, any git repository. Each ticket is a markdown
+file, and its folder shows its stage. `sherpa loop <project>` runs each queued ticket's next stage
+headless (no one is there to answer prompts) in a fresh session. It runs inside the ticket's own
+git worktree, a second checkout of your repo. Each run stops at the next human gate and hands the
+ticket back to you. You drive it by moving files and deleting one line.
+
+### Install the CLI
+
+The `sherpa` command is separate from the plugin. It needs `bash`, `git`, and `yq` (v4+).
+
+```sh
+npm i -g github:limaagabriel/sherpa    # or, inside a clone: npm link
+```
+
+Keep the CLI on the same version as the plugin. Both must agree on the unattended protocol number
+(`protocol=1` in `protocols/unattended.md`). If they differ, the ticket fails with
+`plugin and CLI versions differ`, and the reason goes to `## Last run`.
+
+### Set up a project
+
+A project is one board for one git repository. It needs no pack. Inside the repo:
+
+```sh
+sherpa init                                 # board named after the repo folder
+sherpa init <project> --repository <path>   # or pick the name and the repo yourself
+```
+
+The board's ID (`<project>`) is just a name you pick: letters, digits, `.`, `_` and `-`. It defaults
+to the folder name of the repository's main worktree; if that is not a valid name, `init` asks you to
+pass one. If the worktree has a sherpa pack (see [Project packs](#project-packs-optional)), the
+headless skills pick it up like any session (the SessionStart hook); otherwise they run with no pack.
+
+`init` creates `~/.config/sherpa/inventory/<project>/` and prints its path. `SHERPA_CONFIG_DIR` or
+`XDG_CONFIG_HOME` change the base. The folder holds:
+
+```
+~/.config/sherpa/inventory/<project>/
+  settings.yaml        # your settings; written once, never overwritten
+  board.md             # the generated board; never edit by hand
+  .lock/               # pid and ticket ID while a pass runs
+  backlog/  frame/  shape/  implement/  analyze/  done/
+    <ID>.md            # one ticket per file
+```
+
+The ID is the file name without `.md`. It starts with a letter or digit, then may use letters,
+digits, `.`, `_` and `-`, for example `LPD-12345.md`. An ID lives in one folder only.
+
+### settings.yaml
+
+Here is a Liferay-style example of the location keys:
+
+```yaml
+name: Liferay Portal                   # display label only
+repository:
+  path: /home/you/liferay-portal       # or: command: <prints the path>
+worktree:
+  pattern:
+    path: ~/lp-worktrees/$TICKET_ID    # or: command: lp worktree path "$TICKET_ID"
+  create: lp worktree add "$TICKET_ID"
+source: ~/.local/share/lp/lp.sh        # optional; a file or a list, sourced before each command
+```
+
+`repository` and `worktree.pattern` are maps, and each needs **exactly one** of `path` or `command`
+(neither, both, or a plain value such as `repository: /x` stops the ticket with
+`<key> needs exactly one of path or command`). `init` writes the `path` form and shows the
+`command` form as a comment.
+
+- `path:` is expanded: a leading `~` and any `$NAME` or `${NAME}` from the loop's environment
+  (`$TICKET_ID` is the ticket ID). Nothing is run, and an unset variable stops the ticket with an
+  error.
+- `command:` runs via `bash -c` with `TICKET_ID` exported and stdin empty; its stderr shows on the
+  loop's stderr. It must print exactly one non-empty line, an absolute path (a trailing newline is
+  fine). The output is used as written: nothing in it is expanded or run. A non-zero exit, no
+  output or several lines stops the ticket. Use it when your tooling owns the layout.
+- `name:` (optional) is a display label, such as `Liferay Portal`. It heads `board.md` and shows
+  in the loop's start line (`sherpa: looping Liferay Portal (liferay)`). The folder name stays the
+  ID, used in paths and `TICKET` lines. Without a one-line text value, the ID is shown. `init`
+  writes `name: <project>`.
+- `repository` is the main checkout of your repo. Its `command` runs in `$HOME`.
+- `worktree.pattern` is where each ticket's worktree goes. Its `command` runs in `repository`.
+  `init` writes `path: <repo parent>/<project>-worktrees/$TICKET_ID`. A folder that already
+  exists there must be a separate worktree root of `repository` (not the main checkout, not a
+  subfolder); otherwise the ticket fails with `<path> is not a git worktree of <repository>`. The
+  same check runs after `create:`.
+- `worktree.create` (optional) is the command that makes the worktree. It runs in `repository`,
+  with `TICKET_ID` and `TICKET_WORKTREE` (the resolved path) set. It must create the folder that
+  the pattern names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.
+- `tools:` (optional) is a list of extra commands the headless agent may run, added to the default
+  `--allowedTools` (see below), for example `Bash(npm test:*)`. Never add `git push`. Each entry is
+  one line of text; a value that is not a list, or an entry with a line break, stops the pass with
+  exit 2. `init` writes `tools: []`.
+- `source:` (optional) is a file, or a list of files, that is sourced before every shell command in
+  this file, so a shell function such as `lp` works without repeating `source … &&` each time.
+  Each entry expands like `path` (`~`, `$NAME`, `${NAME}`, with `TICKET_ID` set; nothing is run).
+  Use absolute paths or `~`. The files are sourced in order, in the same shell as the command,
+  before `repository.command`, `worktree.pattern.command`, `worktree.create` and `runner`. They are
+  not sourced before the default `claude -p` command. Anything a file prints goes to stderr, never
+  to a command's output, so it cannot break a path or the `STATUS:` line. A missing file, or one
+  whose sourcing fails, stops the ticket with `settings.yaml: source <file> failed`; a value that
+  is not a file or a list of one-line files stops it too. Because the files run in the command's own
+  shell, a `set -e`, `set -u` or `trap` in one of them applies to the command.
+- `runner:` (optional) replaces the whole default command. It runs via `bash -c` in the ticket's
+  worktree with `TICKET_STAGE` (`frame`, `shape`, `implement` or `analyze`) and `TICKET_FILE` (the
+  ticket file's absolute path) set, and `tools` is then ignored. It must print the `STATUS:` line.
+
+`worktree.create`, `runner`, every `command` and every `source` file run arbitrary shell from this
+file. Keep it yours.
+
+Without `runner`, the loop runs this command in the ticket's worktree (it is run directly, not
+through a shell, so a `tools` entry is never read as shell code). `<stage>` is `frame`, `shape`,
+`implement` or `analyze`:
+
+```sh
+claude -p "/sherpa:<stage> --unattended \"<ticket file>\"" --permission-mode acceptEdits --add-dir "<folder of the ticket file>" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*),<each tools entry>"
+```
+
+- `--unattended` makes the skill follow `protocols/unattended.md`: no questions, and it stops at
+  each gate.
+- `--permission-mode acceptEdits` lets the agent edit files without asking.
+- `--add-dir` gives the agent the ticket's stage folder.
+- `--allowedTools` lists the tools that run without asking. A headless run cannot answer a prompt,
+  so a command you do not list may fail. Add yours with `tools:`.
+
+Rules for `tools`:
+
+- Add your build and test commands, for example `Bash(npm test:*)`.
+- Never allow `git push`.
+- Never use a full permission bypass.
+
+If you write your own `runner`, keep the prompt first. `--add-dir` and `--allowedTools` take every
+argument after them.
+
+Only the default `claude -p` command is tested. For Codex CLI or pi, set a `runner`; it works if
+it reads `TICKET_STAGE` and `TICKET_FILE`, follows `protocols/unattended.md`, and prints the
+`STATUS:` line. That path is untested.
+
+### Write a ticket
+
+Create the ticket in `frame/`, or in `backlog/` to park it. It is plain markdown, with the title as
+the first `# ` line:
+
+```markdown
+# Fix the widget cache
+
+What I want, in my words.
+
+## Answers
+```
+
+The loop adds two lines of front matter (the block between the `---` lines) above the title:
+
+```markdown
+---
+parked: frame
+actionNeeded: answers
+---
+# Fix the widget cache
+```
+
+- `parked:` is the folder where the run stopped. The loop writes it.
+- `actionNeeded:` is what the loop needs from you. Remove the line to say "ready again".
+
+The loop writes each stage's output into its own section, between markers:
+
+```markdown
+## Frame
+<!-- sherpa:frame -->
+...the agent's output, ending with "## Waiting on you"...
+<!-- /sherpa:frame -->
+```
+
+| Stage | Marker | Heading |
+|---|---|---|
+| frame | `frame` | `## Frame` |
+| shape | `plan` | `## Plan` |
+| implement | `implementation` | `## Implementation` |
+| analyze | `analysis` | `## Analysis` |
+| failed run | `last-run` | `## Last run` |
+
+The loop edits only its front matter and these marker sections. Do not edit the `<!-- sherpa:… -->`
+markers, and do not write inside them: the next run of that stage replaces the text there. Your
+replies go under `## Answers`, which the loop never edits.
+
+### Your actions
+
+The loop sets `actionNeeded:` to one of five values:
+
+| Value | Written when | What you do |
+|---|---|---|
+| `answers` | the output has open `Q<n>:` questions | answer under `## Answers`, remove the line |
+| `approval` | frame or shape finished, nothing open | move the file to the next folder |
+| `review` | implement finished | review the code; move to `analyze/`, or answer and move back to `shape/` |
+| `decision` | analyze said APPROVE WITH NITS or REQUEST CHANGES | move to `done/`, or answer and move back to `shape/` |
+| `fix` | the run failed (see `## Last run`) | fix the cause, remove the line to retry; after a failed implement, move back to `shape/` instead, so the plan covers only what is missing |
+
+Then drive the ticket with these actions:
+
+| You want to… | You do |
+|---|---|
+| start a ticket | create it in `frame/`, or move it from `backlog/` |
+| send answers ("ready again") | write under `## Answers`, remove the `actionNeeded:` line |
+| approve and advance | move the file to the next folder |
+| send code-review feedback after implement | write under `## Answers`, move the file back to `shape/` |
+| finish | move the file to `done/` |
+
+The loop moves a file only when analyze says APPROVE, and then only to `done/`. Every other move is
+yours.
+
+The board and the loop read a ticket's state the same way. A ticket **waits on you** when it has
+`actionNeeded:` and its `parked:` names its own folder. It is **running** while its pass runs.
+Anything else is **queued**, and the next pass runs it. So moving a file out of a parked folder
+queues it, and the old `actionNeeded:` line stops counting.
+
+A re-run continues a ticket; it never starts over. If the ticket already has its stage's section,
+the agent keeps that output, applies every answer, and asks only about questions still open. Question
+IDs stay the same.
+
+### Run it
+
+```sh
+sherpa loop <project>            # one pass, wait 300 s, repeat
+sherpa loop <project> --every 60 # wait 60 s between passes instead
+sherpa loop <project> --once     # one pass, then exit
+sherpa board <project>           # refresh board.md and print it
+```
+
+- Ctrl-C stops the loop and the agent it started. A TERM signal does the same.
+- Run one loop per project. If a pass finds the lock held by another pass, the loop stops with
+  `another loop holds <project>` (exit 3).
+- A pass with a failed ticket does not stop the loop; it keeps going. Exit 2 (bad `tools`, unknown
+  project, bad usage) does stop it.
+- The board groups tickets into **Waiting on you**, **Agent running**, **Queued for agent**,
+  **Backlog**, **Done**, and **Needs fixing**. The last holds broken tickets: a bad ID, one ID in
+  two folders, broken front matter, or an unknown `actionNeeded:` value.
+- A failed run writes `## Last run` (the reason, the exit code, the last 20 lines of stderr, and
+  stdout) and sets `actionNeeded: fix`.
+- If the output cannot be written (broken markers, bad YAML), it is saved as
+  `<ID>.lost-output.txt` in the ticket's folder, and the ticket gets `actionNeeded: fix`.
+
+### Trust
+
+- `runner` and `worktree.create` run shell from `settings.yaml`, `tools` widens what the unattended
+  agent may run, and the agent reads your repo. Use only repos you trust.
+- Without `runner`, the command shown under settings is exactly what runs, with exactly those
+  permissions plus your `tools`. Read it once before you start the loop.
+- The unattended agent can edit any file in its worktree, including hook scripts that `git commit`
+  runs. Review the code at the `review` gate.
+- `## Last run` and `.lost-output.txt` files can hold secrets from stderr or stdout. Do not share a
+  ticket as it is.
+- Agent output is model text. Read it before you approve.
+
 ## Project packs (optional)
 
 The engine ships generic. To layer in your project's conventions, commit
@@ -158,6 +413,8 @@ schema and resolution rules: `packs/README.md`.
   git, never pushes.
 - **`/invoke`** — runs a pack skill or any markdown file as a skill; runs with your permissions,
   unsandboxed.
+- **`sherpa`** (`bin/sherpa`) — the CLI for the inventory: `init`, `loop`, and `board`. Each loop
+  run follows `protocols/unattended.md`.
 
 ## Layout
 
@@ -165,9 +422,12 @@ schema and resolution rules: `packs/README.md`.
 skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, /invoke, using-sherpa
 agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
+protocols/unattended.md  rules for the headless runs the inventory loop starts (protocol=1)
 packs/         project-pack template + docs
 hooks/         the SessionStart pack resolver and the read-only Bash guard (scripts/hooks/guard-bash.sh)
+bin/           the sherpa CLI: init, loop, board
 scripts/       helper scripts by group: pack, agents, ci (see scripts/README.md)
+scripts/inventory/  the inventory: ensure-board, ensure-worktree, run, build-board, ticket helpers
 ```
 
 ## License
