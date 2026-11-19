@@ -113,3 +113,6 @@ jobs:
 
       - name: Inventory run test
         run: bash scripts/inventory/test-run.sh
+
+      - name: CLI test
+        run: bash bin/test-sherpa.sh

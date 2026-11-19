@@ -2,6 +2,9 @@
   "name": "sherpa",
   "version": "0.38.0",
   "type": "module",
+  "bin": {
+    "sherpa": "bin/sherpa"
+  },
   "keywords": [
     "pi-package",
     "sherpa",

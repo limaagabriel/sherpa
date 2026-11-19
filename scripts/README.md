@@ -13,6 +13,8 @@ Small bash scripts that keep sherpa's packs, agents and CI working.
 - `inventory/` — inventory boards: tickets that wait, run or are queued per pack (`build-board.sh` writes `board.md`, `run.sh` runs one loop pass)
 - `lib/` — sourced helpers with noun names; they define functions and are never run directly
 
+`bin/` (outside `scripts/`) holds the user-facing `sherpa` CLI under the same rules.
+
 A test sits beside its script as `test-<script name>.sh`.
 
 ## Verbs
