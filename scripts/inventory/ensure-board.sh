@@ -3,7 +3,7 @@
 # Input:  run in a repo (any git repository). `repository` is the main
 #   worktree of --repository (else $PWD). <project>, the board's ID, defaults to that folder's name.
 # Output: creates <inventory_dir>/<project>/ and its six stage folders if missing, writes
-#   settings.yaml ONLY when absent (repository, worktree.path, tools), builds board.md, prints the
+#   settings.yaml ONLY when absent (repository, worktree.pattern, tools), builds board.md, prints the
 #   project dir.
 # Exit:   0 ready; 1 with a reason on stderr (not a git repo, bad or unusable project name);
 #   2 usage. Needs yq and git.
@@ -37,10 +37,16 @@ q() { local s=\'; printf "'%s'" "${1//$s/$s$s}"; }
 if [ ! -e "$dir/settings.yaml" ] && [ ! -L "$dir/settings.yaml" ]; then
   wt="$(dirname "$repository")/$project-worktrees/\$TICKET_ID"
   tpl=$(cat <<'EOF2'
-repository: @REPOSITORY@
-# worktree.create and runner run arbitrary shell: keep this file yours.
+# worktree.create, runner and any command: run arbitrary shell: keep this file yours.
+# repository and worktree.pattern each take exactly one of path or command; a command prints
+# one absolute path (it gets TICKET_ID; repository's runs in $HOME, the pattern's in the repository).
+repository:
+  path: @REPOSITORY@
+  # command: echo "$HOME/src/my-repo"
 worktree:
-  path: @WT@
+  pattern:
+    path: @WT@
+    # command: lp worktree path "$TICKET_ID"
   # create: lp worktree add "$TICKET_ID"
   # default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"
 # extra commands the headless agent may run, added to the default --allowedTools

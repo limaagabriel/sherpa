@@ -30,8 +30,8 @@ pick() { if [ -f "$CTL/$1.$id" ]; then echo "$CTL/$1.$id"; else echo "$CTL/$1"; 
 exit "$(cat "$(pick rc)" 2>/dev/null || echo 0)"
 RUNNER
 settings() { # <runner> [create]: worktrees live under $tmp/wt/<ID>
-  { echo "repository: $repo"; [ -z "$1" ] || echo "runner: '$1'"; echo "worktree:"
-    echo "  path: $tmp/wt/\$TICKET_ID"; [ -z "${2:-}" ] || echo "  create: '$2'"; } >"$conf"
+  { printf 'repository:\n  path: %s\n' "$repo"; [ -z "$1" ] || echo "runner: '$1'"
+    printf 'worktree:\n  pattern:\n    path: %s/wt/$TICKET_ID\n' "$tmp"; [ -z "${2:-}" ] || echo "  create: '$2'"; } >"$conf"
 }
 settings "bash $tmp/runner.sh"
 reset() { rm -rf "$CTL"/* "$inv/.lock" "$inv/board.md" "$tmp/wt" "$inv"/*.lost-output.txt; git -C "$repo" worktree prune
@@ -274,7 +274,7 @@ echo "STATUS: GATE protocol=1"; echo "from claude"
 FAKE
 chmod +x "$tmp/bin/claude"
 dsettings() { # [tools yaml lines]: a settings.yaml with no runner
-  { echo "repository: $repo"; echo "worktree:"; echo "  path: $tmp/wt/\$TICKET_ID"; printf '%s' "${1:-}"; } >"$conf"; }
+  { printf 'repository:\n  path: %s\nworktree:\n  pattern:\n    path: %s/wt/$TICKET_ID\n' "$repo" "$tmp"; printf '%s' "${1:-}"; } >"$conf"; }
 dargs() { sed 1d "$CTL/argv"; }
 f="$inv/frame/T-1.md"; base=$BASE_TOOLS
 reset; mk frame T-1; dsettings; go

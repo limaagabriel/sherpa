@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 # Usage: ensure-worktree.sh <project> <ID>
-# Input:  <inventory_dir>/<project>/settings.yaml with `repository` (main worktree) and `worktree.path`
-#   (required); both keys expand a leading ~ and any $NAME / ${NAME} from the environment, with
-#   TICKET_ID set (see expand_path; nothing is run, an unset variable is an error), optional
-#   `worktree.create` (shell command, default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE").
+# Input:  <inventory_dir>/<project>/settings.yaml with `repository` (the main checkout) and
+#   `worktree.pattern`, each a map with exactly one of `path` or `command` (see resolve_location):
+#   `path` expands a leading ~ and $NAME / ${NAME} with TICKET_ID set (nothing is run, an unset
+#   variable is an error); `command` runs via bash -c (repository.command in $HOME,
+#   worktree.pattern.command in the repository; TICKET_ID exported) and prints one absolute path.
+#   Optional `worktree.create` (shell command, default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE").
 # Output: prints the ticket's absolute worktree path. It CREATES the worktree by running
 #   `worktree.create` via bash -c in `repository` (TICKET_ID, TICKET_WORKTREE exported, stdin
 #   /dev/null, its stdout sent to stderr) when the path is missing; an existing path is reused.
 #   The path is derived on every call, never stored. Needs yq.
 #   The folder (reused or just made) must be a separate worktree root of `repository` (same git
 #   common dir, its own top level, not the main checkout); the path is printed physically resolved.
-# Exit:   0 worktree ready; 1 with a one-line reason on stderr (no settings.yaml, missing key,
-#   bad ID, repository missing, create failed, dir still missing, the main checkout, not a
-#   worktree root of repository); 2 usage.
+# Exit:   0 worktree ready; 1 with a one-line reason on stderr (no settings.yaml, a key that is not
+#   exactly one of path or command, a command that fails or prints other than one path, a path
+#   that is not absolute, bad ID, repository missing, create failed, dir still missing, the main
+#   checkout, not a worktree root of repository); 2 usage.
 set -euo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$here/../lib/inventory.sh"
@@ -26,19 +29,12 @@ valid_id "$project" || conf=/nonexistent
 valid_id "$id" || die "invalid ID: $id (letters, digits, . _ - only)"
 
 get() { yq ".$1 // \"\"" "$conf" 2>/dev/null || die "settings.yaml is not valid YAML: $conf"; }
-repository=$(get repository); raw=$(get worktree.path); create=$(get worktree.create)
-[ -n "$repository" ] || die "settings.yaml has no repository"
-[ -n "$raw" ] || die "settings.yaml has no worktree.path"
-[ -n "$create" ] || create='git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"'
-
-expand() { # <key> <raw>: prints the expansion, or dies naming the unset variable
-  local v; v=$(TICKET_ID=$id expand_path "$2") || die "settings.yaml: $1 uses unset variable \$$v"
-  printf '%s\n' "$v"
-}
-repository=$(expand repository "$repository"); path=$(expand worktree.path "$raw")
-case "$path" in /*) ;; *) die "worktree.path must be absolute after expansion: $path" ;; esac
-
+create=$(get worktree.create); [ -n "$create" ] || create='git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"'
+resolve_location "$conf" repository "$id" "$HOME" || die "$LOCATION_ERR"
+repository=$LOCATION
 [ -d "$repository" ] || die "repository is not a directory: $repository"
+resolve_location "$conf" worktree.pattern "$id" "$repository" || die "$LOCATION_ERR"
+path=$LOCATION
 if [ ! -d "$path" ]; then
   (cd "$repository" && TICKET_ID=$id TICKET_WORKTREE=$path bash -c "$create" </dev/null >&2) ||
     die "worktree.create failed for $id"
@@ -54,7 +50,7 @@ common() { # <dir>: prints the absolute git common dir, or fails when <dir> is n
 }
 top() { local t; t=$(g "$1" rev-parse --show-toplevel 2>/dev/null) && (cd "$t" && pwd -P); }
 [ "$path" != "$repository" ] ||
-  die "$path is the main checkout; worktree.path must point to a separate worktree"
+  die "$path is the main checkout; worktree.pattern must point to a separate worktree"
 mine=$(common "$path") && theirs=$(common "$repository") && [ "$mine" = "$theirs" ] &&
   [ "$(top "$path")" = "$path" ] || die "$path is not a git worktree of $repository"
 echo "$path"

@@ -42,6 +42,13 @@
 #                           command substitution; $(...), backticks, a lone $ and $1 stay as text,
 #                           and a value is not scanned again. An empty-but-set variable gives empty.
 #                           An unset variable prints its name instead and returns 1.
+#   resolve_location <settings-file> <key> <ID> <cwd>  resolves a place that settings.yaml gives as a
+#                           map with exactly one of `path` (expand_path, TICKET_ID set) or `command`
+#                           (bash -c in <cwd>, stdin /dev/null, TICKET_ID exported, stderr passed
+#                           through; stdout must be exactly one non-empty line, used literally). <key>
+#                           is repository or worktree.pattern. The result must be absolute. Sets
+#                           LOCATION and returns 0; else returns 1 with the reason in LOCATION_ERR.
+#                           Call it without a subshell.
 #   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
 #                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
 #   BASE_TOOLS              the default --allowedTools list (comma separated).
@@ -312,4 +319,31 @@ default_cmd() {
   for t in "$@"; do tools+=",$t"; done
   DEFAULT_CMD=(claude -p "/sherpa:$stage --unattended \"$file\"" --permission-mode acceptEdits
     --add-dir "$(dirname "$file")" --allowedTools "$tools")
+}
+
+resolve_location() {
+  local conf=$1 key=$2 id=$3 cwd=$4 t p c v out rc
+  LOCATION= LOCATION_ERR="settings.yaml: $key needs exactly one of path or command"
+  t=$(yq ".$key | type" "$conf" 2>/dev/null) || { LOCATION_ERR="settings.yaml is not valid YAML: $conf"; return 1; }
+  case "$t" in
+    "" | '!!null') return 1 ;;
+    '!!map') ;;
+    *) LOCATION_ERR+=" (write \`$key:\` as a map with \`path:\` or \`command:\` under it, not a plain value)"; return 1 ;;
+  esac
+  p=$(yq ".$key.path // \"\"" "$conf") && c=$(yq ".$key.command // \"\"" "$conf") ||
+    { LOCATION_ERR="settings.yaml is not valid YAML: $conf"; return 1; }
+  { [ -n "$p" ] && [ -z "$c" ]; } || { [ -z "$p" ] && [ -n "$c" ]; } || return 1
+  if [ -n "$p" ]; then
+    v=$(TICKET_ID=$id expand_path "$p") || { LOCATION_ERR="settings.yaml: $key.path uses unset variable \$$v"; return 1; }
+    key=$key.path
+  else
+    key=$key.command
+    out=$(cd "$cwd" && TICKET_ID=$id bash -c "$c" </dev/null; printf 'x%s' "$?")
+    rc=${out##*x}; out=${out%x*}
+    [ "$rc" -eq 0 ] || { LOCATION_ERR="settings.yaml: $key failed (exit $rc)"; return 1; }
+    v=${out%$'\n'}
+    if [ -z "$v" ] || [[ $v == *$'\n'* ]]; then LOCATION_ERR="settings.yaml: $key must print one path"; return 1; fi
+  fi
+  case "$v" in /*) ;; *) LOCATION_ERR="settings.yaml: $key must be absolute: $v"; return 1 ;; esac
+  LOCATION=$v
 }

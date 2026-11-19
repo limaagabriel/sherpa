@@ -183,28 +183,38 @@ digits, `.`, `_` and `-`, for example `LPD-12345.md`. An ID lives in one folder 
 
 ### settings.yaml
 
-Here is a Liferay-style example of the `worktree` keys:
+Here is a Liferay-style example of the location keys:
 
 ```yaml
-repository: /home/you/liferay-portal
+repository:
+  path: /home/you/liferay-portal       # or: command: <prints the path>
 worktree:
-  path: ~/lp-worktrees/$TICKET_ID
+  pattern:
+    path: ~/lp-worktrees/$TICKET_ID    # or: command: lp worktree path "$TICKET_ID"
   create: lp worktree add "$TICKET_ID"
 ```
 
-- `repository:` is the main checkout of your repo. `init` fills it in. Like `path:`, it expands a
-  leading `~` and any `$NAME` or `${NAME}` from the environment (see `path:`).
-- `worktree:` holds two keys:
-  - `path:` (required) is where each ticket's worktree goes. A leading `~` and any `$NAME` or
-    `${NAME}` from the loop's environment are expanded (`$TICKET_ID` is the ticket ID). Nothing is
-    run, and an unset variable stops the ticket with an error. The result must be an absolute path.
-    `init` writes `<project>-worktrees/$TICKET_ID` next to the repo. A folder that already
-    exists at the path must be a separate worktree root of `repository` (not the main checkout, not
-    a subfolder); otherwise the ticket fails with
-    `<path> is not a git worktree of <repository>`. The same check runs after `create:`.
-  - `create:` (optional) is the command that makes the worktree. It runs in `repository`, with
-    `TICKET_ID` and `TICKET_WORKTREE` (the expanded `path`) set. It must create the folder that
-    `path` names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.
+`repository` and `worktree.pattern` are maps, and each needs **exactly one** of `path` or `command`
+(neither, both, or a plain value such as `repository: /x` stops the ticket with
+`<key> needs exactly one of path or command`). `init` writes the `path` form and shows the
+`command` form as a comment.
+
+- `path:` is expanded: a leading `~` and any `$NAME` or `${NAME}` from the loop's environment
+  (`$TICKET_ID` is the ticket ID). Nothing is run, and an unset variable stops the ticket with an
+  error.
+- `command:` runs via `bash -c` with `TICKET_ID` exported and stdin empty; its stderr shows on the
+  loop's stderr. It must print exactly one non-empty line, an absolute path (a trailing newline is
+  fine). The output is used as written: nothing in it is expanded or run. A non-zero exit, no
+  output or several lines stops the ticket. Use it when your tooling owns the layout.
+- `repository` is the main checkout of your repo. Its `command` runs in `$HOME`.
+- `worktree.pattern` is where each ticket's worktree goes. Its `command` runs in `repository`.
+  `init` writes `path: <repo parent>/<project>-worktrees/$TICKET_ID`. A folder that already
+  exists there must be a separate worktree root of `repository` (not the main checkout, not a
+  subfolder); otherwise the ticket fails with `<path> is not a git worktree of <repository>`. The
+  same check runs after `create:`.
+- `worktree.create` (optional) is the command that makes the worktree. It runs in `repository`,
+  with `TICKET_ID` and `TICKET_WORKTREE` (the resolved path) set. It must create the folder that
+  the pattern names. The default is `git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"`.
 - `tools:` (optional) is a list of extra commands the headless agent may run, added to the default
   `--allowedTools` (see below), for example `Bash(npm test:*)`. Never add `git push`. Each entry is
   one line of text; a value that is not a list, or an entry with a line break, stops the pass with
@@ -213,7 +223,7 @@ worktree:
   worktree with `TICKET_STAGE` (`frame`, `shape`, `implement` or `analyze`) and `TICKET_FILE` (the
   ticket file's absolute path) set, and `tools` is then ignored. It must print the `STATUS:` line.
 
-`worktree.create` and `runner` run arbitrary shell from this file. Keep it yours.
+`worktree.create`, `runner` and every `command` run arbitrary shell from this file. Keep it yours.
 
 Without `runner`, the loop runs this command in the ticket's worktree (it is run directly, not
 through a shell, so a `tools` entry is never read as shell code). `<stage>` is `frame`, `shape`,

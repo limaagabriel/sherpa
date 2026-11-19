@@ -16,11 +16,14 @@ conf="$SHERPA_CONFIG_DIR/inventory/p/settings.yaml"
 repository="$tmp/repo"
 git init -q "$repository"; git -C "$repository" commit -q --allow-empty -m init
 
-# settings <repository> <path> [create]: writes settings.yaml; an empty arg leaves that key out
+# settings <repository path> <pattern path> [create]: writes settings.yaml; an empty arg leaves that key out
 settings() {
-  { [ -z "$1" ] || echo "repository: $1"; echo "worktree:"; [ -z "$2" ] || echo "  path: $2"
+  { [ -z "$1" ] || printf 'repository:\n  path: %s\n' "$1"; echo "worktree:"
+    [ -z "$2" ] || printf '  pattern:\n    path: %s\n' "$2"
     [ -z "${3:-}" ] || { echo "  create: |"; sed 's/^/    /' <<<"$3"; }; } >"$conf"
 }
+# settings_cmd <repository yaml lines> <pattern yaml lines>: writes the given lines under each key
+settings_cmd() { { echo "repository:"; sed 's/^/  /' <<<"$1"; printf 'worktree:\n  pattern:\n'; sed 's/^/    /' <<<"$2"; } >"$conf"; }
 run() { out=$(bash "$here/ensure-worktree.sh" p "$@" 2>"$tmp/err" <<<leak); rc=$?; err=$(cat "$tmp/err"); }
 wt_add() { git -C "$repository" worktree add -q --detach "$1"; }  # <path>: a real worktree of the repo
 
@@ -45,7 +48,7 @@ wt_add "$HOME/tilde/T-3"
 settings "$repository" '~/tilde/$TICKET_ID'
 run T-3; assert_eq "tilde" "$out" "$HOME/tilde/T-3"
 
-# $HOME, ${HOME} and a custom variable expand in worktree.path and repository; ~ in repository
+# $HOME, ${HOME} and a custom variable expand in worktree.pattern.path and repository; ~ in repository
 wt_add "$HOME/w/T-3"
 settings "$repository" '$HOME/w/$TICKET_ID'; run T-3; assert_eq "\$HOME path" "$out" "$HOME/w/T-3"
 settings "$repository" '${HOME}/w/${TICKET_ID}'; run T-3; assert_eq "\${HOME} path" "$out" "$HOME/w/T-3"
@@ -73,8 +76,8 @@ bad() { # <label> <want> <ID>
 }
 bad "bad ID" "invalid ID" 'a/b'; bad "leading dot ID" "invalid ID" .hidden
 mv "$conf" "$conf.off"; bad "no settings" "no settings.yaml" T-5; mv "$conf.off" "$conf"
-settings "" "$tmp/wt/\$TICKET_ID"; bad "no repository" "no repository" T-5
-settings "$repository" ""; bad "no path" "no worktree.path" T-5
+settings "" "$tmp/wt/\$TICKET_ID"; bad "no repository" "repository needs exactly one of path or command" T-5
+settings "$repository" ""; bad "no pattern" "worktree.pattern needs exactly one of path or command" T-5
 settings "$repository" "$tmp/wt/\$TICKET_ID" "exit 3"; bad "create failed" "create failed" T-6
 settings "$repository" "$tmp/wt/\$TICKET_ID" "true"; bad "still missing" "still missing" T-7
 # a folder at the path that is not a worktree of repository is refused, created or reused
@@ -98,8 +101,8 @@ GIT_DIR="$repository/.git" bad_same "GIT_DIR plain dir" "is not a git worktree o
 GIT_DIR="$repository/.git" run T-1; assert_exit "GIT_DIR real worktree exit" "$rc" 0; assert_eq "GIT_DIR real worktree" "$out" "$tmp/wt/T-1"
 settings "$tmp/nope" "$tmp/wt/\$TICKET_ID"; bad "repository missing" "repository is not a directory" T-1
 # an unset variable names itself; nothing in a path value is ever run
-settings "$repository" '$NOPE_UNSET/$TICKET_ID'; bad "unset in path" "worktree.path uses unset variable \$NOPE_UNSET" T-5
-settings '${NOPE_REPO}/r' "$tmp/wt/\$TICKET_ID"; bad "unset in repository" "repository uses unset variable \$NOPE_REPO" T-5
+settings "$repository" '$NOPE_UNSET/$TICKET_ID'; bad "unset in path" "worktree.pattern.path uses unset variable \$NOPE_UNSET" T-5
+settings '${NOPE_REPO}/r' "$tmp/wt/\$TICKET_ID"; bad "unset in repository" "repository.path uses unset variable \$NOPE_REPO" T-5
 settings "$repository" "\$(touch $tmp/pwned)/\$TICKET_ID"; bad "cmd subst" "must be absolute" T-5
 settings "$repository" "'\`touch $tmp/pwned2\`/\$TICKET_ID'"; bad "backtick" "must be absolute" T-5
 wt_add "$tmp/wt/\$(touch $tmp/pwned3)"
@@ -108,6 +111,53 @@ assert_exit "cmd subst in abs path exit" "$rc" 0; assert_eq "cmd subst in abs pa
 [ ! -e "$tmp/pwned" ] && [ ! -e "$tmp/pwned2" ] && [ ! -e "$tmp/pwned3" ] || { echo "FAIL [path value ran code]"; fail=1; }
 n=$(printf '%s\n' "${msgs[@]}" | sed "s/T-[0-9]//; s/$(printf '%s' "$tmp" | sed 's/[.[\*^$/]/\\&/g')[^ ]*//" | sort -u | wc -l)
 assert_eq "messages distinct" "$n" "${#msgs[@]}"
+
+# command form: a map with exactly one of path or command, for repository and worktree.pattern
+blk() { printf 'command: |\n'; sed 's/^/  /' <<<"$1"; }  # <shell text>: a YAML command: block
+wt_add "$tmp/wt/T-30"
+settings_cmd "$(blk "echo \"\$(pwd -P) \$TICKET_ID \$(cat | wc -c)\" >$tmp/seen-repo; echo chatter >&2; echo $repository")" "path: $tmp/wt/\$TICKET_ID"
+run T-30; assert_exit "repository.command exit" "$rc" 0; assert_eq "repository.command stdout" "$out" "$tmp/wt/T-30"
+assert_eq "repository.command context" "$(cat "$tmp/seen-repo")" "$(cd "$HOME" && pwd -P) T-30 0"
+assert_contains "repository.command stderr passes" "$err" "chatter"
+rm -rf "$tmp/seen-pat"
+settings_cmd "path: $repository" "$(blk "echo \"\$(pwd -P) \$TICKET_ID \$(cat | wc -c)\" >$tmp/seen-pat; echo note >&2; echo $tmp/wt/cmd-\$TICKET_ID")"
+run T-31; assert_exit "pattern.command exit" "$rc" 0; assert_eq "pattern.command stdout" "$out" "$tmp/wt/cmd-T-31"
+assert_eq "pattern.command context" "$(cat "$tmp/seen-pat")" "$repository T-31 0"
+assert_contains "pattern.command stderr passes" "$err" "note"
+assert_eq "pattern.command made the worktree" "$(git -C "$tmp/wt/cmd-T-31" branch --show-current)" "T-31"
+settings_cmd "$(blk "printf %s $repository")" "$(blk "printf %s $tmp/wt/cmd-\$TICKET_ID")"  # no trailing newline is fine
+run T-31; assert_exit "no trailing newline exit" "$rc" 0; assert_eq "no trailing newline" "$out" "$tmp/wt/cmd-T-31"
+mkdir -p "$tmp/wt/lit"; wt_add "$tmp/wt/\$(touch $tmp/pwned4)"
+settings_cmd "path: $repository" "$(blk "printf '%s\n' '$tmp/wt/\$(touch $tmp/pwned4)'")"
+run T-32; assert_exit "command output literal exit" "$rc" 0
+assert_eq "command output literal" "$out" "$tmp/wt/\$(touch $tmp/pwned4)"
+[ ! -e "$tmp/pwned4" ] || { echo "FAIL [command output was run]"; fail=1; }
+P="path: $tmp/wt/\$TICKET_ID"; R="path: $repository"
+settings_cmd "$R
+$(blk "echo $repository")" "$P"; bad "repository both" "settings.yaml: repository needs exactly one of path or command" T-33
+settings_cmd "$R" "$P
+$(blk "echo x")"; bad "pattern both" "settings.yaml: worktree.pattern needs exactly one of path or command" T-33
+settings_cmd "{}" "$P"; bad_same "repository neither" "settings.yaml: repository needs exactly one of path or command" T-33
+settings_cmd "$R" "{}"; bad_same "pattern neither" "settings.yaml: worktree.pattern needs exactly one of path or command" T-33
+settings_cmd "path: ''" "$P"; bad_same "repository empty path" "repository needs exactly one of path or command" T-33
+printf 'repository: %s\nworktree:\n  pattern:\n    path: %s\n' "$repository" "$tmp/wt/\$TICKET_ID" >"$conf"
+bad "old scalar repository" "repository needs exactly one of path or command (write \`repository:\` as a map" T-33
+printf 'repository:\n  path: %s\nworktree:\n  pattern: %s\n' "$repository" "$tmp/wt/x" >"$conf"
+bad "old scalar pattern" "worktree.pattern needs exactly one of path or command (write" T-33
+printf 'repository:\n  path: %s\nworktree:\n  path: %s\n' "$repository" "$tmp/wt/\$TICKET_ID" >"$conf"
+bad_same "old worktree.path" "worktree.pattern needs exactly one of path or command" T-33
+settings_cmd "$(blk "echo rel/repo")" "$P"; bad "repository relative" "repository.command must be absolute: rel/repo" T-33
+settings_cmd "$R" "$(blk "echo wt/x")"; bad "pattern relative" "worktree.pattern.command must be absolute: wt/x" T-33
+settings_cmd "path: rel/repo" "$P"; bad "repository path relative" "repository.path must be absolute: rel/repo" T-33
+settings_cmd "$R" "path: rel/\$TICKET_ID"; bad "pattern path relative" "worktree.pattern.path must be absolute: rel/T-33" T-33
+settings_cmd "$(blk "echo $repository; echo $repository")" "$P"; bad "repository two lines" "repository.command must print one path" T-33
+settings_cmd "$R" "$(blk "echo $tmp/wt/a; echo $tmp/wt/b")"; bad "pattern two lines" "worktree.pattern.command must print one path" T-33
+settings_cmd "$R" "$(blk "echo $tmp/wt/a; echo")"; bad_same "pattern blank second line" "worktree.pattern.command must print one path" T-33
+settings_cmd "$(blk "true")" "$P"; bad_same "repository prints nothing" "repository.command must print one path" T-33
+settings_cmd "$R" "$(blk "echo")"; bad_same "pattern prints a blank line" "worktree.pattern.command must print one path" T-33
+settings_cmd "$(blk "exit 7")" "$P"; bad "repository command fails" "repository.command failed (exit 7)" T-33
+settings_cmd "$R" "$(blk "echo oops >&2; exit 4")"; bad "pattern command fails" "worktree.pattern.command failed (exit 4)" T-33
+assert_contains "failing command stderr passes" "$err" "oops"
 
 mkdir -p "$SHERPA_CONFIG_DIR/inventory/a b"; settings "$repository" "$tmp/wt/\$TICKET_ID"; cp "$conf" "$SHERPA_CONFIG_DIR/inventory/a b/"
 out=$(bash "$here/ensure-worktree.sh" "a b" T-1 2>&1); assert_exit "bad project name" $? 1; assert_contains "bad project msg" "$out" "no settings.yaml"
