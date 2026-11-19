@@ -77,4 +77,6 @@ out=$(bash "$here/build-board.sh" bare); assert_exit "bare pack" $? 0
 assert_contains "bare done empty" "$(sec "$tmp/inventory/bare/board.md" Done)" "_none_"
 out=$(bash "$here/build-board.sh" nope 2>&1); assert_exit "unknown pack" $? 1
 out=$(bash "$here/build-board.sh" 2>&1); assert_exit "no arg" $? 2
+mkdir -p "$tmp/inventory/a b" "$tmp/inventory/-x"
+for bad in "a b" -x; do out=$(bash "$here/build-board.sh" "$bad" 2>&1); assert_exit "bad name $bad" $? 1; done
 [ "$fail" -eq 0 ] && echo "PASS: all board cases" || { echo FAILED; exit 1; }

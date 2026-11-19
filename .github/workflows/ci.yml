@@ -104,3 +104,6 @@ jobs:
 
       - name: Inventory worktree test
         run: bash scripts/inventory/test-ensure-worktree.sh
+
+      - name: Inventory init test
+        run: bash scripts/inventory/test-ensure-board.sh

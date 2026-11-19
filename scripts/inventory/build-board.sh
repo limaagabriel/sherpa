@@ -12,7 +12,7 @@ source "$here/../lib/inventory.sh"
 [ $# -eq 1 ] || { echo "usage: build-board.sh <pack>" >&2; exit 2; }
 pack=$1
 dir="$(inventory_dir)/$pack"
-case "$pack" in '' | */* | .*) dir=/nonexistent ;; esac
+valid_id "$pack" || dir=/nonexistent
 [ -d "$dir" ] || { echo "build-board: unknown pack: $pack" >&2; exit 1; }
 
 you= running= queued= backlog= done_= bad=

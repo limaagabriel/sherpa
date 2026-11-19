@@ -18,7 +18,7 @@ source "$here/../lib/inventory.sh"
 pack=$1 id=$2
 die() { echo "ensure-worktree: $*" >&2; exit 1; }
 conf="$(inventory_dir)/$pack/settings.yaml"
-case "$pack" in '' | */* | .*) conf=/nonexistent ;; esac
+valid_id "$pack" || conf=/nonexistent
 [ -f "$conf" ] || die "no settings.yaml for pack: $pack"
 valid_id "$id" || die "invalid ID: $id (letters, digits, . _ - only)"
 

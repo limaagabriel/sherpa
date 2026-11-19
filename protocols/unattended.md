@@ -8,8 +8,8 @@ approval" and "ask right then" in the skill you were invoked as. Protocol versio
 
 1. **Never ask, never wait.** Never call `AskUserQuestion`. Stop at the first human gate instead
    of crossing it.
-2. **Read the ticket.** The next arg is the absolute path of the ticket file; the file name without
-   `.md` is the ID.
+2. **Read the ticket.** The next arg is the absolute path of the ticket file (it may arrive wrapped
+   in double quotes; drop them); the file name without `.md` is the ID.
    - The task is the first `# ` line (the title) plus the body above the first `<!-- sherpa:`
      marker.
    - Output of earlier layers lives in marker sections, `<!-- sherpa:<name> -->` to

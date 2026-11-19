@@ -72,6 +72,8 @@ bad "other pack" "detects pack 'other'" T-9
 n=$(printf '%s\n' "${msgs[@]}" | sed "s/T-[0-9]//; s/$(printf '%s' "$tmp" | sed 's/[.[\*^$/]/\\&/g')[^ ]*//" | sort -u | wc -l)
 assert_eq "messages distinct" "$n" "${#msgs[@]}"
 
+mkdir -p "$SHERPA_CONFIG_DIR/inventory/a b"; settings "$repo" "$tmp/wt/\$SHERPA_ID"; cp "$conf" "$SHERPA_CONFIG_DIR/inventory/a b/"
+out=$(bash "$here/ensure-worktree.sh" "a b" T-1 2>&1); assert_exit "bad pack name" $? 1; assert_contains "bad pack msg" "$out" "no settings.yaml"
 bash "$here/ensure-worktree.sh" p >/dev/null 2>&1; assert_exit "one arg" $? 2
 
 [ "$fail" -eq 0 ] && echo "PASS: all worktree cases" || { echo FAILED; exit 1; }
