@@ -18,6 +18,8 @@ description: Build layer. Builds an approved plan from /shape (or a bare task ar
   `bash scripts/pack/load-layer.sh <configPath> <layer>`. `configPath=none` counts as announced —
   forward it verbatim.
 <!-- /shared -->
+<!-- shared:unattended -->Args start with `--unattended` → read `${CLAUDE_PLUGIN_ROOT}/protocols/unattended.md` first; it overrides every ask/wait in this skill.
+<!-- /shared -->
 
 # /implement — build, with pressure per step
 
