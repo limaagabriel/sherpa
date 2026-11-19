@@ -24,9 +24,12 @@ approval" and "ask right then" in the skill you were invoked as. Protocol versio
    new questions after the highest id, and re-run the layer's reviewers.
 4. **Per layer.**
    - Frame: the task is the ticket.
-   - Shape: the problem is the frame section. If the ticket already has an implementation section,
-     the answers are code-review direction: the new plan covers only what is still missing from
-     the worktree's code. Earlier commits are the starting point, never rebuilt.
+   - Shape: the problem is the frame section. Earlier implement work exists when the ticket already
+     has an implementation section, or when the worktree's branch (cwd) already has commits past
+     the repo's default branch (check with `git log <default>..HEAD`, where `<default>` is that
+     branch, such as `main`; the merge-base with it also works). Then the answers are code-review
+     direction: the new plan covers only what is still missing from the worktree's code. Earlier
+     commits are the starting point, never rebuilt.
    - Implement: build the whole plan section in one run, as it does interactively.
    - Analyze: the target is the local branch in cwd.
 5. **Leave no marks.** Never edit the ticket file (the loop writes it). Never push. Never add marks

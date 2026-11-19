@@ -130,6 +130,225 @@ The verification is a check you can run again.
 1. A gap only you can close. The driver shows the finding and waits.
 2. Plan approval. Say "approved", "go" or "lgtm". A question or a critique is not approval.
 
+## Inventory (optional)
+
+The inventory is a ticket board for one pack. Each ticket is a markdown file, and its folder shows
+its stage. `sherpa loop <pack>` runs each queued ticket's next layer headless (no one is there to
+answer prompts) in a fresh session. It runs inside the ticket's own git worktree, a second checkout
+of your repo. Each run stops at the next human gate and hands the ticket back to you. You drive it
+by moving files and deleting one line.
+
+### Install the CLI
+
+The `sherpa` command is separate from the plugin. It needs `bash`, `git`, and `yq` (v4+).
+
+```sh
+npm i -g github:limaagabriel/sherpa    # or, inside a clone: npm link
+```
+
+Keep the CLI on the same version as the plugin. Both must agree on the unattended protocol number
+(`protocol=1` in `protocols/unattended.md`). If they differ, the ticket fails with
+`plugin and CLI versions differ`, and the reason goes to `## Last run`.
+
+### Set up a pack
+
+First, give the repo a pack (see [Project packs](#project-packs-optional)). Then, inside the repo:
+
+```sh
+sherpa init                        # the pack found for this repo
+sherpa init <pack> --repo <path>   # or name the pack and the repo yourself
+```
+
+`init` creates `~/.config/sherpa/inventory/<pack>/` and prints its path. `SHERPA_CONFIG_DIR` or
+`XDG_CONFIG_HOME` change the base. The folder holds:
+
+```
+~/.config/sherpa/inventory/<pack>/
+  settings.yaml        # your settings; written once, never overwritten
+  board.md             # the generated board; never edit by hand
+  .lock/               # pid and ticket ID while a pass runs
+  backlog/  frame/  shape/  implement/  analyze/  done/
+    <ID>.md            # one ticket per file
+```
+
+The ID is the file name without `.md`. It starts with a letter or digit, then may use letters,
+digits, `.`, `_` and `-`, for example `LPD-12345.md`. An ID lives in one folder only.
+
+### settings.yaml
+
+Here is a Liferay-style example of the `worktree` keys:
+
+```yaml
+repo: /home/you/liferay-portal
+worktree:
+  path: ~/lp-worktrees/$SHERPA_ID
+  create: lp worktree add "$SHERPA_ID"
+```
+
+- `repo:` is the main checkout of your repo. `init` fills it in.
+- `worktree:` holds two keys:
+  - `path:` (required) is where each ticket's worktree goes. Only `~` and `$SHERPA_ID` (the ticket
+    ID) are expanded, and the result must be an absolute path. `init` writes
+    `<pack>-worktrees/$SHERPA_ID` next to the repo.
+  - `create:` (optional) is the command that makes the worktree. It runs in `repo`, with
+    `SHERPA_ID` and `SHERPA_WORKTREE` (the expanded `path`) set. It must create the folder that
+    `path` names. The default is `git worktree add -b "$SHERPA_ID" "$SHERPA_WORKTREE"`.
+- `runner:` (required) is the command that runs one layer. It runs in the ticket's worktree with
+  `SHERPA_LAYER` (`frame`, `shape`, `implement` or `analyze`) and `SHERPA_TASK` (the ticket
+  file's absolute path) set.
+
+`runner` and `worktree.create` run arbitrary shell from this file. Keep it yours.
+
+`init` writes this runner:
+
+```yaml
+runner: |-
+  claude -p "/sherpa:$SHERPA_LAYER --unattended \"$SHERPA_TASK\"" --permission-mode acceptEdits --add-dir "$(dirname "$SHERPA_TASK")" --allowedTools "Read,Grep,Glob,Edit,Write,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*)"
+```
+
+- `--unattended` makes the skill follow `protocols/unattended.md`: no questions, and it stops at
+  each gate.
+- `--permission-mode acceptEdits` lets the agent edit files without asking.
+- `--add-dir` gives the agent the ticket's stage folder.
+- `--allowedTools` lists the tools that run without asking. A headless run cannot answer a prompt,
+  so a command you do not list may fail.
+
+Rules for `--allowedTools`:
+
+- Add your build and test commands, for example `Bash(npm test:*)`.
+- Never allow `git push`.
+- Never use a full permission bypass.
+
+Keep the prompt first in the runner. `--add-dir` and `--allowedTools` take every argument after
+them.
+
+Only the `claude -p` runner is tested. For Codex CLI or pi, a runner works if it reads
+`SHERPA_LAYER` and `SHERPA_TASK`, follows `protocols/unattended.md`, and prints the `STATUS:` line.
+That path is untested.
+
+For a workspace pack, its `detect` must match `worktree.path`. Otherwise the ticket fails. The text
+`no pack found in …` or `detects pack …` appears in the stderr part of `## Last run`; the reason
+line there is `worktree: could not be prepared`. For a worktree under `lp-worktrees/`:
+
+```yaml
+detect: case "$CWD" in */lp-worktrees/*) exit 0 ;; *) exit 1 ;; esac
+```
+
+A local pack (`.sherpa/project.yaml` committed in the repo) needs no `detect`.
+
+### Write a ticket
+
+Create the ticket in `frame/`, or in `backlog/` to park it. It is plain markdown, with the title as
+the first `# ` line:
+
+```markdown
+# Fix the widget cache
+
+What I want, in my words.
+
+## Answers
+```
+
+The loop adds two lines of front matter (the block between the `---` lines) above the title:
+
+```markdown
+---
+parked: frame
+actionNeeded: answers
+---
+# Fix the widget cache
+```
+
+- `parked:` is the folder where the run stopped. The loop writes it.
+- `actionNeeded:` is what the loop needs from you. Remove the line to say "ready again".
+
+The loop writes each layer's output into its own section, between markers:
+
+```markdown
+## Frame
+<!-- sherpa:frame -->
+...the agent's output, ending with "## Waiting on you"...
+<!-- /sherpa:frame -->
+```
+
+| Layer | Marker | Heading |
+|---|---|---|
+| frame | `frame` | `## Frame` |
+| shape | `plan` | `## Plan` |
+| implement | `implementation` | `## Implementation` |
+| analyze | `analysis` | `## Analysis` |
+| failed run | `last-run` | `## Last run` |
+
+The loop edits only its front matter and these marker sections. Do not edit the `<!-- sherpa:… -->`
+markers, and do not write inside them: the next run of that layer replaces the text there. Your
+replies go under `## Answers`, which the loop never edits.
+
+### Your actions
+
+The loop sets `actionNeeded:` to one of five values:
+
+| Value | Written when | What you do |
+|---|---|---|
+| `answers` | the output has open `Q<n>:` questions | answer under `## Answers`, remove the line |
+| `approval` | frame or shape finished, nothing open | move the file to the next folder |
+| `review` | implement finished | review the code; move to `analyze/`, or answer and move back to `shape/` |
+| `decision` | analyze said APPROVE WITH NITS or REQUEST CHANGES | move to `done/`, or answer and move back to `shape/` |
+| `fix` | the run failed (see `## Last run`) | fix the cause, remove the line to retry; after a failed implement, move back to `shape/` instead, so the plan covers only what is missing |
+
+Then drive the ticket with these actions:
+
+| You want to… | You do |
+|---|---|
+| start a ticket | create it in `frame/`, or move it from `backlog/` |
+| send answers ("ready again") | write under `## Answers`, remove the `actionNeeded:` line |
+| approve and advance | move the file to the next folder |
+| send code-review feedback after implement | write under `## Answers`, move the file back to `shape/` |
+| finish | move the file to `done/` |
+
+The loop moves a file only when analyze says APPROVE, and then only to `done/`. Every other move is
+yours.
+
+The board and the loop read a ticket's state the same way. A ticket **waits on you** when it has
+`actionNeeded:` and its `parked:` names its own folder. It is **running** while its pass runs.
+Anything else is **queued**, and the next pass runs it. So moving a file out of a parked folder
+queues it, and the old `actionNeeded:` line stops counting.
+
+A re-run continues a ticket; it never starts over. If the ticket already has its layer's section,
+the agent keeps that output, applies every answer, and asks only about questions still open. Question
+IDs stay the same.
+
+### Run it
+
+```sh
+sherpa loop <pack>               # one pass, wait 300 s, repeat
+sherpa loop <pack> --every 60    # wait 60 s between passes instead
+sherpa loop <pack> --once        # one pass, then exit
+sherpa board <pack>              # refresh board.md and print it
+```
+
+- Ctrl-C stops the loop and the agent it started. A TERM signal does the same.
+- Run one loop per pack. If a pass finds the lock held by another pass, the loop stops with
+  `another loop holds <pack>` (exit 3).
+- A pass with a failed ticket does not stop the loop; it keeps going. Exit 2 (no runner, unknown
+  pack, bad usage) does stop it.
+- The board groups tickets into **Waiting on you**, **Agent running**, **Queued for agent**,
+  **Backlog**, **Done**, and **Needs fixing**. The last holds broken tickets: a bad ID, one ID in
+  two folders, broken front matter, or an unknown `actionNeeded:` value.
+- A failed run writes `## Last run` (the reason, the exit code, the last 20 lines of stderr, and
+  stdout) and sets `actionNeeded: fix`.
+- If the output cannot be written (broken markers, bad YAML), it is saved as
+  `<ID>.lost-output.txt` in the ticket's folder, and the ticket gets `actionNeeded: fix`.
+
+### Trust
+
+- `sherpa init` and the worktree check run the `detect` of the packs they find. Use only repos you
+  trust.
+- The unattended agent can edit any file in its worktree, including hook scripts that `git commit`
+  runs. Review the code at the `review` gate.
+- `## Last run` and `.lost-output.txt` files can hold secrets from stderr or stdout. Do not share a
+  ticket as it is.
+- Agent output is model text. Read it before you approve.
+
 ## Project packs (optional)
 
 The engine ships generic. To layer in your project's conventions, commit
@@ -158,6 +377,8 @@ schema and resolution rules: `packs/README.md`.
   git, never pushes.
 - **`/invoke`** — runs a pack skill or any markdown file as a skill; runs with your permissions,
   unsandboxed.
+- **`sherpa`** (`bin/sherpa`) — the CLI for the inventory: `init`, `loop`, and `board`. Each loop
+  run follows `protocols/unattended.md`.
 
 ## Layout
 
@@ -165,9 +386,12 @@ schema and resolution rules: `packs/README.md`.
 skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, /invoke, using-sherpa
 agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
+protocols/unattended.md  rules for the headless runs the inventory loop starts (protocol=1)
 packs/         project-pack template + docs
 hooks/         the SessionStart pack resolver and the read-only Bash guard (scripts/hooks/guard-bash.sh)
+bin/           the sherpa CLI: init, loop, board
 scripts/       helper scripts by group: pack, agents, ci (see scripts/README.md)
+scripts/inventory/  the inventory: ensure-board, ensure-worktree, run, build-board, ticket helpers
 ```
 
 ## License
