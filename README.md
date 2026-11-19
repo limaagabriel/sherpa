@@ -193,6 +193,7 @@ worktree:
   pattern:
     path: ~/lp-worktrees/$TICKET_ID    # or: command: lp worktree path "$TICKET_ID"
   create: lp worktree add "$TICKET_ID"
+source: ~/.local/share/lp/lp.sh        # optional; a file or a list, sourced before each command
 ```
 
 `repository` and `worktree.pattern` are maps, and each needs **exactly one** of `path` or `command`
@@ -224,11 +225,22 @@ worktree:
   `--allowedTools` (see below), for example `Bash(npm test:*)`. Never add `git push`. Each entry is
   one line of text; a value that is not a list, or an entry with a line break, stops the pass with
   exit 2. `init` writes `tools: []`.
+- `source:` (optional) is a file, or a list of files, that is sourced before every shell command in
+  this file, so a shell function such as `lp` works without repeating `source … &&` each time.
+  Each entry expands like `path` (`~`, `$NAME`, `${NAME}`, with `TICKET_ID` set; nothing is run).
+  Use absolute paths or `~`. The files are sourced in order, in the same shell as the command,
+  before `repository.command`, `worktree.pattern.command`, `worktree.create` and `runner`. They are
+  not sourced before the default `claude -p` command. Anything a file prints goes to stderr, never
+  to a command's output, so it cannot break a path or the `STATUS:` line. A missing file, or one
+  whose sourcing fails, stops the ticket with `settings.yaml: source <file> failed`; a value that
+  is not a file or a list of one-line files stops it too. Because the files run in the command's own
+  shell, a `set -e`, `set -u` or `trap` in one of them applies to the command.
 - `runner:` (optional) replaces the whole default command. It runs via `bash -c` in the ticket's
   worktree with `TICKET_STAGE` (`frame`, `shape`, `implement` or `analyze`) and `TICKET_FILE` (the
   ticket file's absolute path) set, and `tools` is then ignored. It must print the `STATUS:` line.
 
-`worktree.create`, `runner` and every `command` run arbitrary shell from this file. Keep it yours.
+`worktree.create`, `runner`, every `command` and every `source` file run arbitrary shell from this
+file. Keep it yours.
 
 Without `runner`, the loop runs this command in the ticket's worktree (it is run directly, not
 through a shell, so a `tools` entry is never read as shell code). `<stage>` is `frame`, `shape`,

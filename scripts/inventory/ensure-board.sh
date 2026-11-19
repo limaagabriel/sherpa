@@ -40,6 +40,7 @@ if [ ! -e "$dir/settings.yaml" ] && [ ! -L "$dir/settings.yaml" ]; then
 # name is only a display label (board heading, loop start line); the folder name stays the ID.
 name: @NAME@
 # worktree.create, runner and any command: run arbitrary shell: keep this file yours.
+# source: ~/.local/share/my-tool.sh   # sourced before every command below (one file or a list)
 # repository and worktree.pattern each take exactly one of path or command; a command prints
 # one absolute path (it gets TICKET_ID; repository's runs in $HOME, the pattern's in the repository).
 repository:

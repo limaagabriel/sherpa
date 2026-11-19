@@ -159,6 +159,47 @@ settings_cmd "$(blk "exit 7")" "$P"; bad "repository command fails" "repository.
 settings_cmd "$R" "$(blk "echo oops >&2; exit 4")"; bad "pattern command fails" "worktree.pattern.command failed (exit 4)" T-33
 assert_contains "failing command stderr passes" "$err" "oops"
 
+# --- source: files are sourced, in order, before every shell command; their stdout goes to stderr
+sset() { printf '%s\n' "$@" >>"$conf"; }  # <yaml line>...: appended to settings.yaml (after settings_cmd)
+create_cmd() { sset "  create: '$1'"; }
+printf 'repo_path() { echo %q; }\nwt_path() { echo %q/"$1"; }\nmk_wt() { git worktree add -q --detach "$1"; }\nSEQ=a\necho noise\n' \
+  "$repository" "$tmp/wt" >"$tmp/lp.sh"
+printf 'SEQ+=b\n' >"$tmp/lp2.sh"
+rm -rf "$tmp/wt/T-40"
+settings_cmd "$(blk 'echo "$SEQ" >'"$tmp"'/seq; repo_path')" "$(blk 'wt_path "$TICKET_ID"')"; create_cmd 'mk_wt "$TICKET_WORKTREE"'
+sset "source:" "  - $tmp/lp.sh" "  - $tmp/lp2.sh"
+run T-40; assert_exit "source all three exit" "$rc" 0; assert_eq "source all three stdout" "$out" "$tmp/wt/T-40"
+assert_eq "source order" "$(cat "$tmp/seq")" "ab"; assert_contains "source stdout goes to stderr" "$err" "noise"
+assert_eq "source made the worktree" "$(git -C "$tmp/wt/T-40" rev-parse --is-inside-work-tree)" "true"
+# ~ and $VAR (TICKET_ID too) expand; a single string works; the same file name in a list is fine
+cp "$tmp/lp.sh" "$HOME/lp-home.sh"; cp "$tmp/lp.sh" "$tmp/lp-T-41.sh"; rm -rf "$tmp/wt/T-41"
+settings_cmd "$(blk repo_path)" "$(blk 'wt_path "$TICKET_ID"')"; create_cmd 'mk_wt "$TICKET_WORKTREE"'; sset "source: ~/lp-home.sh"
+run T-41; assert_exit "source ~ exit" "$rc" 0; assert_eq "source ~" "$out" "$tmp/wt/T-41"
+rm -rf "$tmp/wt/T-41"; git -C "$repository" worktree prune; sed -i '$d' "$conf"; sset 'source: $SRC_BASE/lp-${TICKET_ID}.sh'; SRC_BASE=$tmp run T-41
+assert_exit "source \$VAR exit" "$rc" 0; assert_eq "source \$VAR" "$out" "$tmp/wt/T-41"
+# a missing file, a file that fails, a bad shape and an unset variable: each fails with a clear reason
+settings_cmd "$(blk 'echo should-not-run; echo /x')" "path: $tmp/wt/\$TICKET_ID"; sset "source: $tmp/nope.sh"
+bad "source missing (repository.command)" "settings.yaml: source $tmp/nope.sh failed" T-42
+assert_not_contains "source missing: command not run" "$err" "should-not-run"
+printf 'return 3\n' >"$tmp/fails.sh"; settings_cmd "path: $repository" "$(blk 'echo /x')"; sset "source:" "  - $tmp/lp.sh" "  - $tmp/fails.sh"
+bad "source fails (pattern.command)" "settings.yaml: source $tmp/fails.sh failed" T-42
+settings "$repository" "$tmp/wt/\$TICKET_ID" "touch $tmp/create-ran"; sset "source: $tmp/nope.sh"
+bad "source missing (create)" "settings.yaml: source $tmp/nope.sh failed" T-42
+[ ! -e "$tmp/create-ran" ] || { echo "FAIL [create ran despite a failed source]"; fail=1; }
+for v in '{a: b}' '5' '[a, {b: c}]' '[a, 7]' "''" '[""]' '"a\nb"' '[[a]]'; do
+  settings "$repository" "$tmp/wt/\$TICKET_ID"; sset "source: $v"
+  bad_same "source bad shape $v" "settings.yaml: source must be a file or a list of files" T-42
+done
+settings "$repository" "$tmp/wt/\$TICKET_ID"; sset 'source: $NOPE_SRC/x.sh'; bad_same "source unset var" 'source uses unset variable $NOPE_SRC' T-42
+# a path with spaces and $(...) text is a file name, never code
+mkdir -p "$tmp/we ird \$(touch $tmp/pwned5)"; printf 'repo_path() { echo %q; }\n' "$repository" >"$tmp/we ird \$(touch $tmp/pwned5)/f.sh"
+settings_cmd "$(blk repo_path)" "path: $tmp/wt/\$TICKET_ID"; sset "source: '$tmp/we ird \$(touch $tmp/pwned5)/f.sh'"
+run T-1; assert_exit "source odd path exit" "$rc" 0; assert_eq "source odd path" "$out" "$tmp/wt/T-1"
+[ ! -e "$tmp/pwned5" ] || { echo "FAIL [source path was run]"; fail=1; }
+# positional parameters and $0 are as with plain bash -c; no source: bash -c exactly
+settings_cmd "$(blk 'echo "[$#][$0]" >'"$tmp"'/pos; echo '"$repository")" "path: $tmp/wt/\$TICKET_ID"; sset "source: $tmp/lp2.sh"
+run T-1; assert_eq "source keeps \$# and \$0" "$(cat "$tmp/pos")" "[0][bash]"
+
 mkdir -p "$SHERPA_CONFIG_DIR/inventory/a b"; settings "$repository" "$tmp/wt/\$TICKET_ID"; cp "$conf" "$SHERPA_CONFIG_DIR/inventory/a b/"
 out=$(bash "$here/ensure-worktree.sh" "a b" T-1 2>&1); assert_exit "bad project name" $? 1; assert_contains "bad project msg" "$out" "no settings.yaml"
 bash "$here/ensure-worktree.sh" p >/dev/null 2>&1; assert_exit "one arg" $? 2

@@ -6,6 +6,9 @@
 #   variable is an error); `command` runs via bash -c (repository.command in $HOME,
 #   worktree.pattern.command in the repository; TICKET_ID exported) and prints one absolute path.
 #   Optional `worktree.create` (shell command, default: git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE").
+#   Optional `source` (a file or a list): sourced, in order, before every command above, create
+#   included, with stdout sent to stderr (see scripts/lib/source-cmd.sh). A bad `source` value, a
+#   missing file or a file whose sourcing fails stops the call with a reason naming it.
 # Output: prints the ticket's absolute worktree path. It CREATES the worktree by running
 #   `worktree.create` via bash -c in `repository` (TICKET_ID, TICKET_WORKTREE exported, stdin
 #   /dev/null, its stdout sent to stderr) when the path is missing; an existing path is reused.
@@ -30,13 +33,15 @@ valid_id "$id" || die "invalid ID: $id (letters, digits, . _ - only)"
 
 get() { yq ".$1 // \"\"" "$conf" 2>/dev/null || die "settings.yaml is not valid YAML: $conf"; }
 create=$(get worktree.create); [ -n "$create" ] || create='git worktree add -b "$TICKET_ID" "$TICKET_WORKTREE"'
+source_cmd "$conf" "$id" true || die "$SOURCE_ERR"
 resolve_location "$conf" repository "$id" "$HOME" || die "$LOCATION_ERR"
 repository=$LOCATION
 [ -d "$repository" ] || die "repository is not a directory: $repository"
 resolve_location "$conf" worktree.pattern "$id" "$repository" || die "$LOCATION_ERR"
 path=$LOCATION
 if [ ! -d "$path" ]; then
-  (cd "$repository" && TICKET_ID=$id TICKET_WORKTREE=$path bash -c "$create" </dev/null >&2) ||
+  source_cmd "$conf" "$id" "$create" || die "$SOURCE_ERR"
+  (cd "$repository" && TICKET_ID=$id TICKET_WORKTREE=$path "${SHELL_CMD[@]}" </dev/null >&2) ||
     die "worktree.create failed for $id"
   [ -d "$path" ] || die "worktree.create ran but $path is still missing"
 fi

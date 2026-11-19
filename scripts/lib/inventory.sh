@@ -44,11 +44,15 @@
 #                           An unset variable prints its name instead and returns 1.
 #   resolve_location <settings-file> <key> <ID> <cwd>  resolves a place that settings.yaml gives as a
 #                           map with exactly one of `path` (expand_path, TICKET_ID set) or `command`
-#                           (bash -c in <cwd>, stdin /dev/null, TICKET_ID exported, stderr passed
-#                           through; stdout must be exactly one non-empty line, used literally). <key>
+#                           (source_cmd's `bash -c` in <cwd>, so settings.yaml `source` files load first; stdin
+#                           /dev/null, TICKET_ID exported, stderr passed through;
+#                           stdout must be exactly one non-empty line, used literally). <key>
 #                           is repository or worktree.pattern. The result must be absolute. Sets
 #                           LOCATION and returns 0; else returns 1 with the reason in LOCATION_ERR.
+#                           A failing `source` file prints "settings.yaml: source <file> failed" on stderr.
 #                           Call it without a subshell.
+#   source_cmd <settings-file> <ID> <command>  sets the array SHELL_CMD, the argv that runs a settings
+#                           command with the `source` files loaded first; see scripts/lib/source-cmd.sh.
 #   lock_acquire <lock-dir>  mkdir lock with this shell's pid; takes over a lock whose pid is dead
 #                           (rename aside, then mkdir); 1 when a live pass holds it or the race is lost.
 #   project_title <project>  prints settings.yaml `name` (the display label) when it is a one-line,
@@ -67,6 +71,7 @@
 
 source "$(dirname "${BASH_SOURCE[0]}")/layers.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/dirs.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/source-cmd.sh"
 
 STAGES=(backlog "${LAYERS[@]}" done)
 PROTOCOL=1
@@ -347,7 +352,8 @@ resolve_location() {
     key=$key.path
   else
     key=$key.command
-    out=$(cd "$cwd" && TICKET_ID=$id bash -c "$c" </dev/null; printf 'x%s' "$?")
+    source_cmd "$conf" "$id" "$c" || { LOCATION_ERR=$SOURCE_ERR; return 1; }
+    out=$(cd "$cwd" && TICKET_ID=$id "${SHELL_CMD[@]}" </dev/null; printf 'x%s' "$?")
     rc=${out##*x}; out=${out%x*}
     [ "$rc" -eq 0 ] || { LOCATION_ERR="settings.yaml: $key failed (exit $rc)"; return 1; }
     v=${out%$'\n'}

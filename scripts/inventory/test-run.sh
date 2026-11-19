@@ -319,6 +319,31 @@ reset; mk frame T-1; settings "bash $tmp/runner.sh"; printf 'tools: x\n' >>"$con
 assert_exit "bad tools ignored with runner" "$rc" 0
 settings "bash $tmp/runner.sh"
 
+# --- source: files are sourced before the runner (not before the default command); stdout stays out of STATUS
+srcf="$tmp/run-src.sh"
+printf 'myrun() { echo "STATUS: GATE protocol=1"; echo "via fn $TICKET_STAGE $SEQ"; }\nSEQ=a\necho "STATUS: FAILED protocol=1"\n' >"$srcf"
+printf 'SEQ+=b\n' >"$tmp/run-src2.sh"
+sset() { settings "$1"; printf '%s\n' "$2" >>"$conf"; }  # <runner> <source yaml lines>
+reset; mk frame T-1; sset myrun "source:
+  - $srcf
+  - $tmp/run-src2.sh"; go
+assert_exit "source runner exit" "$rc" 0; assert_eq "source runner print" "$out" "TICKET $project/T-1 frame: gate"
+assert_contains "source runner: fn and order" "$(cat "$inv/frame/T-1.md")" "via fn frame ab"
+assert_not_contains "source stdout not parsed" "$(cat "$inv/frame/T-1.md")" "STATUS"
+reset; mk frame T-1; sset myrun "source: '$tmp/dir with \$(touch $tmp/pwned6)/x.sh'"; mkdir -p "$tmp/dir with \$(touch $tmp/pwned6)"
+printf 'SEQ=odd\nmyrun() { echo "STATUS: GATE protocol=1"; echo "$SEQ"; }\n' >"$tmp/dir with \$(touch $tmp/pwned6)/x.sh"; go
+assert_contains "source path literal" "$(cat "$inv/frame/T-1.md")" "odd"
+[ ! -e "$tmp/pwned6" ] || { echo "FAIL [source path was run]"; fail=1; }
+reset; mk frame T-1; sset myrun "source: $tmp/missing-src.sh"; go
+assert_exit "source missing exit" "$rc" 1; assert_contains "source missing names the file" "$(cat "$inv/frame/T-1.md")" "settings.yaml: source $tmp/missing-src.sh failed"
+assert_eq "source missing: ticket parked fix" "$(ticket_get "$inv/frame/T-1.md" actionNeeded)" "fix"
+reset; mk frame T-1; sset myrun "source: [{a: b}]"; go
+assert_exit "source bad shape exit" "$rc" 1; assert_contains "source bad shape msg" "$(cat "$inv/frame/T-1.md")" "source must be a file or a list of files"
+reset; mk frame T-1; dsettings "source: $tmp/missing-src.sh
+"; go
+assert_exit "default ignores source exit" "$rc" 0; assert_eq "default ignores source" "$(count "$CTL/claude-runs" ran)" 1
+settings "bash $tmp/runner.sh"
+
 # --- setup errors
 bash "$here/run.sh" nope >/dev/null 2>&1; assert_exit "unknown project" $? 1
 bash "$here/run.sh" >/dev/null 2>&1; assert_exit "no args" $? 2

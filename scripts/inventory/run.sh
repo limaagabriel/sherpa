@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Usage: run.sh <project>
 # Input:  <inventory_dir>/<project>/settings.yaml (`tools`, a list of extra allowed tools; `runner`,
-#   an optional shell command; plus what ensure-worktree.sh reads) and the tickets in the project's
+#   an optional shell command; `source`, files sourced before it (see scripts/lib/source-cmd.sh); plus
+#   what ensure-worktree.sh reads) and the tickets in the project's
 #   stage folders. Needs yq.
 # Output: one pass: each ticket whose state is queued, stages analyze, implement, shape, frame in
 #   that order, runs in its worktree (TICKET_STAGE, TICKET_FILE exported, stdin /dev/null) the
 #   default command (default_cmd in scripts/lib/inventory.sh, run directly, no shell) with `tools`
-#   added to its --allowedTools; or, when `runner` is set, `bash -c <runner>` and `tools` is
-#   ignored. The output goes into the ticket (see ticket_apply_result) and the ticket is
+#   added to its --allowedTools, with no `source` files; or, when `runner` is set, `bash -c <runner>`
+#   after the `source` files, and `tools` is ignored. The output goes into the ticket (see ticket_apply_result) and the ticket is
 #   parked. Prints "TICKET <project>/<ID> <stage>: done|gate|failed" per ticket. Rebuilds board.md
 #   at the start and after each ticket. Holds <project>/.lock (pid, ticket ID) during the pass.
 #   A failed run keeps the runner's whole stdout in last-run; stdout is cut at $SHERPA_MAX_OUTPUT
@@ -45,7 +46,8 @@ for stage in analyze implement shape frame; do
     case $stage in implement) action=review ;; analyze) action=decision ;; esac
     : >"$tmp/body"; : >"$tmp/out"
     if wt=$(bash "$here/ensure-worktree.sh" "$project" "$id" 2>"$tmp/err" </dev/null); then
-      if [ -n "$runner" ]; then cmd=(bash -c "$runner")
+      if [ -n "$runner" ]; then source_cmd "$dir/settings.yaml" "$id" "$runner" && cmd=("${SHELL_CMD[@]}") ||
+        cmd=(bash -c 'echo "$1" >&2; exit 1' bash "$SOURCE_ERR")
       else default_cmd "$stage" "$task" ${TOOLS[@]+"${TOOLS[@]}"}; cmd=("${DEFAULT_CMD[@]}"); fi
       (cd "$wt" && TICKET_STAGE=$stage TICKET_FILE=$task "${cmd[@]}" \
         </dev/null >"$tmp/out" 2>"$tmp/err") || rc=$?
