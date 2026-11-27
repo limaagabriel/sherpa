@@ -28,7 +28,8 @@ same opaque fence on both sides and cannot catch the drift.
   forward it verbatim.
 
 ## agent-rules
-- **Read-only.** Never change the repo or files: no
+- **Read-only.** Never change the repo or files, except: when your prompt gives `HANDOFF`, write
+  your output with `Write` inside `HANDOFF` and return `WROTE` (see `protocols/handoff.md`). No
   `git checkout/switch/reset/commit/stash/add/restore/clean/push`, no `rm`/`mv`/`sed -i`, no `>`
   redirect to a file. Read with Read, Grep, Glob and Bash (`git status/diff/log/show/blame/grep`,
   `grep`, `find`, `cat`, `ls`); read a file at another commit with `git show <sha>:<path>`, never by

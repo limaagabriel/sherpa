@@ -33,3 +33,6 @@ identical; only the mechanism differs.
   (`~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`).
   step-builder is the only writer; the other eight roles (seven reviewers plus
   codebase-explorer) are read-only.
+- **`HANDOFF` writes are prose-enforced.** `scripts/hooks/guard-write.sh` does not run under pi,
+  so nothing stops a read-only role writing elsewhere — it must keep every `write` inside
+  `HANDOFF` (`protocols/handoff.md`).

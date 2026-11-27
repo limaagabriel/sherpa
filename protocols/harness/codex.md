@@ -32,3 +32,5 @@ identical; only the mechanism differs.
 - **The Bash guard allows every Codex call.** Codex also loads the `PreToolUse` hook in
   `hooks/hooks.json` (`scripts/hooks/guard-bash.sh`), but Codex payloads carry no `agent_type`, so it
   lets every call through; Codex's own read-only sandbox does the enforcing for the read-only roles.
+- **The `HANDOFF` write falls back to inline.** The read-only sandbox blocks a read-only role's
+  `Write` into the handoff dir (`protocols/handoff.md`), so the role returns its content inline.

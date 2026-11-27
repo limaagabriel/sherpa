@@ -22,8 +22,8 @@ a ticket board that only the `sherpa` inventory commands write to (see
 ## Install
 
 Requires `jq` and `yq` (v4+) on `PATH`. `jq` serves the SessionStart pack resolver (without it the
-hook stays silent) and the read-only Bash guard (without it, sherpa's read-only agents cannot run
-Bash); without `yq` the resolver still loads but skips project packs.
+hook stays silent) and the read-only Bash and Write guards (without it, sherpa's read-only agents
+cannot run Bash or write handoff files); without `yq` the resolver still loads but skips project packs.
 
 Sherpa is a Claude Code plugin. From inside Claude Code:
 
@@ -41,8 +41,8 @@ git clone https://github.com/limaagabriel/sherpa.git
 ```
 
 Then open `/hooks`, review and **trust** sherpa's two hooks: `SessionStart` (it detects your
-project pack) and `PreToolUse` (it blocks state-changing Bash in the read-only agents), and start a
-new thread. Verify with `/frame` — if the skill shows up, you're set.
+project pack) and `PreToolUse` (it blocks state-changing Bash, and any Write or Edit outside the per-run handoff
+dir, in the read-only agents), and start a new thread. Verify with `/frame` — if the skill shows up, you're set.
 
 ## Usage
 
@@ -424,7 +424,7 @@ agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-
 protocols/harness/  Codex CLI and pi harness equivalence tables
 protocols/unattended.md  rules for the headless runs the inventory loop starts (protocol=1)
 packs/         project-pack template + docs
-hooks/         the SessionStart pack resolver and the read-only Bash guard (scripts/hooks/guard-bash.sh)
+hooks/         the SessionStart pack resolver and the read-only Bash and Write guards (scripts/hooks/guard-*.sh)
 bin/           the sherpa CLI: init, loop, board
 scripts/       helper scripts by group: pack, agents, ci (see scripts/README.md)
 scripts/inventory/  the inventory: ensure-board, ensure-worktree, run, build-board, ticket helpers

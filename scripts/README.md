@@ -9,7 +9,7 @@ Small bash scripts that keep sherpa's packs, agents and CI working.
 - `pack/` — project and layer context for sessions and subagents
 - `agents/` — generated agent files
 - `ci/` — repo checks run by CI
-- `hooks/` — Claude Code hook entry points (`guard-bash.sh` keeps read-only agents from changing state)
+- `hooks/` — Claude Code hook entry points (`guard-bash.sh` keeps read-only agents from changing state; `guard-write.sh` keeps their writes inside the handoff dir)
 - `inventory/` — inventory boards: tickets that wait, run or are queued per pack (`build-board.sh` writes `board.md`, `run.sh` runs one loop pass)
 - `lib/` — sourced helpers with noun names; they define functions and are never run directly
 

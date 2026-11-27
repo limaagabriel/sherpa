@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Independent read-only reviewer. Audits a diff through an injected lens brief; returns findings.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 effort: high
 codexModel: gpt-6.1-sol
@@ -19,12 +19,13 @@ codexBody: |-
   installed sherpa plugin root) and follow it exactly. Review the passed diff
   through the injected lens brief and report findings. Your final message IS
   the return value (the findings), not a human-facing note.
-piTools: read, grep, find, ls, bash
+piTools: read, grep, find, ls, bash, write
 piThinking: high
 piGist: |-
   The canonical body lives at `<root>/agents/code-reviewer.md`. Read-only: review the passed diff through the injected lens brief and report findings; never edit or write. Your final message IS the return value (the findings), not a human-facing note.
 ---
-<!-- shared:agent-rules -->- **Read-only.** Never change the repo or files: no
+<!-- shared:agent-rules -->- **Read-only.** Never change the repo or files, except: when your prompt gives `HANDOFF`, write
+  your output with `Write` inside `HANDOFF` and return `WROTE` (see `protocols/handoff.md`). No
   `git checkout/switch/reset/commit/stash/add/restore/clean/push`, no `rm`/`mv`/`sed -i`, no `>`
   redirect to a file. Read with Read, Grep, Glob and Bash (`git status/diff/log/show/blame/grep`,
   `grep`, `find`, `cat`, `ls`); read a file at another commit with `git show <sha>:<path>`, never by
