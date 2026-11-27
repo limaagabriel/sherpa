@@ -67,7 +67,13 @@ start here directly. Pressure lives per step (acceptance + quality); a Validate 
    - On `BUILT`, dispatch `quality-reviewer` over the step's commit range for every step alike
      (mechanical and normal), briefed with the step's `Acceptance criteria` and `Interfaces`, the
      current step index, and the remaining steps' goals (so it can tell whether a failure is covered
-     by a later step). Its output always carries one `ACCEPTANCE: MET|UNMET`
+     by a later step), plus the `minimality`, `architecture` and `correctness` lenses from
+     `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/` — and `security.md` only when its "Runs only when the
+     diff touches" list matches the step's diff, as in the risk-scaled check below — injected as
+     content, never paths, per the section map in `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/README.md`
+     (`## In scope`, `## Out of scope`, `## Severity`, `## Deep-pass triggers`, whichever exist), and
+     a `deep-pass running: <lenses that hit>|none` line — the risk-scaled check below is evaluated
+     before both dispatches. Its output always carries one `ACCEPTANCE: MET|UNMET`
      line per acceptance criterion and one `PRODUCES: MET|UNMET` line per declared `produces` entry,
      and closes with `PASS|FIX|BLOCK`.
    - **Risk-scaled lenses** (non-mechanical steps only). On `BUILT`, read the `## Deep-pass triggers`
