@@ -1,6 +1,6 @@
 ---
 name: persist
-description: Opt-in. Writes the in-context frame and/or plan to disk for a later session. Sherpa persists nothing automatically. Triggers - "/persist", "save the frame", "save the plan", "persist this". Optional path; default `.sherpa/<slug>.md`.
+description: Opt-in. Writes the in-context frame and/or plan to disk for a later session. Never automatic. Triggers - "/persist", "save the frame", "save the plan", "persist this". Optional path; default `.sherpa/<slug>.md`.
 ---
 
 # /persist — save the frame or plan to disk
@@ -8,6 +8,7 @@ description: Opt-in. Writes the in-context frame and/or plan to disk for a later
 Sherpa keeps the frame and plan in conversation by default. Run this only when you want
 them on disk — to resume in a fresh session, or to commit them. The separate opt-in inventory
 (`sherpa loop`, see README "Inventory") keeps its ticket state on its own; this skill does not touch it.
+Sherpa writes nothing in the repo unless you run `/persist`; temp handoff files outside it follow `protocols/handoff.md`.
 
 ## Steps
 1. **Resolve the path.** Use the path arg if given. Else default to `.sherpa/<slug>.md` where

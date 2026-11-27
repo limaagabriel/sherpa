@@ -147,7 +147,7 @@ The step budget (step 1) is stated up front, and the human may change it at any 
 is not a third gate; there's no formal wait on it.
 
 ## Output
-The plan, presented once at plan approval, Summary first, then Details. Nothing on disk;
+The plan, presented once at plan approval, Summary first, then Details. Nothing in the repo;
 persisting it is `/persist`'s job.
 
 ## Done when

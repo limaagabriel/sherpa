@@ -1,6 +1,6 @@
 ---
 name: frame
-description: Frame layer. Turns a fuzzy task into the frame — scout, problem statement, open questions, no solution bound. Writes nothing to disk. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /implement.
+description: Frame layer. Turns a fuzzy task into the frame — scout, problem statement, open questions, no solution bound. Writes no repo files. Triggers - "/frame <task>", "frame this", "what's the shape of X". Counterparts - /shape, /implement.
 ---
 <!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
   shows everything else.
@@ -24,7 +24,7 @@ description: Frame layer. Turns a fuzzy task into the frame — scout, problem s
 # /frame — discover, then bind the problem
 
 Produce **the frame** for `<task>`: the right problem, well-framed, with discovery and the open
-questions named. Never binds a solution. The frame lives **in context** (printed, not on disk);
+questions named. Never binds a solution. The frame lives **in context** (printed, not in the repo);
 persisting it is the opt-in `/persist` skill — never automatic.
 
 ## Steps

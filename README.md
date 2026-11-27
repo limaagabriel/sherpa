@@ -14,8 +14,8 @@ Other skills: `/persist`, `/analyze`, `/triage`, `/restory`, and `/invoke`.
 Sherpa also bundles helper agents: codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and the reviewers.
 
 Sherpa offers the tools. You decide the workflow. It is opt-in: nothing runs until you call a skill.
-It keeps nothing on disk unless you call `/persist`. The one exception is the optional inventory,
-a ticket board that only the `sherpa` inventory commands write to (see
+It keeps nothing in the repo unless you call `/persist`. The optional inventory, a ticket board
+that only the `sherpa` inventory commands write to, keeps its state outside the repo (see
 [Inventory](#inventory-optional)). Your project's rules go in an optional YAML file called a
 "pack", so the core stays general and knows nothing about your repo.
 
@@ -404,7 +404,7 @@ schema and resolution rules: `packs/README.md`.
 - **`/implement`** (build) — runs approved steps; `step-builder` builds and commits each one,
   `quality-reviewer` checks it.
 - **`codebase-explorer`** / **`/persist`** — cross-cutting: codebase discovery (dispatched directly by
-  `/frame` and `/shape`, not a standalone skill), and opt-in disk persistence.
+  `/frame` and `/shape`, not a standalone skill), and opt-in persistence: nothing lands in the repo unless you call `/persist`.
 - **`/analyze`** — Pre-review analysis of a branch's changes or a GitHub PR;
   `code-reviewer` does the independent, isolated look, `analysis-reviewer` checks each finding; the report opens with a short context briefing and ends with a verdict.
 - **`/triage`** — categorizes all PR review feedback and flags lessons for AGENTS.md;

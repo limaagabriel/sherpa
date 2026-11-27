@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Sherpa",
     "shortDescription": "Composable frame, shape, implement, analyze, triage, and restory layers",
-    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /analyze (pre-review analysis), /triage (reason about and route all PR review feedback), /restory (reconstruct story context), /invoke (run a pack skill or any markdown file as a skill) — that the user composes into a workflow. Nothing persists unless you call /persist or run the opt-in inventory loop.",
+    "longDescription": "Adds opt-in Sherpa skills — /frame (scout, bind an intent), /shape (draft the plan, then critique it), /implement (build with per-step review), /analyze (pre-review analysis), /triage (reason about and route all PR review feedback), /restory (reconstruct story context), /invoke (run a pack skill or any markdown file as a skill) — that the user composes into a workflow. Nothing lands in the repo unless you call /persist, and the opt-in inventory loop keeps its state outside it.",
     "developerName": "Gabriel Lima",
     "category": "Productivity",
     "capabilities": [

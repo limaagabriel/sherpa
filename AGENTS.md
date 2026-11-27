@@ -9,8 +9,10 @@ workflow; sherpa offers the tools.
   approve it.
 - **`/implement <task>`** (build) — build the plan (or the task as one implicit step), one
   reviewed step at a time.
-- **Nothing persists unless asked** — `/persist` saves the in-context frame or plan to disk;
-  the inventory keeps ticket state under `~/.config/sherpa/inventory` only when you run it.
+- **Nothing in the repo unless asked** — `/persist` writes the in-context frame or plan into
+  the repo (`.sherpa/` by default); there is no automatic run-state. Temp handoff files outside
+  the repo are allowed (`protocols/handoff.md`), and the inventory keeps ticket state under
+  `~/.config/sherpa/inventory` only when you run it.
 - **`/analyze <branch or PR>`** — Pre-review analysis of changes; the report opens with a short
   context briefing, then lens findings checked by `analysis-reviewer`, plus a verdict.
 - **`/triage <PR>`** — categorizes all PR review feedback and flags lessons for
