@@ -5,7 +5,7 @@ Code's vocabulary but run under **Claude Code, Codex CLI, and pi**. The user com
 workflow; sherpa offers the tools.
 
 - **`/frame <task>`** (frame) — scout + bind a problem statement, ask questions as they arise.
-- **`/shape <task>`** (shape) — draft the plan from four lens pre-plans, then critique it three ways before you
+- **`/shape <task>`** (shape) — draft the plan from four lens proposals, then critique it three ways before you
   approve it.
 - **`/implement <task>`** (build) — build the plan (or the task as one implicit step), one
   reviewed step at a time.

@@ -17,6 +17,6 @@ reach a diff reviewer, and a lens without a section is simply not used by that c
 
 ## Proposing
 
-`## Proposing` is written for an agent that drafts a light pre-plan (idea, macro steps, pros, cons)
+`## Proposing` is written for an agent that drafts a light proposal (idea, macro steps, pros, cons)
 from the problem alone, before any plan exists. It says what to optimize for and what kind of
 direction to propose. It is not a review checklist.

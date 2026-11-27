@@ -1,6 +1,6 @@
 ---
 name: shape
-description: Shape layer. Gathers four lens pre-plans, drafts one plan, then reviews it three ways (structure, readiness, engineering) before the human approves. Frameless-tolerant. Triggers - "/shape", "/shape <problem>", "brainstorm directions".
+description: Shape layer. Gathers four lens proposals, drafts one plan, then reviews it three ways (structure, readiness, engineering) before the human approves. Frameless-tolerant. Triggers - "/shape", "/shape <problem>", "brainstorm directions".
 ---
 <!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
   shows everything else.
@@ -30,7 +30,7 @@ codebase-explorer's evidence — the same five-slot sentence `who` cannot `capab
 `obstacle`; costs `consequence`; done signal is `observable` — applying the no-mechanism check to
 the done signal (every noun and verb in it must already appear in who/capability/obstacle, or
 be observable before any change). That codebase-explorer's output feeds the inline contract, the
-step budget anchoring, the contributors' pre-plans (step 2), and the `shape-builder` draft (step 3).
+step budget anchoring, the contributors' proposals (step 2), and the `shape-builder` draft (step 3).
 
 ## Inputs
 - `PROBLEM` — the problem statement to draft the plan from: a frame's, as-is, or the driver's own
@@ -79,13 +79,13 @@ rationale that also lands there. No frame, or a frame that carries none: no-op.
    holes), the discovery summary, `HANDOFF`, `configPath`, and its lens: its name, the `Owns` line and
    the `## Proposing` section of `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/<lens>.md`, read per the
    section map in `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/README.md` and injected as content, never
-   a path. Keep only each `WROTE` line; do not read the pre-plan files. A pre-plan returned inline
+   a path. Keep only each `WROTE` line; do not read the proposal files. A proposal returned inline
    (handoff fallback): report it in one line and keep it for step 3.
 3. **Draft.** Dispatch `shape-builder` via Agent with `PROBLEM`, the discovery summary,
    `TARGET_DIR`, the design questions, the step budget (stated in step 1), `DIRECTION` when bound,
-   `REVISIT` when carried, the pre-plans (the paths from the `WROTE` lines, or the inline
-   pre-plans; none when step 2 was skipped), `HANDOFF` and `configPath`. It drafts the direct
-   approach, weighs each pre-plan, settles the design questions and writes the plan's Blocks 1–3.
+   `REVISIT` when carried, the proposals (the paths from the `WROTE` lines, or the inline
+   proposals; none when step 2 was skipped), `HANDOFF` and `configPath`. It drafts the direct
+   approach, weighs each proposal, settles the design questions and writes the plan's Blocks 1–3.
    Read `<HANDOFF>/shape-builder.md` once. A plan returned inline (handoff fallback): report it
    in one line and use it.
 4. **Plan.** Keep what is the driver's own. Answer each `OPEN` question the builder returned:
@@ -117,8 +117,8 @@ rationale that also lands there. No frame, or a frame that carries none: no-op.
      the one real risk that would sink this step, or `none — <why>`.
    - **Block 3** — its precedent/rationale (what the draft's solution field cites), plus any
      design-question resolutions the draft made (each with its one-line why), how it's verified
-     (end state + test plan), and Contributions — one row per pre-plan (lens, took/partly/dropped,
-     why; a dropped row names the frame slot that outweighed it). No pre-plans: no rows.
+     (end state + test plan), and Contributions — one row per proposal (lens, took/partly/dropped,
+     why; a dropped row names the frame slot that outweighed it). No proposals: no rows.
    Silent self-review before presenting: placeholder scan, consistency, scope, earns-its-keep,
    premortem (imagine this plan already failed; name the most likely reason, fold it in),
    interface closure (every `consumes` produced by an earlier step, every `produces` has a
