@@ -17,6 +17,6 @@ BLOCK_FILE_MAP=(
   agents/quality-reviewer.md
   agents/code-reviewer.md
   agents/analysis-reviewer.md
-  skills/analyze/references/lenses/correctness.md
-  skills/analyze/references/lenses/readability.md
+  protocols/lenses/correctness.md
+  protocols/lenses/readability.md
 )

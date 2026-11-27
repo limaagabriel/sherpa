@@ -71,11 +71,11 @@ start here directly. Pressure lives per step (acceptance + quality); a Validate 
      line per acceptance criterion and one `PRODUCES: MET|UNMET` line per declared `produces` entry,
      and closes with `PASS|FIX|BLOCK`.
    - **Risk-scaled lenses** (non-mechanical steps only). On `BUILT`, read the `## Deep-pass triggers`
-     section of `skills/analyze/references/lenses/correctness.md` and `acceptance.md`, plus the
+     section of `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/correctness.md` and `acceptance.md`, plus the
      "Runs only when the diff touches" list in `security.md`, and check them against the step's own
      range, `git diff <pre>..HEAD` (`pre` from the run ledger). For each lens that hits, dispatch
      `code-reviewer` in parallel with `quality-reviewer`, using /analyze's **Lens dispatch prompt**
-     shape (step 4 there, same per-harness dispatch): you read `skills/analyze/references/reviewer.md`
+     shape (step 4 there, same per-harness dispatch): you read `${CLAUDE_PLUGIN_ROOT}/skills/analyze/references/reviewer.md`
      and the lens file and inject their content — never paths — plus the step's `Goal` as the change
      description, the step's diff, and `configPath` when announced. Lens findings labelled `Blocking`
      join the quality `FIX` items in one fold-in brief, deduped by `file:line`, each item naming its

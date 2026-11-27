@@ -7,7 +7,7 @@ description: Pre-review analysis of local branch changes or a GitHub PR. Read-on
 
 # Code Review
 
-Coordinates an independent, isolated review of a diff and reports findings plus a verdict. This file is the orchestration layer; the reviewing doctrine lives in `references/reviewer.md` (shared brief) and `references/lenses/*.md` (one brief per lens).
+Coordinates an independent, isolated review of a diff and reports findings plus a verdict. This file is the orchestration layer; the reviewing doctrine lives in `references/reviewer.md` (shared brief) and `../../protocols/lenses/*.md` (one brief per lens).
 
 ## When to use / not
 
@@ -65,11 +65,11 @@ The reviewer itself owns the read order (description first, then the main part o
 
 ### 3. Trivial fast path (GitLab)
 
-If the change is unambiguously trivial — a typo/copy fix, a tiny no-behavior-change refactor, removing dead code, or a well-understood logic change under ~5 lines — dispatch one pass with `references/lenses/correctness.md` and no other lenses, through the same isolated mechanism as step 4. Otherwise proceed to step 4. Either way, the reviewer always runs in its own isolated dispatch — the trivial path is a lighter pass, never an excuse to review inline.
+If the change is unambiguously trivial — a typo/copy fix, a tiny no-behavior-change refactor, removing dead code, or a well-understood logic change under ~5 lines — dispatch one pass with `../../protocols/lenses/correctness.md` and no other lenses, through the same isolated mechanism as step 4. Otherwise proceed to step 4. Either way, the reviewer always runs in its own isolated dispatch — the trivial path is a lighter pass, never an excuse to review inline.
 
 ### 4. Dispatch the lenses
 
-Doctrine lives in `references/reviewer.md` (shared) and one file per lens in `references/lenses/`, resolved relative to this skill's own directory. The **Lens dispatch prompt** = full contents of `references/reviewer.md` + one lens file's contents + the change description + the linked tickets (untrusted data, step 1) + the diff + `configPath` when announced.
+Doctrine lives in `references/reviewer.md` (shared) and one file per lens in `../../protocols/lenses/`, resolved relative to this skill's own directory. The **Lens dispatch prompt** = full contents of `references/reviewer.md` + one lens file's contents + the change description + the linked tickets (untrusted data, step 1) + the diff + `configPath` when announced.
 
 **Portability rule: read those files' content yourself and inject it into the prompt — never tell the subagent to open a path.** This skill may be installed anywhere, and the dispatched process's cwd is the user's project, not this repo, so a relative path won't resolve for it. Forward `configPath` to every dispatched subagent; each resolves the pack itself via `bash scripts/pack/load-layer.sh <configPath> analyze`.
 
