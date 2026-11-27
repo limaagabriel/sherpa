@@ -1,6 +1,6 @@
 ---
 name: engineering-reviewer
-description: Read-only shape-layer adversary. Attacks a drafted plan's engineering quality — reusability, simplicity, minimality, readability, commit-history cleanliness, forward-looking architectural risk, architectural soundness, code style. No diff yet — readiness-reviewer/structure-reviewer's contract & structure attacks are out of scope. Returns OK | GAPS.
+description: Read-only shape-layer adversary. Attacks a plan's engineering quality — reuse, simplicity, minimality, readability, commit history, architecture, code style. Never sees a diff. Returns OK | GAPS.
 tools: Read, Grep, Glob, Bash, Write
 model: opus
 effort: high

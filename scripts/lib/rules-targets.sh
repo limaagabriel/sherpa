@@ -12,6 +12,8 @@ BLOCK_FILE_MAP=(
   agents/codebase-explorer.md
   agents/frame-reviewer.md
   agents/readiness-reviewer.md
+  agents/shape-contributor.md
+  agents/shape-builder.md
   agents/structure-reviewer.md
   agents/engineering-reviewer.md
   agents/quality-reviewer.md

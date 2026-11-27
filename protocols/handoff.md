@@ -16,8 +16,9 @@ context holds one line instead of the whole text. Any skill or agent may use it.
 5. Delete the dir when the run ends: `rm -rf "$HANDOFF"`.
 
 ## Agent
-- With `HANDOFF` in your prompt, write the full output to `<HANDOFF>/<agent>-<lens>.md` with the
-  `Write` tool and return one line: `WROTE <path> — <≤15-word gist>`.
+- With `HANDOFF` in your prompt, write the full output to `<HANDOFF>/<agent>[-<lens>].md` (lens part only
+  when the agent runs once per lens) with the `Write` tool and return one line:
+  `WROTE <path> — <≤15-word gist>`.
 - Write only inside `HANDOFF`; no other path, never the repo.
 - No `HANDOFF` in the prompt, or the write fails (denied or errors): return the content inline.
 

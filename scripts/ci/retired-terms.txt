@@ -23,7 +23,6 @@ macro layer
 WAVE1
 FAN-OUT
 CONTESTED
-shape-builder
 shape-reviewer
 sherpa:review
 /review

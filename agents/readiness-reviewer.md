@@ -1,6 +1,6 @@
 ---
 name: readiness-reviewer
-description: Read-only shape-layer adversary. Attacks each step's own contract in isolation — complete, testable, goal-honest, single-responsibility, risk substantive. Cross-step is structure-reviewer's job. Never sees a diff. Returns OK | GAPS.
+description: Read-only shape-layer adversary. Attacks each step's own contract — complete, testable, goal-honest, single-responsibility, risk substantive. Never sees a diff. Returns OK | GAPS.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 effort: high

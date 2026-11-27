@@ -31,8 +31,9 @@ identical; only the mechanism differs.
 - **Plugin root resolution.** Each role shim and skill path resolves the package
   root via `$SHERPA_PLUGIN_ROOT` first, else the concrete pi install roots
   (`~/.pi/agent/npm/node_modules/sherpa` or `~/.pi/agent/git/*/*/sherpa`).
-  step-builder is the only writer; the other eight roles (seven reviewers plus
-  codebase-explorer) are read-only.
+  step-builder is the only writer; the other ten roles (seven reviewers plus
+  codebase-explorer, shape-contributor and shape-builder) are read-only (they may write only
+  inside `HANDOFF`; see `protocols/handoff.md`).
 - **`HANDOFF` writes are prose-enforced.** `scripts/hooks/guard-write.sh` does not run under pi,
   so nothing stops a read-only role writing elsewhere — it must keep every `write` inside
   `HANDOFF` (`protocols/handoff.md`).
