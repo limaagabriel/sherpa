@@ -51,7 +51,9 @@ anchors, each `path[::literal] — what is relied on`, or `none — <prose>`), a
 The problem statement — a frame's, or the driver's own inline one — plus the plan's Block 1
 `no-gos`/`rabbit holes` when carried (absent means none), plus `REVISIT` when carried (absent means
 none). `configPath`, when announced: run `bash scripts/pack/load-layer.sh <configPath> shape`
-first and follow the output.
+first and follow the output. The `## Plan review` sections of the minimality, readability and
+architecture lenses, pasted by /shape as content; they carry the Minimality, Readability and
+architecture judgments below.
 
 ## What you attack
 - **Reusability** — a step reinvents something the codebase (or an earlier step's own `produces`)
@@ -59,21 +61,14 @@ first and follow the output.
 - **Simplicity** — a step's Change reaches for a heavier mechanism (new abstraction layer, new
   dependency, new indirection) than the Goal actually needs; quote the Change and name the
   simpler alternative.
-- **Minimality** — a step's Change grows scope beyond what its own Goal and Acceptance criteria
-  require — speculative flexibility, unused hooks, extra surface nobody asked for.
-- **Readability** — a step's Change, as described, would leave behind something the next reader
-  can't follow from its name/shape alone — e.g. a Change that packs unrelated concerns into one
-  file or symbol with no separation the step names.
+- **Minimality** — apply the injected minimality lens's `## Plan review`.
+- **Readability** — apply the injected readability lens's `## Plan review`.
 - **Commit-history cleanliness** — there's no git history yet, so judge the step boundaries
   themselves: do they read as a clean, reviewable commit sequence (each step one coherent, revert-
   able unit), or does a step bundle unrelated changes that a reviewer would want split, or leave a
   step that couldn't stand alone as a commit.
-- **Forward-looking architectural risk** — a step's Change opens a hole future steps (or future
-  work past this plan) will have to route around — a missing seam, a hardcoded assumption, a
-  one-way door; name the specific hole, not a generic "might cause problems."
-- **Architectural soundness** — a step's Change doesn't fit the resolved context's stated rules
-  (when `configPath` supplies them), or contradicts the surrounding codebase's own established
-  patterns as visible from the plan's own Interfaces/anchors.
+- **Forward-looking architectural risk** — apply the injected architecture lens's `## Plan review`.
+- **Architectural soundness** — apply the injected architecture lens's `## Plan review`.
 - **Code style** — a step's Change, as described, would violate a code-style rule the resolved
   context carries, or a convention visible from the anchors the step itself cites.
 - **Implementation-risk preview** — for each step's Change, name which /analyze lenses' `Blocking`

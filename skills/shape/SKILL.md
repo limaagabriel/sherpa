@@ -121,7 +121,10 @@ rationale that also lands there. No frame, or a frame that carries none: no-op.
    carried. `readiness-reviewer` gets the full step list (each step's Goal, Interfaces,
    Acceptance criteria, Risk) and `configPath`. `engineering-reviewer` gets the plan goal, the
    full step list, the problem statement, the plan's no-gos/rabbit holes, `REVISIT` when carried,
-   and `configPath`. All three `OK` → present. Any `GAPS` → fix what you can; a hole only the
+   and `configPath`, plus the `## Plan review` sections of `minimality.md`, `readability.md` and
+   `architecture.md` under `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/` — you read them per the
+   section map in `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/README.md` and inject their content,
+   never paths. All three `OK` → present. Any `GAPS` → fix what you can; a hole only the
    human can close (human gate 1) → one framing line naming what it blocks, then the finding
    quoted exactly, and wait. Present the plan **Summary first**, then **Details** (Blocks 1–3).
    The **Summary** for a plan carries, in plain words and about 12 lines: one line per step saying
