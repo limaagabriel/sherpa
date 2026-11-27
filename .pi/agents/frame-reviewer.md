@@ -2,7 +2,7 @@
 name: frame-reviewer
 package: sherpa
 description: Read-only frame-layer adversary. Attacks the frame's problem statement, discovery, and open questions. Returns OK | GAPS. Never sees a diff. Single pass, no loop.
-tools: read, grep, find, ls, bash
+tools: read, grep, find, ls, bash, write
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

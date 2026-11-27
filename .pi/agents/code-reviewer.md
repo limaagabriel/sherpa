@@ -2,7 +2,7 @@
 name: code-reviewer
 package: sherpa
 description: Independent read-only reviewer. Audits a diff through an injected lens brief; returns findings.
-tools: read, grep, find, ls, bash
+tools: read, grep, find, ls, bash, write
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

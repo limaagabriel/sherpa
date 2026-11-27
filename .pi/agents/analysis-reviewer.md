@@ -2,7 +2,7 @@
 name: analysis-reviewer
 package: sherpa
 description: Read-only analyze-layer adversary. Checks each /analyze finding against the code; confirms, disproves, or marks unverified.
-tools: read, grep, find, ls, bash
+tools: read, grep, find, ls, bash, write
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

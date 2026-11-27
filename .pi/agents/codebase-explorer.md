@@ -2,7 +2,7 @@
 name: codebase-explorer
 package: sherpa
 description: Read-only codebase scout that explores per the caller's task/target/focus and returns a Discover record (landmarks, precedent, constraints, tests, gaps, confidence).
-tools: read, grep, find, ls, bash
+tools: read, grep, find, ls, bash, write
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

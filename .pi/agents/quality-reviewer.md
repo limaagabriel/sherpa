@@ -1,8 +1,8 @@
 ---
 name: quality-reviewer
 package: sherpa
-description: Per-step reviewer (build layer). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, performance, regression risk, and per-criterion acceptance/produces fidelity — one reviewer, one verdict. Self-contained.
-tools: read, grep, find, ls, bash
+description: Per-step reviewer (build layer). Read-only. Audits a built step's diff for minimality, architecture, correctness, security, regression risk, and per-criterion acceptance/produces fidelity — one reviewer, one verdict. Self-contained.
+tools: read, grep, find, ls, bash, write
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

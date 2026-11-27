@@ -1,8 +1,8 @@
 ---
 name: structure-reviewer
 package: sherpa
-description: Read-only shape-layer adversary. Attacks the whole plan's step structure — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns OK | GAPS.
-tools: read, grep, find, ls, bash
+description: Read-only shape-layer adversary. Attacks the plan's step structure — traceable to the goal, no missing foundation, no overlap, sound order. Never sees a diff. Returns OK | GAPS.
+tools: read, grep, find, ls, bash, write
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

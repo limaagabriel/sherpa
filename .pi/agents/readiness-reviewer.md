@@ -1,8 +1,8 @@
 ---
 name: readiness-reviewer
 package: sherpa
-description: Read-only shape-layer adversary. Attacks each step's own contract in isolation — complete, testable, goal-honest, single-responsibility, risk substantive. Cross-step is structure-reviewer's job. Never sees a diff. Returns OK | GAPS.
-tools: read, grep, find, ls, bash
+description: Read-only shape-layer adversary. Attacks each step's own contract — complete, testable, goal-honest, single-responsibility, risk substantive. Never sees a diff. Returns OK | GAPS.
+tools: read, grep, find, ls, bash, write
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

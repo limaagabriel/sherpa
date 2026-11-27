@@ -2,7 +2,7 @@
 # Full role in plugin file agents/structure-reviewer.md; this TOML binds the model
 # tier + sandbox. Tier: adversarial review (GPT-6 Astra, high). Read-only.
 name = "structure-reviewer"
-description = '''Read-only shape-layer adversary. Attacks the whole plan's step structure — traceable to the goal, no missing foundation, no overlap, sound order. Cross-step only — readiness-reviewer's per-step. Never sees a diff. Returns OK | GAPS.'''
+description = '''Read-only shape-layer adversary. Attacks the plan's step structure — traceable to the goal, no missing foundation, no overlap, sound order. Never sees a diff. Returns OK | GAPS.'''
 model = "gpt-6-astra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

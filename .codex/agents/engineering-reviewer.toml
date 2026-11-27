@@ -2,7 +2,7 @@
 # Full role in plugin file agents/engineering-reviewer.md; this TOML binds the
 # model tier + sandbox. Tier: adversarial review (GPT-6 Astra, high). Read-only.
 name = "engineering-reviewer"
-description = '''Read-only shape-layer adversary. Attacks a drafted plan's engineering quality — reusability, simplicity, minimality, readability, commit-history cleanliness, forward-looking architectural risk, architectural soundness, code style. No diff yet — readiness-reviewer/structure-reviewer's contract & structure attacks are out of scope. Returns OK | GAPS.'''
+description = '''Read-only shape-layer adversary. Attacks a plan's engineering quality — reuse, simplicity, minimality, readability, commit history, architecture, code style. Never sees a diff. Returns OK | GAPS.'''
 model = "gpt-6-astra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
