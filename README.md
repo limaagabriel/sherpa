@@ -11,7 +11,7 @@ The three main skills work in order:
 
 Other skills: `/persist`, `/analyze`, `/triage`, `/restory`, and `/invoke`.
 
-Sherpa also bundles helper agents: codebase-explorer, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and the reviewers.
+Sherpa also bundles helper agents: codebase-explorer, shape-contributor, shape-builder, step-builder, code-reviewer, analysis-reviewer, engineering-reviewer, and the reviewers.
 
 Sherpa offers the tools. You decide the workflow. It is opt-in: nothing runs until you call a skill.
 It keeps nothing in the repo unless you call `/persist`. The optional inventory, a ticket board
@@ -49,7 +49,7 @@ dir, in the read-only agents), and start a new thread. Verify with `/frame` — 
 | Skill | Does | Start here when |
 |---|---|---|
 | `/frame <task>` | Scout, bind a problem statement, ask questions as they arise, compose + present a frame, get a cold-eyes critique. | the task is fuzzy or has design calls |
-| `/shape <task>` | Drafts the plan directly — step budget stated up front — then gets it critiqued three ways (structure, readiness, engineering) in parallel, and waits for your one approval. | the problem's framed (or clear enough) |
+| `/shape <task>` | Four lens contributors each sketch a light pre-plan, `shape-builder` weighs them into one plan — step budget stated up front — then it gets critiqued three ways (structure, readiness, engineering) in parallel, and waits for your one approval. | the problem's framed (or clear enough) |
 | `/implement <task>` | Build each step (step-builder + quality reviewer), with pressure per step. | it's one obvious change |
 | `/persist` | Write the in-context frame or plan to disk so a later session can resume. | you want to save or resume |
 | `/analyze` | Pre-review analysis of a branch's changes or a GitHub PR; opens with a short context briefing, then lens findings checked by `analysis-reviewer`, plus a verdict. | you want a pre-PR or pre-merge second opinion |
@@ -63,7 +63,7 @@ does the minimum to proceed — never re-running the layer above.
 ```
 /frame add rate limiting to the public API   # fuzzy → frame it first
    → scouts, asks a few questions, presents a frame
-/shape                                       # draft the plan directly
+/shape                                       # four contributors, one drafted plan
    → critiques it three ways, then presents the plan, waits for your approval
 /implement                                   # build them, reviewed per step
 ```
@@ -73,7 +73,7 @@ does the minimum to proceed — never re-running the layer above.
 ## How it works
 
 `/frame` scouts, binds a problem statement, and asks questions as they arise; `frame-reviewer`
-attacks the framing. `/shape` drafts the plan directly, then gets it attacked in parallel by
+attacks the framing. `/shape` has four `shape-contributor` agents (minimality, correctness, robustness, naive) each sketch a light pre-plan, then `shape-builder` weighs them into one plan, which gets attacked in parallel by
 `structure-reviewer` (how the steps relate), `readiness-reviewer` (each step's own contract), and
 `engineering-reviewer` (plan-level engineering quality) — a gap only you can close waits on you
 (human gate 1) — before presenting the plan and waiting for **your explicit approval (human
@@ -399,7 +399,7 @@ schema and resolution rules: `packs/README.md`.
 ## Components
 
 - **`/frame`** (frame) — scout + bind a problem statement; `frame-reviewer` gives it cold eyes.
-- **`/shape`** (shape) — drafts the plan directly; `structure-reviewer`, `readiness-reviewer`,
+- **`/shape`** (shape) — `shape-contributor` agents sketch pre-plans and `shape-builder` drafts the plan (the contributors are skipped when you state a direction); `structure-reviewer`, `readiness-reviewer`,
   and `engineering-reviewer` critique it in parallel.
 - **`/implement`** (build) — runs approved steps; `step-builder` builds and commits each one,
   `quality-reviewer` checks it.
@@ -420,7 +420,7 @@ schema and resolution rules: `packs/README.md`.
 
 ```
 skills/        /frame, /shape, /implement, /persist, /analyze, /triage, /restory, /invoke, using-sherpa
-agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
+agents/        codebase-explorer, frame-reviewer, structure-reviewer, readiness-reviewer, engineering-reviewer, shape-contributor, shape-builder, step-builder, quality-reviewer, code-reviewer, analysis-reviewer
 protocols/harness/  Codex CLI and pi harness equivalence tables
 protocols/unattended.md  rules for the headless runs the inventory loop starts (protocol=1)
 packs/         project-pack template + docs

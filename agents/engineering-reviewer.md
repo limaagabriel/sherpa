@@ -54,7 +54,8 @@ The problem statement — a frame's, or the driver's own inline one — plus the
 none). `configPath`, when announced: run `bash scripts/pack/load-layer.sh <configPath> shape`
 first and follow the output. The `## Plan review` sections of the minimality, readability and
 architecture lenses, pasted by /shape as content; they carry the Minimality, Readability and
-architecture judgments below.
+architecture judgments below. If a `## Plan review` section is absent from the prompt, say so in one
+line before the verdict rather than judging from memory.
 
 ## What you attack
 - **Reusability** — a step reinvents something the codebase (or an earlier step's own `produces`)
