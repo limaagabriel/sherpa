@@ -73,7 +73,7 @@ Gives up: <what you would lose by choosing it, and what you assumed>
 
 ## Rules
 - No full steps, no step contracts, no acceptance checks. The drafter writes those.
-- Never compare with or criticize other approaches, the direct one included. State your own cons
+- Never compare with or criticize other proposals. State your own cons
   only.
 - Respect the problem's no-gos. If your idea needs to break one, say so under `Cons` instead of
   hiding it.

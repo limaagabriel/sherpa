@@ -1,6 +1,6 @@
 ---
 name: shape
-description: Shape layer. Gathers four lens proposals, drafts one plan, then reviews it three ways (structure, readiness, engineering) before the human approves. Frameless-tolerant. Triggers - "/shape", "/shape <problem>", "brainstorm directions".
+description: Shape layer. Gathers five lens proposals, drafts one plan, then reviews it three ways (structure, readiness, engineering) before the human approves. Frameless-tolerant. Triggers - "/shape", "/shape <problem>", "brainstorm directions".
 ---
 <!-- shared:skill-rules -->- **Authority:** the human decides at the human gates each skill lists; the driver decides and
   shows everything else.
@@ -74,8 +74,8 @@ rationale that also lands there. No frame, or a frame that carries none: no-op.
    and what it leaves out; the human may change it — before drafting begins.
 2. **Contributors.** Create `HANDOFF` per `${CLAUDE_PLUGIN_ROOT}/protocols/handoff.md`. When
    `DIRECTION` is bound, say in one line that contributors were skipped and go to step 3.
-   Otherwise dispatch four `shape-contributor` agents via Agent, in parallel, one per lens:
-   minimality, correctness, robustness, naive. Each gets `PROBLEM` (with its no-gos and rabbit
+   Otherwise dispatch five `shape-contributor` agents via Agent, in parallel, one per lens:
+   direct, minimality, correctness, robustness, naive. Each gets `PROBLEM` (with its no-gos and rabbit
    holes), the discovery summary, `HANDOFF`, `configPath`, and its lens: its name, the `Owns` line and
    the `## Proposing` section of `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/<lens>.md`, read per the
    section map in `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/README.md` and injected as content, never
@@ -84,8 +84,8 @@ rationale that also lands there. No frame, or a frame that carries none: no-op.
 3. **Draft.** Dispatch `shape-builder` via Agent with `PROBLEM`, the discovery summary,
    `TARGET_DIR`, the design questions, the step budget (stated in step 1), `DIRECTION` when bound,
    `REVISIT` when carried, the proposals (the paths from the `WROTE` lines, or the inline
-   proposals; none when step 2 was skipped), `HANDOFF` and `configPath`. It drafts the direct
-   approach, weighs each proposal, settles the design questions and writes the plan's Blocks 1–3.
+   proposals; none when step 2 was skipped), `HANDOFF` and `configPath`. It weighs each
+   proposal (the `direct` one included), settles the design questions and writes the plan's Blocks 1–3.
    Read `<HANDOFF>/shape-builder.md` once. A plan returned inline (handoff fallback): report it
    in one line and use it.
 4. **Plan.** Keep what is the driver's own. Answer each `OPEN` question the builder returned:

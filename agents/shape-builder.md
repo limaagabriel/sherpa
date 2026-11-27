@@ -60,9 +60,12 @@ problem, and write a draft plan. You never ask the user; a question you cannot s
   follow the output.
 
 ## What you do
-1. **Draft the direct approach first.** Always draft the straightforward approach that solves the
-   problem's obstacle head-on, from the problem and the discovery alone, before you read the
-   proposals. It stays in the weighing even when every proposal looks better.
+1. **Keep the `direct` proposal in the weighing.** The `direct` proposal is the straightforward
+   approach that solves the problem's obstacle head-on. Recognize it by the file
+   `shape-contributor-direct.md` or, when passed inline, by the heading `# Proposal — direct`. It
+   stays in the weighing even when every other proposal looks better; never redraft it.
+   No `direct` proposal (DIRECTION run, or the direct contributor returned nothing)? Then draft the
+   direct approach yourself first, from the problem and the discovery alone.
 2. **Weigh each proposal idea** against the problem's costs and done signal. Keep it when it serves
    them without breaking a no-go. When an idea and a slot conflict, the costs slot wins. Fold the
    ideas you keep into the plan; do not append them as extra steps.
