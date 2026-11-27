@@ -21,3 +21,17 @@ Owns whether the change is as small and simple as the problem allows.
 ## Severity
 
 - `Blocking` only when the extra complexity clearly lowers code health. Most findings are `Optional:` or `Nit:`.
+
+## Plan review
+
+- **Minimality** — a step's Change grows scope beyond what its own Goal and Acceptance criteria
+  require — speculative flexibility, unused hooks, extra surface nobody asked for.
+
+## Proposing
+
+Propose the smallest direction that fully solves the stated problem.
+
+- Optimize for the least new code, fewest moving parts, and most reuse of what already exists.
+- Name what the problem does not need and leave it out: no speculative flexibility, no extra surface.
+- Prefer a direction that changes one layer over one that touches many.
+- A good proposal reads as "do only this"; state what it gives up by staying small.

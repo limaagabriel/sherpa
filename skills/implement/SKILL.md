@@ -76,7 +76,9 @@ start here directly. Pressure lives per step (acceptance + quality); a Validate 
      range, `git diff <pre>..HEAD` (`pre` from the run ledger). For each lens that hits, dispatch
      `code-reviewer` in parallel with `quality-reviewer`, using /analyze's **Lens dispatch prompt**
      shape (step 4 there, same per-harness dispatch): you read `${CLAUDE_PLUGIN_ROOT}/skills/analyze/references/reviewer.md`
-     and the lens file and inject their content — never paths — plus the step's `Goal` as the change
+     and the lens file and inject their content — never paths — per the section map in
+     `${CLAUDE_PLUGIN_ROOT}/protocols/lenses/README.md` (diff reviewers get `## In scope`, `## Out of scope`,
+     `## Severity`, `## Deep-pass triggers` only) — plus the step's `Goal` as the change
      description, the step's diff, and `configPath` when announced. Lens findings labelled `Blocking`
      join the quality `FIX` items in one fold-in brief, deduped by `file:line`, each item naming its
      source. Non-`Blocking` lens findings are printed, not acted on. The ledger records the lenses run.

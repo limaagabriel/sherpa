@@ -35,3 +35,14 @@ lens; ignore when reviewing.)
 
 - `Blocking`: a real defect, a test that cannot fail, or an irreversible migration.
 - Pre-existing bugs: `FYI:` only.
+
+## Proposing
+
+Propose the direction that is most likely to be right, and provably so.
+
+- Optimize for behavior that is correct on the normal path and on the edges: empty, missing,
+  duplicate, malformed input, error paths, ordering and concurrency.
+- Prefer a direction whose correctness can be shown by a test that fails when the code breaks.
+- Name the invariants the solution must hold and where each one is checked.
+- Prefer fewer states and fewer implicit assumptions over clever shortcuts.
+- A good proposal says how we would know it works; state what it costs in speed or simplicity.

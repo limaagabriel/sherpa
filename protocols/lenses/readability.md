@@ -24,3 +24,9 @@ Owns how easy the change is to read, follow, and look up later.
 
 - Cap findings at `Nit:` unless they break a pack or style-guide rule.
 - Exception: missing docs for a behavior change is a real finding. `Optional:` or `Blocking` is allowed there.
+
+## Plan review
+
+- **Readability** — a step's Change, as described, would leave behind something the next reader
+  can't follow from its name/shape alone — e.g. a Change that packs unrelated concerns into one
+  file or symbol with no separation the step names.
