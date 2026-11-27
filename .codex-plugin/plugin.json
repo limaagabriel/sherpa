@@ -1,6 +1,6 @@
 {
   "name": "sherpa",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "Composable /frame, /shape, /implement skills — one per layer (macro, shape, build) — plus /analyze, /triage, /restory, and /invoke skills for analyzing, triaging, reconstructing story context, and running pack skills, with adversarial review at every boundary. The user composes the workflow; opt-in /persist for state; opt-in inventory loop.",
   "author": {
     "name": "Gabriel Lima",
